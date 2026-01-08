@@ -1,8 +1,8 @@
 // ABOUTME: Authentication context provider for the app.
 // ABOUTME: Manages user session state and provides auth methods.
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { User, Session } from '@supabase/supabase-js'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import type { User, Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 
 interface AuthContextType {
