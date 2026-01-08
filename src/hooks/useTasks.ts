@@ -57,7 +57,7 @@ export function useTasks() {
         description: input.description || null,
         real_due_date: input.real_due_date,
         category: input.category || null,
-      })
+      } as never)
       .select()
       .single()
 
@@ -83,10 +83,10 @@ export function useTasks() {
     const { data, error } = await supabase
       .from('tasks')
       .update({
-        status: 'completed',
+        status: 'completed' as const,
         completed_at: now.toISOString(),
         was_on_time: wasOnTime,
-      })
+      } as never)
       .eq('id', taskId)
       .select()
       .single()

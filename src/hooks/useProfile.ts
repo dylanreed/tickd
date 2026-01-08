@@ -50,7 +50,7 @@ export function useProfile() {
 
     const { data, error } = await supabase
       .from('profiles')
-      .update(updates)
+      .update(updates as never)
       .eq('id', user.id)
       .select()
       .single()
