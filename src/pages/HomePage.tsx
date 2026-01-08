@@ -4,9 +4,9 @@
 import { useState } from 'react'
 
 // Import mascot images
-import neutralImg from '../assets/mascot/neutral.png'
-import shiftyImg from '../assets/mascot/shifty.png'
-import evilImg from '../assets/mascot/evil.png'
+import neutralImg from '../assets/tick/neutral.png'
+import shiftyImg from '../assets/tick/shifty.png'
+import evilImg from '../assets/tick/evil.png'
 
 interface HomePageProps {
   onGetStarted: () => void

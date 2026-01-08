@@ -100,29 +100,37 @@ export default function TaskListPage() {
     await updateProfile({ theme: newTheme })
   }
 
+  const isHinged = theme === 'hinged'
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-lavender flex items-center justify-center font-body">
-        <div className="text-dusty-purple">Loading your lies...</div>
+      <div className={`min-h-screen flex items-center justify-center font-body ${isHinged ? 'bg-hinged-bg' : 'bg-lavender'}`}>
+        <div className={isHinged ? 'text-hinged-text-secondary' : 'text-dusty-purple'}>
+          {isHinged ? 'Loading...' : 'Loading your lies...'}
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-lavender font-body">
-      <header className="bg-cloud shadow-sm sticky top-0 z-10">
+    <div className={`min-h-screen font-body ${isHinged ? 'bg-hinged-bg' : 'bg-lavender'}`}>
+      <header className={`shadow-sm sticky top-0 z-10 ${isHinged ? 'bg-hinged-card border-b border-hinged-border' : 'bg-cloud'}`}>
         <div className="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
           <div>
-            <h1 className="font-pixel text-sm text-charcoal">
-              {theme === 'unhinged' ? 'TICK IS A LIAR 🤥' : 'TICK IS A LIAR'}
+            <h1 className={isHinged ? 'font-medium text-hinged-text' : 'font-pixel text-sm text-charcoal'}>
+              {theme === 'unhinged' ? 'TICK IS A LIAR 🤥' : 'Tick is a Liar'}
             </h1>
-            <p className="text-xs text-dusty-purple">{user?.email}</p>
+            <p className={`text-xs ${isHinged ? 'text-hinged-text-secondary' : 'text-dusty-purple'}`}>{user?.email}</p>
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle theme={theme} onToggle={handleThemeToggle} />
             <button
               onClick={signOut}
-              className="text-sm text-dusty-purple hover:text-hot-pink transition-colors"
+              className={`text-sm transition-colors ${
+                isHinged
+                  ? 'text-hinged-text-secondary hover:text-hinged-text'
+                  : 'text-dusty-purple hover:text-hot-pink'
+              }`}
             >
               Sign out
             </button>
@@ -135,7 +143,7 @@ export default function TaskListPage() {
 
         {pendingTasks.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-dusty-purple">
+            <p className={isHinged ? 'text-hinged-text-secondary' : 'text-dusty-purple'}>
               {theme === 'unhinged'
                 ? "No tasks? Suspicious. What are you hiding?"
                 : "No tasks yet. Add one above."}
@@ -156,8 +164,8 @@ export default function TaskListPage() {
         )}
 
         {profile && (
-          <div className="text-center text-sm text-dusty-purple">
-            Reliability score: <span className="font-bold text-charcoal">{profile.reliability_score}%</span>
+          <div className={`text-center text-sm ${isHinged ? 'text-hinged-text-secondary' : 'text-dusty-purple'}`}>
+            Reliability score: <span className={`font-bold ${isHinged ? 'text-hinged-text' : 'text-charcoal'}`}>{profile.reliability_score}%</span>
             {theme === 'unhinged' && profile.reliability_score < 50 && (
               <span className="ml-2 text-hot-pink">(yikes)</span>
             )}

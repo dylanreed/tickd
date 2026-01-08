@@ -28,6 +28,14 @@ export default {
         'tick-face': '#F5F0E1',
         'tick-nose': '#6B4423',
         'tick-cheeks': '#E8A0A0',
+        // Hinged mode (standard UI) colors
+        'hinged-bg': '#F9FAFB',
+        'hinged-card': '#FFFFFF',
+        'hinged-border': '#E5E7EB',
+        'hinged-text': '#111827',
+        'hinged-text-secondary': '#6B7280',
+        'hinged-accent': '#10B981',
+        'hinged-accent-hover': '#059669',
       },
       fontFamily: {
         'pixel': ['"Press Start 2P"', 'cursive'],

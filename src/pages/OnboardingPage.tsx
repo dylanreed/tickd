@@ -5,10 +5,10 @@ import { useState } from 'react'
 import type { CreateTaskInput } from '../types/task'
 
 // Import mascot images
-import neutralImg from '../assets/mascot/neutral.png'
-import shiftyImg from '../assets/mascot/shifty.png'
-import evilImg from '../assets/mascot/evil.png'
-import celebrateImg from '../assets/mascot/celebrate.png'
+import neutralImg from '../assets/tick/neutral.png'
+import shiftyImg from '../assets/tick/shifty.png'
+import evilImg from '../assets/tick/evil.png'
+import celebrateImg from '../assets/tick/celebrate.png'
 
 interface OnboardingPageProps {
   onComplete: (spicyLevel: number) => void
