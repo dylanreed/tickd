@@ -47,7 +47,7 @@ export default function AddTaskForm({ onAdd, theme }: AddTaskFormProps) {
   const minDate = tomorrow.toISOString().split('T')[0]
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+    <form onSubmit={handleSubmit} className="bg-cloud rounded-2xl shadow-sm p-6">
       <div className="space-y-4">
         <input
           type="text"
@@ -55,23 +55,23 @@ export default function AddTaskForm({ onAdd, theme }: AddTaskFormProps) {
           onChange={(e) => setTitle(e.target.value)}
           placeholder={theme === 'unhinged' ? "What are you procrastinating on?" : "Task title"}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900"
+          className="w-full px-4 py-3 rounded-xl bg-white text-charcoal placeholder-warm-gray border-2 border-transparent focus:border-hot-pink focus:outline-none"
         />
         <div className="flex gap-4">
           <div className="flex-1">
-            <label htmlFor="dueDate" className="block text-sm text-gray-600 mb-1">
-              Due date {theme === 'unhinged' && <span className="text-xs">(we'll lie about this)</span>}
+            <label htmlFor="dueDate" className="block text-sm text-dusty-purple mb-1">
+              Due date {theme === 'unhinged' && <span className="text-xs text-hot-pink">(we'll lie about this)</span>}
             </label>
-            <input type="date" id="dueDate" value={dueDate} onChange={(e) => setDueDate(e.target.value)} min={minDate} required className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900" />
+            <input type="date" id="dueDate" value={dueDate} onChange={(e) => setDueDate(e.target.value)} min={minDate} required className="w-full px-4 py-3 rounded-xl bg-white text-charcoal border-2 border-transparent focus:border-hot-pink focus:outline-none" />
           </div>
           <div className="flex-1">
-            <label htmlFor="category" className="block text-sm text-gray-600 mb-1">Category (optional)</label>
-            <input type="text" id="category" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="work, personal..." className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900" />
+            <label htmlFor="category" className="block text-sm text-dusty-purple mb-1">Category (optional)</label>
+            <input type="text" id="category" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="work, personal..." className="w-full px-4 py-3 rounded-xl bg-white text-charcoal placeholder-warm-gray border-2 border-transparent focus:border-hot-pink focus:outline-none" />
           </div>
         </div>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none" />
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-        <button type="submit" disabled={submitting || !title.trim() || !dueDate} className="w-full bg-gray-900 text-white py-2 px-4 rounded-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" rows={2} className="w-full px-4 py-3 rounded-xl bg-white text-charcoal placeholder-warm-gray border-2 border-transparent focus:border-hot-pink focus:outline-none resize-none" />
+        {error && <p className="text-coral text-sm">{error}</p>}
+        <button type="submit" disabled={submitting || !title.trim() || !dueDate} className="w-full bg-hot-pink text-cloud font-bold py-3 px-6 rounded-full hover:bg-coral transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           {submitting ? 'Adding...' : theme === 'unhinged' ? 'Add Task (good luck)' : 'Add Task'}
         </button>
       </div>

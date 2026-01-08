@@ -36,6 +36,14 @@ export default {
       animation: {
         'bounce-slow': 'bounce 2s infinite',
         'pulse-slow': 'pulse 3s infinite',
+        'bounce-in': 'bounceIn 0.3s ease-out',
+      },
+      keyframes: {
+        bounceIn: {
+          '0%': { transform: 'scale(0.8)', opacity: '0' },
+          '50%': { transform: 'scale(1.05)' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
       },
     },
   },

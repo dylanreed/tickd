@@ -14,11 +14,15 @@ export default function ThemeToggle({ theme, onToggle }: ThemeToggleProps) {
   return (
     <button
       onClick={handleToggle}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
+      className={`flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-colors ${
+        theme === 'hinged'
+          ? 'border-mint bg-mint/20 hover:bg-mint/40'
+          : 'border-hot-pink bg-hot-pink/20 hover:bg-hot-pink/40'
+      }`}
       title={`Switch to ${theme === 'hinged' ? 'unhinged' : 'hinged'} mode`}
     >
       <span className="text-sm">{theme === 'hinged' ? '😌' : '🤪'}</span>
-      <span className="text-sm font-medium text-gray-700">{theme === 'hinged' ? 'Hinged' : 'Unhinged'}</span>
+      <span className="text-sm font-bold text-charcoal">{theme === 'hinged' ? 'Hinged' : 'Unhinged'}</span>
     </button>
   )
 }
