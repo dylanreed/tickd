@@ -62,5 +62,15 @@ export function useProfile() {
     return { data, error }
   }
 
-  return { profile, loading, error, updateProfile }
+  const adjustReliabilityScore = async (wasOnTime: boolean) => {
+    if (!profile) return
+
+    // Adjust score: +5 for on-time, -10 for late (asymmetric penalty)
+    const adjustment = wasOnTime ? 5 : -10
+    const newScore = Math.max(0, Math.min(100, profile.reliability_score + adjustment))
+
+    await updateProfile({ reliability_score: newScore })
+  }
+
+  return { profile, loading, error, updateProfile, adjustReliabilityScore }
 }

@@ -19,7 +19,7 @@ interface CompletionData {
 
 export default function TaskListPage() {
   const { user, signOut } = useAuth()
-  const { profile, updateProfile } = useProfile()
+  const { profile, updateProfile, adjustReliabilityScore } = useProfile()
   const { tasks, addTask, completeTask, deleteTask, loading } = useTasks()
   const [completionData, setCompletionData] = useState<CompletionData | null>(null)
 
@@ -39,6 +39,7 @@ export default function TaskListPage() {
         completedAt: new Date(),
         wasOnTime,
       })
+      await adjustReliabilityScore(wasOnTime)
     }
   }
 

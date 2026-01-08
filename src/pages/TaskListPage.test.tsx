@@ -16,6 +16,7 @@ const mockAddTask = vi.fn().mockResolvedValue({ data: {}, error: null })
 const mockCompleteTask = vi.fn().mockResolvedValue({ data: {}, error: null, wasOnTime: true, realDueDate: new Date() })
 const mockDeleteTask = vi.fn().mockResolvedValue({ error: null })
 const mockUpdateProfile = vi.fn().mockResolvedValue({ data: {}, error: null })
+const mockAdjustReliabilityScore = vi.fn().mockResolvedValue(undefined)
 
 vi.mock('../contexts/AuthContext', () => ({
   useAuth: () => ({ user: mockUser, session: null, loading: false, signIn: vi.fn(), signOut: mockSignOut }),
@@ -26,7 +27,7 @@ vi.mock('../hooks/useTasks', () => ({
 }))
 
 vi.mock('../hooks/useProfile', () => ({
-  useProfile: () => ({ profile: mockProfile, loading: false, error: null, updateProfile: mockUpdateProfile }),
+  useProfile: () => ({ profile: mockProfile, loading: false, error: null, updateProfile: mockUpdateProfile, adjustReliabilityScore: mockAdjustReliabilityScore }),
 }))
 
 describe('TaskListPage', () => {
@@ -77,6 +78,16 @@ describe('TaskListPage', () => {
 
     await waitFor(() => {
       expect(mockUpdateProfile).toHaveBeenCalledWith({ theme: 'unhinged' })
+    })
+  })
+
+  it('adjusts reliability score when task is completed', async () => {
+    render(<TaskListPage />)
+
+    fireEvent.click(screen.getByLabelText('Complete task'))
+
+    await waitFor(() => {
+      expect(mockAdjustReliabilityScore).toHaveBeenCalledWith(true)
     })
   })
 })
