@@ -5,6 +5,10 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  # Supabase anon keys are designed to be public (client-side) - they only work with RLS
+  SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY"
+
 # SPA redirect - all routes go to index.html
 [[redirects]]
   from = "/*"
