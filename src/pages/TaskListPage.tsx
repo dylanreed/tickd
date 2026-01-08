@@ -32,10 +32,10 @@ export default function TaskListPage() {
 
     const { wasOnTime, realDueDate } = await completeTask(taskId)
 
-    if (wasOnTime !== undefined) {
+    if (wasOnTime !== undefined && realDueDate) {
       setCompletionData({
         taskTitle: task.title,
-        realDueDate: realDueDate!,
+        realDueDate,
         completedAt: new Date(),
         wasOnTime,
       })

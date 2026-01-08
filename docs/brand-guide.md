@@ -45,6 +45,156 @@ Tick is a warm brown pixel art alarm clock with a Pinocchio nose (because he lie
 | Shocked | Dramatic gasp | Wide eyes, open mouth, surprised | Reveal moment ("you finished 2 days early!") |
 | Smug | Self-satisfied grin | Knowing smile, "told you so" energy | After successful lie reveal |
 
+### Tick's Placement & Behavior
+
+Tick is an always-present companion who also delivers all notifications. He's not just decoration - he's the face of the app's communication.
+
+#### The Persistent Tick (Corner Companion)
+
+**Location:** Bottom-right corner of the screen
+
+**Size:**
+- Mobile: 48x48px
+- Desktop: 64x64px
+
+**Ambient Behavior:**
+- Subtle idle animation (gentle bobbing, occasional blink)
+- Eyes follow cursor/thumb as user interacts
+- Expression changes based on current app state
+- Always visible, never intrusive
+
+**Expression Triggers:**
+
+| App State | Tick's Reaction |
+|-----------|-----------------|
+| All tasks complete | Celebrating, maybe party hat |
+| No overdue tasks | Content, friendly |
+| 1-2 tasks approaching deadline | Suspicious side-eye |
+| Task goes overdue | Concerned → Disappointed (escalates) |
+| Multiple overdue tasks | Increasingly unhinged |
+| User ignores notifications | Tapping foot, staring |
+| User opens app after long absence | Dramatic gasp |
+| User completes a task | Quick celebration bounce |
+
+#### Tick as Notification Deliverer
+
+When notifications trigger, Tick actively delivers the message:
+
+**In-App Notification Flow:**
+1. Tick perks up (attention-getting animation)
+2. Speech bubble appears from Tick with the message
+3. Bubble stays for 4-5 seconds (or until dismissed)
+4. Tick returns to ambient state
+
+**Visual Example:**
+```
+                          ┌─────────────────────────────┐
+                          │ "I have asked you ONE       │
+                          │  thing. ONE THING."         │
+                          └─────────────────────────────┘
+                                        △
+                                    ┌───────┐
+                                    │  😤   │
+                                    │ Tick  │
+                                    └───────┘
+```
+
+**Push Notifications:**
+- Tick's face IS the notification icon
+- Expression matches the spiciness level
+- When user taps and opens app, Tick is already in that expression
+
+#### Tick Interactions
+
+**Short Tap → Random Quip**
+
+Tapping Tick triggers a contextual quip based on current app state:
+
+| Context | Example Quips |
+|---------|---------------|
+| All complete | "Is this what peace feels like?" |
+| No tasks | "Add a task so I can gaslight you about it." |
+| On track | "Don't get cocky. The deadlines are coming." |
+| Approaching deadline | "Maybe focus on that task instead of poking me?" |
+| Overdue (mild) | "I'm fine. Everything's fine." |
+| Overdue (medium) | "THE AUDACITY of tapping me when your tasks are overdue." |
+| Overdue (spicy) | "NO. NO TAP. ONLY TASKS." |
+| Just completed | "Dopamine acquired. You're welcome." |
+| After reveal | "I lied. You succeeded. We both win." |
+
+Full quip library available in `src/data/tickQuips.ts`.
+
+**Long Press → Spiciness Settings**
+
+Long-pressing Tick opens the spiciness settings modal:
+
+```
+┌─────────────────────────────────────┐
+│                                     │
+│         ┌───────────┐               │
+│         │    😏     │               │
+│         │   Tick    │               │
+│         └───────────┘               │
+│                                     │
+│     "How mean should I be?"         │
+│                                     │
+│   🌶️─────────────●─────────────🌶️   │
+│   1     2     3     4     5         │
+│                                     │
+│  Gentle    ←───→    Unhinged        │
+│                                     │
+│  Current: Level 3                   │
+│  "Disappointed parent energy"       │
+│                                     │
+│  Preview:                           │
+│  "I have asked you ONE thing."      │
+│                                     │
+│         [ Save ]  [ Cancel ]        │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+**Features:**
+- Tick's expression changes as slider moves (live preview)
+- Sample message updates in real-time
+- Level descriptions:
+  - 1: "Gentle concern"
+  - 2: "Pointed reminders"
+  - 3: "Disappointed parent"
+  - 4: "Unfiltered chaos"
+  - 5: "Maximum violence"
+
+#### Key Moments: Tick Goes Big
+
+For important moments, small corner Tick isn't enough. He takes center stage:
+
+**1. The Reveal Moment (Task Completed)**
+- Full-screen Tick with shocked expression
+- Message: "OH THANK GOD. You did it."
+- Reveal: "You finished 2 DAYS EARLY! (You thought you had 6 hours)"
+- Confetti animation
+- Tick transitions from shocked → smug
+
+**2. Onboarding**
+- Full-screen Tick introduces himself
+- "Hi! I'm Tick. I'm going to lie to you about your deadlines."
+- "It's for your own good. You can't handle the truth."
+- Walks user through adding first task
+
+**3. First Overdue (Tutorial Moment)**
+- Tick explains the system
+- "So... you missed the deadline I showed you."
+- "Want to know a secret? That wasn't the real deadline."
+- "The real deadline is tomorrow. You're welcome."
+
+**4. Reliability Score Changes**
+- Score up: Tick celebrating, "I might have to start lying less!"
+- Score down: Tick disappointed, "I'm going to have to lie harder now."
+
+**5. Empty States**
+- No tasks: Large Tick, "No tasks? Suspicious. I'm watching you."
+- All complete: Large Tick with party hat, "You did everything? WHO ARE YOU?"
+
 ---
 
 ## App Color Palette: Warm & Cozy Chaos
