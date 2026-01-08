@@ -1,6 +1,30 @@
-/* ABOUTME: Global CSS file with Tailwind directives. */
-/* ABOUTME: Imports Tailwind's base, component, and utility layers. */
+/* ABOUTME: Global CSS file with Tailwind directives and custom base styles. */
+/* ABOUTME: Imports Tailwind layers and sets up brand typography defaults. */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-body text-charcoal;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-8 py-4 bg-hot-pink text-cloud font-bold rounded-full hover:bg-coral transition-colors disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply px-8 py-4 bg-lavender text-charcoal font-bold rounded-full hover:bg-peach transition-colors;
+  }
+
+  .input-field {
+    @apply px-6 py-4 rounded-full bg-cloud text-charcoal placeholder-warm-gray border-2 border-transparent focus:border-hot-pink focus:outline-none;
+  }
+}
