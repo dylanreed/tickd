@@ -36,17 +36,17 @@ export default function CompletionModal({ isOpen, onClose, taskTitle, realDueDat
   const message = wasOnTime ? (diffDays > 0 || diffHours > 0 ? messages.early : messages.onTime) : messages.late
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 text-center">
+    <div className="fixed inset-0 bg-charcoal/60 flex items-center justify-center p-4 z-50 font-body">
+      <div className="bg-cloud rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
         {theme === 'unhinged' && wasOnTime && <div className="text-6xl mb-4">🎉</div>}
-        <h2 className="text-xl font-bold text-gray-900 mb-2">{theme === 'unhinged' ? 'THE REVEAL' : 'Task Completed'}</h2>
-        <p className="text-lg font-medium text-gray-800 mb-4">{taskTitle}</p>
-        <div className="bg-gray-100 rounded-lg p-4 mb-4">
-          <p className="text-sm text-gray-600 mb-1">Real due date was:</p>
-          <p className="text-lg font-semibold text-gray-900">{realDueDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+        <h2 className="font-pixel text-lg text-charcoal mb-4">{theme === 'unhinged' ? 'THE REVEAL' : 'TASK COMPLETED'}</h2>
+        <p className="text-xl font-bold text-charcoal mb-4">{taskTitle}</p>
+        <div className="bg-lavender/50 rounded-2xl p-4 mb-6">
+          <p className="text-sm text-dusty-purple mb-1">Real due date was:</p>
+          <p className="text-lg font-bold text-charcoal">{realDueDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
-        <p className={`text-lg mb-6 ${wasOnTime ? 'text-green-600' : 'text-amber-600'}`}>{message}</p>
-        <button onClick={onClose} className="bg-gray-900 text-white px-6 py-2 rounded-md hover:bg-gray-800">{theme === 'unhinged' ? 'Nice.' : 'Close'}</button>
+        <p className={`text-lg mb-6 font-medium ${wasOnTime ? 'text-charcoal' : 'text-coral'}`}>{message}</p>
+        <button onClick={onClose} className="bg-hot-pink text-cloud font-bold px-8 py-3 rounded-full hover:bg-coral transition-colors">{theme === 'unhinged' ? 'Nice.' : 'Close'}</button>
       </div>
     </div>
   )

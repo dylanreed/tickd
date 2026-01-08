@@ -3,8 +3,13 @@
 
 import { useState, type FormEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import Tick from '../components/Tick'
 
-export default function LoginPage() {
+interface LoginPageProps {
+  onBack?: () => void
+}
+
+export default function LoginPage({ onBack }: LoginPageProps) {
   const { signIn } = useAuth()
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
@@ -28,25 +33,43 @@ export default function LoginPage() {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Check your email</h2>
-          <p className="text-gray-600">
-            We sent a magic link to <strong>{email}</strong>
+      <div className="min-h-screen bg-lavender flex items-center justify-center p-4 font-body">
+        <div className="bg-cloud rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
+          <div className="text-5xl mb-4">✉️</div>
+          <h2 className="text-2xl font-bold text-charcoal mb-4">Check your email</h2>
+          <p className="text-charcoal">
+            We sent a magic link to <strong className="text-hot-pink">{email}</strong>
           </p>
-          <p className="text-gray-500 mt-2 text-sm">
-            Click the link in the email to sign in.
+          <p className="text-dusty-purple mt-2 text-sm">
+            Click the link in the email to sign in. We promise it's real.
           </p>
         </div>
+        <Tick
+          totalTasks={0}
+          completedTasks={0}
+          overdueTasks={0}
+          approachingTasks={0}
+        />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Liars Todo</h1>
-        <p className="text-gray-600 mb-6">Your friendly neighborhood gaslighter.</p>
+    <div className="min-h-screen bg-lavender flex items-center justify-center p-4 font-body">
+      <div className="bg-cloud rounded-2xl shadow-lg p-8 max-w-md w-full relative">
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="absolute top-4 left-4 text-dusty-purple hover:text-charcoal transition-colors"
+            aria-label="Go back"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
+        <h1 className="font-pixel text-xl text-charcoal mb-2 leading-relaxed">TICK IS A LIAR</h1>
+        <p className="text-dusty-purple mb-6">Your friendly neighborhood gaslighter.</p>
 
         <form onSubmit={handleSubmit}>
           <input
@@ -55,22 +78,28 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 mb-4"
+            className="w-full px-6 py-4 rounded-full bg-white text-charcoal placeholder-warm-gray border-2 border-transparent focus:border-hot-pink focus:outline-none mb-4"
           />
 
           {error && (
-            <p className="text-red-600 text-sm mb-4">{error}</p>
+            <p className="text-coral text-sm mb-4">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-gray-900 text-white py-2 px-4 rounded-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-hot-pink text-cloud font-bold py-4 px-6 rounded-full hover:bg-coral transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {submitting ? 'Sending...' : 'Send Magic Link'}
+            {submitting ? 'Sending...' : 'Lie to me'}
           </button>
         </form>
       </div>
+      <Tick
+        totalTasks={0}
+        completedTasks={0}
+        overdueTasks={0}
+        approachingTasks={0}
+      />
     </div>
   )
 }
