@@ -51,6 +51,16 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
           <p className="text-warm-gray mt-4 text-sm">
             Free forever. No credit card needed.
           </p>
+
+          <p className="mt-6 text-dusty-purple">
+            Already have an account?{' '}
+            <button
+              onClick={onGetStarted}
+              className="text-hot-pink hover:text-coral underline font-medium transition-colors"
+            >
+              Sign in
+            </button>
+          </p>
         </div>
 
         {/* Scroll indicator */}
