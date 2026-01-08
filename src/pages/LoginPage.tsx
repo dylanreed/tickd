@@ -5,7 +5,11 @@ import { useState, type FormEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import Tick from '../components/Tick'
 
-export default function LoginPage() {
+interface LoginPageProps {
+  onBack?: () => void
+}
+
+export default function LoginPage({ onBack }: LoginPageProps) {
   const { signIn } = useAuth()
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
@@ -52,8 +56,19 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-lavender flex items-center justify-center p-4 font-body">
-      <div className="bg-cloud rounded-2xl shadow-lg p-8 max-w-md w-full">
-        <h1 className="font-pixel text-xl text-charcoal mb-2 leading-relaxed">LIARS TODO</h1>
+      <div className="bg-cloud rounded-2xl shadow-lg p-8 max-w-md w-full relative">
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="absolute top-4 left-4 text-dusty-purple hover:text-charcoal transition-colors"
+            aria-label="Go back"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
+        <h1 className="font-pixel text-xl text-charcoal mb-2 leading-relaxed">TICK IS A LIAR</h1>
         <p className="text-dusty-purple mb-6">Your friendly neighborhood gaslighter.</p>
 
         <form onSubmit={handleSubmit}>

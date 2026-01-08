@@ -10,6 +10,9 @@ import AddTaskForm from '../components/AddTaskForm'
 import CompletionModal from '../components/CompletionModal'
 import ThemeToggle from '../components/ThemeToggle'
 import Tick from '../components/Tick'
+import SpicinessModal from '../components/SpicinessModal'
+
+const SPICY_LEVEL_KEY = 'liars-todo-spicy-level'
 
 interface CompletionData {
   taskTitle: string
@@ -25,6 +28,25 @@ export default function TaskListPage() {
   const [completionData, setCompletionData] = useState<CompletionData | null>(null)
   const [justCompleted, setJustCompleted] = useState(false)
   const [justRevealed, setJustRevealed] = useState(false)
+  const [spicinessModalOpen, setSpicinessModalOpen] = useState(false)
+  const [spicyLevel, setSpicyLevel] = useState(3)
+
+  // Load spicy level from localStorage
+  useEffect(() => {
+    if (user) {
+      const saved = localStorage.getItem(`${SPICY_LEVEL_KEY}-${user.id}`)
+      if (saved) {
+        setSpicyLevel(Number(saved))
+      }
+    }
+  }, [user])
+
+  const handleSpicySave = (level: number) => {
+    if (user) {
+      localStorage.setItem(`${SPICY_LEVEL_KEY}-${user.id}`, String(level))
+      setSpicyLevel(level)
+    }
+  }
 
   const theme = profile?.theme ?? 'hinged'
   const pendingTasks = tasks.filter(t => t.status === 'pending')
@@ -92,7 +114,7 @@ export default function TaskListPage() {
         <div className="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
           <div>
             <h1 className="font-pixel text-sm text-charcoal">
-              {theme === 'unhinged' ? 'LIARS TODO 🤥' : 'LIARS TODO'}
+              {theme === 'unhinged' ? 'TICK IS A LIAR 🤥' : 'TICK IS A LIAR'}
             </h1>
             <p className="text-xs text-dusty-purple">{user?.email}</p>
           </div>
@@ -158,10 +180,18 @@ export default function TaskListPage() {
         completedTasks={completedTasks.length}
         overdueTasks={overdueTasks.length}
         approachingTasks={approachingTasks.length}
-        spicyLevel={3}
+        spicyLevel={spicyLevel}
         justCompleted={justCompleted}
         justRevealed={justRevealed}
         userName={userName}
+        onLongPress={() => setSpicinessModalOpen(true)}
+      />
+
+      <SpicinessModal
+        isOpen={spicinessModalOpen}
+        onClose={() => setSpicinessModalOpen(false)}
+        currentLevel={spicyLevel}
+        onSave={handleSpicySave}
       />
     </div>
   )

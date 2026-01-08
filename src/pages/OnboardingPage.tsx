@@ -2,6 +2,7 @@
 // ABOUTME: Walks users through how the lying system works and sets spiciness level.
 
 import { useState } from 'react'
+import type { CreateTaskInput } from '../types/task'
 
 // Import mascot images
 import neutralImg from '../assets/mascot/neutral.png'
@@ -11,6 +12,7 @@ import celebrateImg from '../assets/mascot/celebrate.png'
 
 interface OnboardingPageProps {
   onComplete: (spicyLevel: number) => void
+  onAddTask?: (task: CreateTaskInput) => Promise<{ error: Error | null }>
 }
 
 type TickExpression = 'neutral' | 'shifty' | 'evil' | 'celebrate'
@@ -38,15 +40,43 @@ const spicyExamples: Record<number, string> = {
   5: '"I\'M DMING ALL YOUR EXES ABOUT THIS."',
 }
 
-export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
+export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPageProps) {
   const [step, setStep] = useState(0)
   const [spicyLevel, setSpicyLevel] = useState(3)
+  const [taskTitle, setTaskTitle] = useState('')
+  const [taskDueDate, setTaskDueDate] = useState('')
+  const [isAddingTask, setIsAddingTask] = useState(false)
+  const [taskAdded, setTaskAdded] = useState(false)
 
   const nextStep = () => setStep(s => s + 1)
 
   const handleComplete = () => {
     onComplete(spicyLevel)
   }
+
+  const handleAddFirstTask = async () => {
+    if (!taskTitle.trim() || !taskDueDate || !onAddTask) {
+      // If no task entered, just skip to next screen
+      nextStep()
+      return
+    }
+
+    setIsAddingTask(true)
+    const { error } = await onAddTask({
+      title: taskTitle.trim(),
+      real_due_date: new Date(taskDueDate).toISOString(),
+    })
+
+    setIsAddingTask(false)
+    if (!error) {
+      setTaskAdded(true)
+    }
+  }
+
+  // Calculate min date (tomorrow)
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const minDate = tomorrow.toISOString().split('T')[0]
 
   const screens = [
     // Screen 1: Welcome
@@ -128,20 +158,13 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
       cta: "That's perfect",
       isSpicySelector: true,
     },
-    // Screen 6: First Task Prompt
+    // Screen 6: First Task Prompt (with inline form)
     {
       expression: 'celebrate' as TickExpression,
-      headline: "Perfect! Now let's get started.",
-      body: (
-        <>
-          <p className="mb-4">Be honest about the real deadline. I'll handle the lying.</p>
-          <p className="text-dusty-purple">
-            Remember: <span className="font-pixel text-xs">YOU CAN'T HANDLE THE TRUTH.</span>
-            <br />But I can handle it for you.
-          </p>
-        </>
-      ),
-      cta: 'Add my first task',
+      headline: "Add your first task!",
+      body: null, // Custom rendering for task form
+      cta: 'Add task',
+      isFirstTask: true,
     },
     // Screen 7: Setup Complete
     {
@@ -264,18 +287,61 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
           </div>
         )}
 
+        {/* First Task Form */}
+        {currentScreen.isFirstTask && !taskAdded && (
+          <div className="mb-6 space-y-4">
+            <p className="text-dusty-purple text-sm mb-4">
+              Be honest about the real deadline. I'll handle the lying.
+            </p>
+            <input
+              type="text"
+              value={taskTitle}
+              onChange={(e) => setTaskTitle(e.target.value)}
+              placeholder="What do you need to do?"
+              className="w-full px-4 py-3 rounded-xl bg-white text-charcoal placeholder-warm-gray border-2 border-transparent focus:border-hot-pink focus:outline-none"
+            />
+            <div>
+              <label className="block text-sm text-dusty-purple mb-1 text-left">
+                Real deadline <span className="text-hot-pink">(I'll lie about this)</span>
+              </label>
+              <input
+                type="date"
+                value={taskDueDate}
+                onChange={(e) => setTaskDueDate(e.target.value)}
+                min={minDate}
+                className="w-full px-4 py-3 rounded-xl bg-white text-charcoal border-2 border-transparent focus:border-hot-pink focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Task Added Celebration */}
+        {currentScreen.isFirstTask && taskAdded && (
+          <div className="mb-6 bg-mint/30 rounded-xl p-4">
+            <p className="text-charcoal font-bold text-lg">Your first task!</p>
+            <p className="text-dusty-purple">I've already started lying about the deadline.</p>
+          </div>
+        )}
+
         {/* CTA Button */}
         <button
-          onClick={currentScreen.isFinal ? handleComplete : nextStep}
-          className="w-full bg-hot-pink text-cloud font-bold py-4 px-6 rounded-full hover:bg-coral transition-colors"
+          onClick={
+            currentScreen.isFirstTask
+              ? (taskAdded ? nextStep : handleAddFirstTask)
+              : currentScreen.isFinal
+                ? handleComplete
+                : nextStep
+          }
+          disabled={isAddingTask}
+          className="w-full bg-hot-pink text-cloud font-bold py-4 px-6 rounded-full hover:bg-coral transition-colors disabled:opacity-50"
         >
-          {currentScreen.cta}
+          {isAddingTask ? 'Adding...' : taskAdded ? 'Continue' : currentScreen.cta}
         </button>
 
         {/* Skip option on first task prompt */}
-        {step === 5 && (
+        {currentScreen.isFirstTask && !taskAdded && (
           <button
-            onClick={handleComplete}
+            onClick={nextStep}
             className="w-full mt-3 text-dusty-purple hover:text-charcoal transition-colors text-sm"
           >
             Skip for now

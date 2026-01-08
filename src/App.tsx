@@ -3,6 +3,8 @@
 
 import { useState, useEffect } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { useTasks } from './hooks/useTasks'
+import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import TaskListPage from './pages/TaskListPage'
 import LandingPage from './pages/LandingPage'
@@ -16,13 +18,16 @@ const SPICY_LEVEL_KEY = 'liars-todo-spicy-level'
 
 function AppContent() {
   const { user, loading } = useAuth()
+  const { addTask } = useTasks()
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean | null>(null)
+  const [showLogin, setShowLogin] = useState(false)
 
   // Check onboarding status on mount and when user changes
   useEffect(() => {
     if (user) {
       const completed = localStorage.getItem(`${ONBOARDING_KEY}-${user.id}`)
       setHasCompletedOnboarding(completed === 'true')
+      setShowLogin(false) // Reset when user logs in
     } else {
       setHasCompletedOnboarding(null)
     }
@@ -50,12 +55,16 @@ function AppContent() {
   }
 
   if (!user) {
-    return <LoginPage />
+    // Show HomePage first, then LoginPage when they click Get Started
+    if (!showLogin) {
+      return <HomePage onGetStarted={() => setShowLogin(true)} />
+    }
+    return <LoginPage onBack={() => setShowLogin(false)} />
   }
 
   // Show onboarding for new users
   if (hasCompletedOnboarding === false) {
-    return <OnboardingPage onComplete={handleOnboardingComplete} />
+    return <OnboardingPage onComplete={handleOnboardingComplete} onAddTask={addTask} />
   }
 
   // Still checking onboarding status
