@@ -14,7 +14,7 @@ const mockProfile = {
   created_at: new Date().toISOString(),
 }
 
-const mockUpdateFn = vi.fn()
+let capturedUpdatePayload: Record<string, unknown> | null = null
 
 vi.mock('../lib/supabase', () => ({
   supabase: {
@@ -24,19 +24,19 @@ vi.mock('../lib/supabase', () => ({
           single: vi.fn(() => Promise.resolve({ data: mockProfile, error: null }))
         }))
       })),
-      update: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          select: vi.fn(() => ({
-            single: vi.fn(() => {
-              mockUpdateFn()
-              return Promise.resolve({
-                data: { ...mockProfile, reliability_score: mockProfile.reliability_score },
+      update: vi.fn((payload: Record<string, unknown>) => {
+        capturedUpdatePayload = payload
+        return {
+          eq: vi.fn(() => ({
+            select: vi.fn(() => ({
+              single: vi.fn(() => Promise.resolve({
+                data: { ...mockProfile, ...payload },
                 error: null
-              })
-            })
+              }))
+            }))
           }))
-        }))
-      })),
+        }
+      }),
     }))
   }
 }))
@@ -51,6 +51,7 @@ describe('useProfile', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockProfile.reliability_score = 50
+    capturedUpdatePayload = null
   })
 
   it('fetches profile on mount', async () => {
@@ -76,7 +77,7 @@ describe('useProfile', () => {
         await result.current.adjustReliabilityScore(true)
       })
 
-      expect(mockUpdateFn).toHaveBeenCalled()
+      expect(capturedUpdatePayload).toEqual({ reliability_score: 55 })
     })
 
     it('decreases score by 10 when wasOnTime is false', async () => {
@@ -90,7 +91,7 @@ describe('useProfile', () => {
         await result.current.adjustReliabilityScore(false)
       })
 
-      expect(mockUpdateFn).toHaveBeenCalled()
+      expect(capturedUpdatePayload).toEqual({ reliability_score: 40 })
     })
 
     it('clamps score to minimum of 0', async () => {
@@ -106,7 +107,7 @@ describe('useProfile', () => {
         await result.current.adjustReliabilityScore(false)
       })
 
-      expect(mockUpdateFn).toHaveBeenCalled()
+      expect(capturedUpdatePayload).toEqual({ reliability_score: 0 })
     })
 
     it('clamps score to maximum of 100', async () => {
@@ -122,7 +123,7 @@ describe('useProfile', () => {
         await result.current.adjustReliabilityScore(true)
       })
 
-      expect(mockUpdateFn).toHaveBeenCalled()
+      expect(capturedUpdatePayload).toEqual({ reliability_score: 100 })
     })
 
     it('does nothing when profile is null', async () => {
