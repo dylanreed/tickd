@@ -37,6 +37,7 @@ export function useTasks() {
     if (error) {
       setError(error)
     } else {
+      setError(null)
       setTasks((data || []).map(enrichTask))
     }
     setLoading(false)
@@ -54,9 +55,9 @@ export function useTasks() {
       .insert({
         user_id: user.id,
         title: input.title,
-        description: input.description || null,
+        description: input.description ?? null,
         real_due_date: input.real_due_date,
-        category: input.category || null,
+        category: input.category ?? null,
       } as never)
       .select()
       .single()
@@ -83,7 +84,7 @@ export function useTasks() {
     const { data, error } = await supabase
       .from('tasks')
       .update({
-        status: 'completed' as const,
+        status: 'completed',
         completed_at: now.toISOString(),
         was_on_time: wasOnTime,
       } as never)
@@ -95,14 +96,18 @@ export function useTasks() {
       setTasks(prev => prev.map(t => t.id === taskId ? enrichTask(data) : t))
     }
 
-    return { data, error, wasOnTime, realDueDate: realDue }
+    const taskData = data as Task | null
+    return { data, error, wasOnTime, realDueDate: realDue, completedAt: taskData?.completed_at ? new Date(taskData.completed_at) : null }
   }
 
   const deleteTask = async (taskId: string) => {
+    if (!user) return { error: new Error('Not authenticated') }
+
     const { error } = await supabase
       .from('tasks')
       .delete()
       .eq('id', taskId)
+      .eq('user_id', user.id)
 
     if (!error) {
       setTasks(prev => prev.filter(t => t.id !== taskId))

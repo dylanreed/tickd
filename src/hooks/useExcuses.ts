@@ -35,17 +35,30 @@ export function useExcuses() {
       return { success: false, error: `Excuse must be at least ${MIN_EXCUSE_LENGTH} characters` }
     }
 
+    // Check if task already has an active excuse
+    const now = new Date().toISOString()
+    const { data: existingExcuses } = await supabase
+      .from('excuses')
+      .select('id')
+      .eq('task_id', taskId)
+      .eq('user_id', user.id)
+      .gt('postponed_until', now)
+      .limit(1)
+
+    if (existingExcuses && existingExcuses.length > 0) {
+      return { success: false, error: 'Task already has an active excuse. Wait until it expires.' }
+    }
+
     const postponedUntil = new Date(Date.now() + POSTPONE_HOURS * 60 * 60 * 1000)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('excuses')
       .insert({
         task_id: taskId,
         user_id: user.id,
         excuse_text: excuseText,
         postponed_until: postponedUntil.toISOString(),
-      })
+      } as never)
       .select()
       .single()
 
