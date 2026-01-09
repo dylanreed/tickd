@@ -299,7 +299,7 @@ describe('ExcuseModal', () => {
       .mockResolvedValueOnce({ success: false })
       .mockResolvedValueOnce({ success: true })
 
-    const { rerender } = render(
+    render(
       <ExcuseModal
         isOpen={true}
         onClose={mockOnClose}

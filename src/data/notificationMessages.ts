@@ -1,7 +1,7 @@
 // ABOUTME: Contains notification message templates for browser push and email notifications.
 // ABOUTME: Messages organized by notification tier and theme (hinged/unhinged).
 
-import { NotificationTier } from '../lib/lieCalculator'
+import type { NotificationTier } from '../lib/lieCalculator'
 
 export type Theme = 'hinged' | 'unhinged'
 

@@ -106,11 +106,12 @@ export function usePushSubscription(): PushSubscriptionHookResult {
       const registration = await navigator.serviceWorker.ready
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey) as BufferSource,
       })
 
       const subscriptionJson = subscription.toJSON()
-      const { error: dbError } = await supabase.from('push_subscriptions').insert({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: dbError } = await (supabase as any).from('push_subscriptions').insert({
         user_id: user.id,
         endpoint: subscriptionJson.endpoint ?? '',
         p256dh: subscriptionJson.keys?.p256dh ?? '',

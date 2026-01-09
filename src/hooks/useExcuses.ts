@@ -37,7 +37,8 @@ export function useExcuses() {
 
     const postponedUntil = new Date(Date.now() + POSTPONE_HOURS * 60 * 60 * 1000)
 
-    const { data, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase as any)
       .from('excuses')
       .insert({
         task_id: taskId,
