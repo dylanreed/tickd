@@ -64,7 +64,8 @@ export function usePushSubscription(): PushSubscriptionHookResult {
         const registration = await navigator.serviceWorker.ready
         const subscription = await registration.pushManager.getSubscription()
         setIsSubscribed(!!subscription)
-      } catch {
+      } catch (err) {
+        console.error('Failed to check push subscription:', err)
         setIsSubscribed(false)
       }
 
@@ -75,6 +76,10 @@ export function usePushSubscription(): PushSubscriptionHookResult {
   }, [isSupported])
 
   const subscribe = useCallback(async (): Promise<{ error: Error | null }> => {
+    if (loading) {
+      return { error: new Error('Operation in progress') }
+    }
+
     if (!user) {
       return { error: new Error('User not authenticated') }
     }
@@ -83,6 +88,7 @@ export function usePushSubscription(): PushSubscriptionHookResult {
       return { error: new Error('Push notifications not supported') }
     }
 
+    setLoading(true)
     try {
       const permission = await Notification.requestPermission()
       if (permission === 'granted') {
@@ -106,12 +112,18 @@ export function usePushSubscription(): PushSubscriptionHookResult {
       const subscriptionJson = subscription.toJSON()
       const { error: dbError } = await supabase.from('push_subscriptions').insert({
         user_id: user.id,
-        endpoint: subscriptionJson.endpoint,
-        p256dh: subscriptionJson.keys?.p256dh,
-        auth: subscriptionJson.keys?.auth,
-      } as never)
+        endpoint: subscriptionJson.endpoint ?? '',
+        p256dh: subscriptionJson.keys?.p256dh ?? '',
+        auth: subscriptionJson.keys?.auth ?? '',
+      })
 
       if (dbError) {
+        // Check if error is due to unique constraint violation (subscription already exists)
+        if (dbError.code === '23505' || dbError.message?.includes('duplicate')) {
+          // Subscription already exists, treat as success
+          setIsSubscribed(true)
+          return { error: null }
+        }
         await subscription.unsubscribe()
         return { error: new Error(dbError.message) }
       }
@@ -120,10 +132,16 @@ export function usePushSubscription(): PushSubscriptionHookResult {
       return { error: null }
     } catch (err) {
       return { error: err instanceof Error ? err : new Error('Unknown error') }
+    } finally {
+      setLoading(false)
     }
-  }, [user, isSupported])
+  }, [user, isSupported, loading])
 
   const unsubscribe = useCallback(async (): Promise<{ error: Error | null }> => {
+    if (loading) {
+      return { error: new Error('Operation in progress') }
+    }
+
     if (!user) {
       return { error: new Error('User not authenticated') }
     }
@@ -132,6 +150,7 @@ export function usePushSubscription(): PushSubscriptionHookResult {
       return { error: new Error('Push notifications not supported') }
     }
 
+    setLoading(true)
     try {
       const registration = await navigator.serviceWorker.ready
       const subscription = await registration.pushManager.getSubscription()
@@ -155,8 +174,10 @@ export function usePushSubscription(): PushSubscriptionHookResult {
       return { error: null }
     } catch (err) {
       return { error: err instanceof Error ? err : new Error('Unknown error') }
+    } finally {
+      setLoading(false)
     }
-  }, [user, isSupported])
+  }, [user, isSupported, loading])
 
   return {
     permissionState,
