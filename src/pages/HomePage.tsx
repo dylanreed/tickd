@@ -40,11 +40,11 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
           </h1>
 
           <p className="text-xl md:text-2xl text-clock-black mb-4 font-semibold">
-            The to-do app that lies about your deadlines
+            Your brain lies about time. <span className="text-clock-red">We lie back.</span>
           </p>
 
           <p className="text-lg text-clock-black/70 mb-8 max-w-xl mx-auto">
-            Because you only function under pressure, and we both know it.
+            A deadline app for people with time blindness and ADHD. We show you fake earlier deadlines because your brain literally cannot perceive "two weeks from now" as real.
           </p>
 
           <button
@@ -55,7 +55,7 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
           </button>
 
           <p className="text-clock-black/50 mt-4 text-sm font-mono">
-            14-day free trial, then $1/month
+            14 days free · $1/month · cheaper than therapy
           </p>
 
           <p className="mt-6 text-clock-black/70">
@@ -95,10 +95,10 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
       <section className="py-20 px-4 bg-clock-ivory">
         <div className="max-w-4xl mx-auto">
           <h2 className="font-pixel text-lg md:text-xl text-clock-black text-center mb-2">
-            HOW IT WORKS
+            THE SCHEME
           </h2>
           <p className="text-center text-clock-black/60 mb-16 font-mono">
-            (three steps to strategic self-deception)
+            (three steps to outsmarting your own garbage brain)
           </p>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -108,10 +108,10 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
                 <span className="font-pixel text-2xl text-clock-black">01</span>
               </div>
               <h3 className="font-bold text-xl text-clock-black mb-3">
-                Add a task
+                Tell us the truth
               </h3>
               <p className="text-clock-black/70">
-                Enter the <em>real</em> deadline. Be honest. Tick won't be.
+                Enter when it's <em>actually</em> due. Be honest. This is the last time you'll see that date.
               </p>
             </div>
 
@@ -121,10 +121,10 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
                 <span className="font-pixel text-2xl text-clock-brass">02</span>
               </div>
               <h3 className="font-bold text-xl text-clock-black mb-3">
-                See a fake deadline
+                We gaslight you
               </h3>
               <p className="text-clock-black/70">
-                Tick shows you an <em>earlier</em> date. Panic accordingly.
+                We show you an <em>earlier</em> deadline. Your brain finally goes "oh CRAP" instead of "eh, later."
               </p>
             </div>
 
@@ -134,10 +134,10 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
                 <span className="font-pixel text-2xl text-clock-red">03</span>
               </div>
               <h3 className="font-bold text-xl text-clock-black mb-3">
-                Finish "early"
+                Sweet, sweet victory
               </h3>
               <p className="text-clock-black/70">
-                Complete the task, then discover you had <em>days to spare</em>.
+                Finish "just in time" and discover you actually had <em>days left</em>. Dopamine achieved. Shame avoided.
               </p>
             </div>
           </div>
@@ -162,27 +162,29 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
       <section className="py-20 px-4 bg-clock-parchment">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-pixel text-lg md:text-xl text-clock-black mb-2">
-            SOUND FAMILIAR?
+            TIME BLINDNESS
           </h2>
           <p className="text-clock-red font-mono text-sm mb-12">
-            (we're not judging. ok maybe a little.)
+            IT'S NOT A MORAL FAILING, KAREN
           </p>
 
           <div className="space-y-4 text-left max-w-xl mx-auto">
             <div className="bg-clock-ivory border-3 border-clock-black p-5 shadow-[4px_4px_0_0_#1c1917] -rotate-1">
-              <p className="text-clock-black font-medium">"I'll do it when it's urgent"</p>
-              <p className="text-clock-black/50 text-sm mt-1 font-mono">— You, 3 weeks before the deadline</p>
+              <p className="text-clock-black font-medium">"I have two weeks. That's basically infinite time."</p>
+              <p className="text-clock-black/50 text-sm mt-1 font-mono">— Your brain, committing crimes against future you</p>
             </div>
 
             <div className="bg-clock-ivory border-3 border-clock-black p-5 shadow-[4px_4px_0_0_#1c1917] rotate-1">
-              <p className="text-clock-black font-medium">"Why didn't I start earlier?!"</p>
-              <p className="text-clock-black/50 text-sm mt-1 font-mono">— Also you, 3 hours before the deadline</p>
+              <p className="text-clock-black font-medium">"WAIT THAT'S TOMORROW?!"</p>
+              <p className="text-clock-black/50 text-sm mt-1 font-mono">— Your brain, 13 days later, betrayed by itself</p>
             </div>
           </div>
 
-          <div className="mt-12 p-6 bg-clock-dark text-clock-ivory border-3 border-clock-black max-w-xl mx-auto">
+          <div className="mt-12 p-8 bg-clock-dark text-clock-ivory border-3 border-clock-black max-w-xl mx-auto rotate-1 shadow-[6px_6px_0_0_#ca8a04]">
+            <p className="font-pixel text-xs mb-3 text-clock-brass">THE BIG BRAIN INSIGHT</p>
             <p className="text-xl">
-              What if the pressure was... <span className="text-clock-red font-bold">manufactured?</span>
+              You <em>need</em> the panic to function.
+              <span className="text-clock-brass"> So we manufacture panic earlier.</span>
             </p>
           </div>
         </div>
@@ -205,9 +207,15 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
       {/* Spiciness Preview Section */}
       <section className="py-20 px-4 bg-clock-ivory">
         <div className="max-w-4xl mx-auto">
-          <h2 className="font-pixel text-lg md:text-xl text-clock-black text-center mb-10">
-            CHOOSE YOUR ROAST LEVEL
+          <h2 className="font-pixel text-lg md:text-xl text-clock-black text-center mb-2">
+            CHOOSE YOUR VIOLENCE
           </h2>
+          <p className="text-center text-clock-black/60 mb-4 font-mono">
+            How mean should Tick be when you're slacking?
+          </p>
+          <p className="text-center text-clock-red/80 text-sm mb-10">
+            (yes his name is Tick. yes he judges you. yes you can adjust his attitude.)
+          </p>
 
           <div className="flex justify-center gap-3 mb-8">
             {[1, 2, 3, 4, 5].map((level) => (
@@ -243,19 +251,19 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
                     Level {selectedLevel}
                   </span>
                   <span className="text-clock-black/60 font-mono text-sm">
-                    {selectedLevel === 1 && "gentle concern"}
-                    {selectedLevel === 2 && "pointed reminders"}
+                    {selectedLevel === 1 && "therapy voice"}
+                    {selectedLevel === 2 && "passive aggressive"}
                     {selectedLevel === 3 && "disappointed parent"}
                     {selectedLevel === 4 && "unfiltered chaos"}
-                    {selectedLevel === 5 && "maximum violence"}
+                    {selectedLevel === 5 && "unhinged chaos mode"}
                   </span>
                 </div>
                 <p className="text-clock-black italic text-lg">
-                  {selectedLevel === 1 && '"oh no baby what is you doing"'}
+                  {selectedLevel === 1 && '"hey friend, just checking in on that thing~"'}
                   {selectedLevel === 2 && '"Overdue. Per my last three notifications."'}
-                  {selectedLevel === 3 && '"I have asked you ONE thing. ONE THING."'}
+                  {selectedLevel === 3 && '"I have asked you ONE thing. ONE. THING."'}
                   {selectedLevel === 4 && '"THE AUDACITY. THE UNMITIGATED GALL."'}
-                  {selectedLevel === 5 && '"I\'M DMING ALL YOUR EXES ABOUT THIS."'}
+                  {selectedLevel === 5 && '"I\'M TELLING YOUR MOTHER. I\'M DMING YOUR EXES. I\'M CALLING YOUR BOSS."'}
                 </p>
               </div>
               <div className="flex-shrink-0">
@@ -312,8 +320,10 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
           </div>
 
           <p className="text-lg text-clock-black max-w-xl mx-auto">
-            Tick lives in the corner of your screen, watching. Judging. Lying.
-            Tap him for a quip. Long-press to adjust how mean he is.
+            A little creature who lives in the corner of your screen. He watches. He judges. He threatens. He celebrates. He is unhinged. You will love him.
+          </p>
+          <p className="text-clock-black/50 mt-4 font-mono text-sm">
+            tap him for a quip · long-press to adjust his attitude
           </p>
         </div>
       </section>
@@ -322,21 +332,21 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
       <section className="py-20 px-4 bg-clock-dark">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="font-pixel text-lg md:text-xl text-clock-ivory mb-6">
-            READY TO BE LIED TO?
+            STOP FIGHTING<br />YOUR OWN BRAIN
           </h2>
           <p className="text-clock-ivory/70 text-lg mb-8">
-            Join the chaos goblins who've accepted they can't handle the truth.
+            Work with your chaos. Not against it.
           </p>
 
           <button
             onClick={onGetStarted}
             className="px-10 py-4 bg-clock-red text-clock-ivory font-bold border-3 border-clock-red hover:bg-clock-brass hover:border-clock-brass hover:text-clock-black transition-colors text-lg"
           >
-            Start Free Trial
+            GASLIGHT ME
           </button>
 
           <p className="text-clock-ivory/40 mt-4 text-sm font-mono">
-            14 days free · $1/month after
+            14 days free · $1/month · cheaper than missing another deadline
           </p>
         </div>
       </section>
@@ -353,10 +363,10 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
           ))}
         </div>
         <p className="text-clock-ivory/50 text-sm">
-          Built by someone who also can't handle the truth
+          built for brains that experience time as a lie
         </p>
         <p className="text-clock-ivory/30 text-xs mt-2 font-mono">
-          tick'd © 2026
+          tick'd © 2026 · made with chaos and love
         </p>
       </footer>
     </div>

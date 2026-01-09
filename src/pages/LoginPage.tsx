@@ -41,7 +41,7 @@ export default function LoginPage({ onBack }: LoginPageProps) {
             We sent a magic link to <strong className="text-clock-red">{email}</strong>
           </p>
           <p className="text-clock-black/60 mt-2 text-sm font-mono">
-            Click the link in the email to sign in. We promise it's real.
+            click the link to enter · trust issues officially begin
           </p>
         </div>
         <Tick
@@ -69,7 +69,7 @@ export default function LoginPage({ onBack }: LoginPageProps) {
           </button>
         )}
         <h1 className="font-pixel text-xl text-clock-black mb-2 leading-relaxed">TICK'D</h1>
-        <p className="text-clock-black/70 mb-6 font-mono text-sm">Your friendly neighborhood gaslighter.</p>
+        <p className="text-clock-black/70 mb-6 font-mono text-sm">your friendly neighborhood gaslighter · enter at your own risk</p>
 
         <form onSubmit={handleSubmit}>
           <input
@@ -90,7 +90,7 @@ export default function LoginPage({ onBack }: LoginPageProps) {
             disabled={submitting}
             className="w-full bg-clock-red text-clock-ivory font-bold py-4 px-6 border-3 border-clock-black hover:bg-clock-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[4px_4px_0_0_#1c1917] hover:shadow-[2px_2px_0_0_#1c1917] hover:translate-x-0.5 hover:translate-y-0.5 active:shadow-none active:translate-x-1 active:translate-y-1"
           >
-            {submitting ? 'Sending...' : 'Lie to me'}
+            {submitting ? 'INITIATING DECEPTION...' : 'LIE TO ME'}
           </button>
         </form>
       </div>

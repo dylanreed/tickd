@@ -11,19 +11,19 @@ interface OnboardingPageProps {
 }
 
 const spicyLevelLabels: Record<number, { name: string; description: string }> = {
-  1: { name: 'Gentle concern', description: 'Soft reminders, minimal judgment' },
-  2: { name: 'Pointed reminders', description: 'Slightly passive-aggressive' },
-  3: { name: 'Disappointed parent', description: 'Guilt trips and sighs' },
-  4: { name: 'Unfiltered chaos', description: 'Dramatic, emotional, caps lock' },
-  5: { name: 'Maximum violence', description: 'Full unhinged mode' },
+  1: { name: 'Therapy voice', description: 'Soft, supportive, borderline enabling' },
+  2: { name: 'Passive aggressive', description: 'Per my last reminder...' },
+  3: { name: 'Disappointed parent', description: 'I asked you ONE thing' },
+  4: { name: 'Unfiltered chaos', description: 'Caps lock energy' },
+  5: { name: 'Unhinged chaos mode', description: 'Will contact your exes' },
 }
 
 const spicyExamples: Record<number, string> = {
-  1: '"oh no baby what is you doing"',
+  1: '"hey friend, just checking in on that thing~"',
   2: '"Overdue. Per my last three notifications."',
-  3: '"I have asked you ONE thing. ONE THING."',
+  3: '"I have asked you ONE thing. ONE. THING."',
   4: '"THE AUDACITY. THE UNMITIGATED GALL."',
-  5: '"I\'M DMING ALL YOUR EXES ABOUT THIS."',
+  5: '"I\'M TELLING YOUR MOTHER. I\'M DMING YOUR EXES."',
 }
 
 export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPageProps) {
@@ -69,8 +69,8 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
       headline: "Hi! I'm Tick.",
       body: (
         <>
-          <p className="mb-4">I'm going to lie to you about your deadlines. Constantly.</p>
-          <p className="text-clock-black/60 font-mono text-sm">It's for your own good.</p>
+          <p className="mb-4">I'm going to <span className="text-clock-red font-bold">lie to you</span> about your deadlines. Constantly.</p>
+          <p className="text-clock-black/60 font-mono text-sm">it's for your own good. trust me. (or don't. I'll lie anyway.)</p>
         </>
       ),
       cta: 'Tell me more',
@@ -82,30 +82,36 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
       body: (
         <>
           <p className="mb-4">
-            You only do things when they're urgent. A deadline two weeks away?
-            <span className="text-clock-black/60"> Doesn't exist to your brain.</span>
+            Two weeks away? <span className="text-clock-black/60">Your brain: "basically infinite time."</span>
           </p>
-          <p>
-            But a deadline <span className="text-clock-red font-bold">TOMORROW</span>?
-            Suddenly you're a productivity machine.
+          <p className="mb-4">
+            <span className="text-clock-red font-bold">TOMORROW?!</span> Your brain: <span className="italic">"PANIC MODE ACTIVATED."</span>
+          </p>
+          <p className="text-clock-black/60 font-mono text-sm">
+            it's not a character flaw. it's time blindness. we get it.
           </p>
         </>
       ),
-      cta: "That's... accurate",
+      cta: "That's... painfully accurate",
     },
     // Screen 3: The Solution
     {
       expression: 'unhinged' as TickExpression,
-      headline: "Here's my evil plan:",
+      headline: "THE SCHEME:",
       body: (
         <>
           <p className="mb-4">
             You tell me the <span className="font-bold">REAL</span> deadline.
             I show you a <span className="text-clock-red font-bold">FAKE</span> earlier one.
           </p>
-          <p>
-            You panic. You work. You finish "just in time" — and discover you're actually
-            <span className="text-clock-brass font-bold"> EARLY</span>.
+          <p className="mb-4">
+            You panic. You work. You finish "just in time"...
+          </p>
+          <p className="text-clock-brass font-bold">
+            ...and discover you actually had DAYS LEFT.
+          </p>
+          <p className="text-clock-black/60 font-mono text-sm mt-4">
+            dopamine achieved. shame avoided. you're welcome.
           </p>
         </>
       ),
@@ -114,58 +120,57 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
     // Screen 4: The Spiciness Intro
     {
       expression: 'suspicious' as TickExpression,
-      headline: 'One more thing...',
+      headline: 'CHOOSE YOUR VIOLENCE',
       body: (
         <>
-          <p className="mb-6">You get to choose how mean I am when you ignore your tasks.</p>
+          <p className="mb-6">You get to decide how <span className="text-clock-red font-bold">unhinged</span> I get when you slack off.</p>
           <div className="space-y-3 text-left">
             <div className="bg-mint/30 border-2 border-clock-black p-3">
               <span className="font-bold">Level 1:</span>
-              <span className="text-clock-black/60 font-mono text-sm"> "gentle concern"</span>
-              <p className="text-sm text-clock-black italic mt-1">"oh no baby what is you doing"</p>
+              <span className="text-clock-black/60 font-mono text-sm"> "therapy voice"</span>
+              <p className="text-sm text-clock-black italic mt-1">"hey friend, just checking in~"</p>
             </div>
             <div className="bg-clock-red/20 border-2 border-clock-black p-3">
               <span className="font-bold">Level 5:</span>
-              <span className="text-clock-black/60 font-mono text-sm"> "maximum violence"</span>
-              <p className="text-sm text-clock-black italic mt-1">"I'M DMING ALL YOUR EXES ABOUT THIS"</p>
+              <span className="text-clock-black/60 font-mono text-sm"> "unhinged chaos mode"</span>
+              <p className="text-sm text-clock-black italic mt-1">"I'M TELLING YOUR MOTHER"</p>
             </div>
           </div>
         </>
       ),
-      cta: 'Set my spiciness level',
+      cta: 'Choose my violence level',
     },
     // Screen 5: Spiciness Selection
     {
       expression: 'idle' as TickExpression,
-      headline: 'How mean should I be?',
+      headline: 'Set my attitude:',
       body: null,
-      cta: "That's perfect",
+      cta: "LOCK IT IN",
       isSpicySelector: true,
     },
     // Screen 6: First Task Prompt
     {
       expression: 'celebrating' as TickExpression,
-      headline: "Add your first task!",
+      headline: "Your first victim:",
       body: null,
-      cta: 'Add task',
+      cta: 'ADD TASK',
       isFirstTask: true,
     },
     // Screen 7: Setup Complete
     {
       expression: 'idle' as TickExpression,
-      headline: "We're all set!",
+      headline: "LET THE CHAOS BEGIN",
       body: (
         <>
-          <p className="mb-4">I'll be right here in the corner, watching. Judging. Lying.</p>
-          <p className="mb-4">
-            <span className="font-bold">Tap me</span> anytime if you want to chat.
-            <br />
-            <span className="font-bold">Long-press</span> to adjust how mean I am.
+          <p className="mb-4">I'll be right here in the corner. Watching. Judging. <span className="text-clock-red">Lying.</span></p>
+          <p className="mb-4 text-clock-black/70 font-mono text-sm">
+            <span className="font-bold text-clock-black">tap me</span> for a quip ·
+            <span className="font-bold text-clock-black"> long-press</span> to adjust my attitude
           </p>
-          <p className="text-clock-red font-bold">Let's get you on track.</p>
+          <p className="text-clock-brass font-bold">Work with your chaos. Not against it.</p>
         </>
       ),
-      cta: "Let's do this",
+      cta: "GASLIGHT ME",
       isFinal: true,
     },
   ]
@@ -261,7 +266,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
             </div>
 
             <p className="text-clock-black/40 text-xs mt-4 font-mono">
-              You can change this anytime by long-pressing Tick.
+              adjustable anytime · long-press me to change · I forgive nothing
             </p>
           </div>
         )}
@@ -270,7 +275,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
         {currentScreen.isFirstTask && !taskAdded && (
           <div className="mb-6 space-y-4">
             <p className="text-clock-black/60 text-sm mb-4 font-mono">
-              Be honest about the real deadline. I'll handle the lying.
+              be honest about the real deadline · I'll handle the deception
             </p>
             <input
               type="text"
@@ -297,8 +302,8 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
         {/* Task Added Celebration */}
         {currentScreen.isFirstTask && taskAdded && (
           <div className="mb-6 bg-clock-brass/20 border-2 border-clock-black p-4">
-            <p className="text-clock-black font-bold text-lg">Your first task!</p>
-            <p className="text-clock-black/60 font-mono text-sm">I've already started lying about the deadline.</p>
+            <p className="text-clock-black font-bold text-lg">EXCELLENT.</p>
+            <p className="text-clock-black/60 font-mono text-sm">the deception has already begun.</p>
           </div>
         )}
 
