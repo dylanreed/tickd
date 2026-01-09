@@ -7,6 +7,7 @@ import { useTasks } from './hooks/useTasks'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import TaskListPage from './pages/TaskListPage'
+import SettingsPage from './pages/SettingsPage'
 import LandingPage from './pages/LandingPage'
 import OnboardingPage from './pages/OnboardingPage'
 import SpriteReferencePage from './pages/SpriteReferencePage'
@@ -92,6 +93,11 @@ function AppContent() {
         <div className="text-dusty-purple">Loading...</div>
       </div>
     )
+  }
+
+  // Settings page
+  if (hash === '#settings') {
+    return <SettingsPage onBack={() => (window.location.hash = '')} />
   }
 
   return <TaskListPage />

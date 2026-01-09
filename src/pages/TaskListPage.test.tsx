@@ -91,4 +91,11 @@ describe('TaskListPage', () => {
       expect(mockAdjustReliabilityScore).toHaveBeenCalledWith(true)
     })
   })
+
+  it('renders settings button in header', () => {
+    render(<TaskListPage />)
+
+    const settingsButton = screen.getByLabelText('Settings')
+    expect(settingsButton).toBeInTheDocument()
+  })
 })
