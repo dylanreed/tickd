@@ -203,54 +203,76 @@ serve(async (_req) => {
     })
 
     // Check for active postponements (excuses)
-    const { data: activeExcuses } = await supabase
+    const { data: activeExcuses, error: excusesError } = await supabase
       .from('excuses')
       .select('task_id, postponed_until')
       .gt('postponed_until', new Date().toISOString())
 
+    if (excusesError) {
+      console.error('Failed to fetch excuses:', excusesError)
+    }
+
     const postponedTasks = new Set(activeExcuses?.map((e: { task_id: string }) => e.task_id) || [])
+
+    // Batch fetch notification logs for all tasks to avoid N+1 queries
+    const taskIds = tasks.map((t: Task) => t.id)
+
+    const { data: allLogs, error: logsError } = await supabase
+      .from('notification_log')
+      .select('task_id, notification_type, sent_at')
+      .in('task_id', taskIds)
+
+    if (logsError) {
+      console.error('Failed to fetch notification logs:', logsError)
+    }
+
+    // Build lookup maps for O(1) access
+    const oneTimeLogsSet = new Set<string>() // "taskId:tier" for one-time notifications
+    const recentLogsMap = new Map<string, Date>() // "taskId:tier" -> most recent sent_at
+
+    allLogs?.forEach((log: { task_id: string; notification_type: string; sent_at: string }) => {
+      const key = `${log.task_id}:${log.notification_type}`
+      if (log.notification_type === '4_day' || log.notification_type === '1_day') {
+        oneTimeLogsSet.add(key)
+      }
+      // Track most recent for cooldown checks
+      const existingDate = recentLogsMap.get(key)
+      const logDate = new Date(log.sent_at)
+      if (!existingDate || logDate > existingDate) {
+        recentLogsMap.set(key, logDate)
+      }
+    })
 
     let notificationsSent = 0
 
-    for (const task of tasks as Task[]) {
+    for (const task of tasks) {
       // Skip postponed tasks
       if (postponedTasks.has(task.id)) continue
 
       const profile = profileMap.get(task.user_id)
       if (!profile || profile.notification_preferences === 'none') continue
 
+      // Validate email before proceeding
+      if (!profile.email || !profile.email.includes('@')) {
+        console.warn(`Invalid email for user ${task.user_id}`)
+        continue
+      }
+
       const fakeDueDate = calculateFakeDueDate(new Date(task.real_due_date), profile.reliability_score)
       const tier = getNotificationTier(fakeDueDate)
       if (!tier) continue
 
       // Check if already sent this tier (for 4_day and 1_day which are one-time)
-      if (tier === '4_day' || tier === '1_day') {
-        const { data: existingLog } = await supabase
-          .from('notification_log')
-          .select('id')
-          .eq('task_id', task.id)
-          .eq('notification_type', tier)
-          .limit(1)
-
-        if (existingLog && existingLog.length > 0) continue
+      if ((tier === '4_day' || tier === '1_day') && oneTimeLogsSet.has(`${task.id}:${tier}`)) {
+        continue
       }
 
-      // For day_of and overdue, check cooldown period
+      // For day_of and overdue, check cooldown period using O(1) lookup
       if (tier === 'day_of' || tier === 'overdue') {
         const cooldownHours = tier === 'overdue' ? 1 : 3
-        const { data: recentLog } = await supabase
-          .from('notification_log')
-          .select('sent_at')
-          .eq('task_id', task.id)
-          .eq('notification_type', tier)
-          .order('sent_at', { ascending: false })
-          .limit(1)
-
-        if (recentLog && recentLog.length > 0) {
-          const lastSent = new Date(recentLog[0].sent_at).getTime()
-          if (Date.now() - lastSent < cooldownHours * MS_IN_HOUR) {
-            continue
-          }
+        const lastSent = recentLogsMap.get(`${task.id}:${tier}`)
+        if (lastSent && Date.now() - lastSent.getTime() < cooldownHours * MS_IN_HOUR) {
+          continue
         }
       }
 
@@ -262,13 +284,17 @@ serve(async (_req) => {
         const emailBody = `${message.body}\n\nView your tasks: https://liars.todo\n\n- Tick`
         const success = await sendEmail(profile.email, `${message.title}: ${task.title}`, emailBody)
         if (success) {
-          await supabase.from('notification_log').insert({
+          const { error: logError } = await supabase.from('notification_log').insert({
             task_id: task.id,
             user_id: task.user_id,
             notification_type: tier,
             channel: 'email',
           })
-          notificationsSent++
+          if (logError) {
+            console.error('Failed to log email notification:', logError)
+          } else {
+            notificationsSent++
+          }
         }
       }
 
@@ -278,13 +304,17 @@ serve(async (_req) => {
         const userSubs = subscriptionMap.get(task.user_id) || []
         if (userSubs.length > 0) {
           // TODO: Implement actual web-push sending with VAPID keys in Task 11
-          await supabase.from('notification_log').insert({
+          const { error: logError } = await supabase.from('notification_log').insert({
             task_id: task.id,
             user_id: task.user_id,
             notification_type: tier,
             channel: 'browser',
           })
-          notificationsSent++
+          if (logError) {
+            console.error('Failed to log browser notification:', logError)
+          } else {
+            notificationsSent++
+          }
           console.log(`Would send browser push to ${profile.email}: ${message.body}`)
         }
       }
