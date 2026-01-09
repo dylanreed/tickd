@@ -1,23 +1,33 @@
 // ABOUTME: Modal for adjusting the spiciness level of Tick's messages.
 // ABOUTME: Opened by long-pressing Tick in the corner.
 
-import { useState } from 'react'
-import TickSprite, { type TickExpression } from './TickSprite'
+import { useState } from "react";
+import TickSprite, { type TickExpression } from "./TickSprite";
 
 interface SpicinessModalProps {
-  isOpen: boolean
-  onClose: () => void
-  currentLevel: number
-  onSave: (level: number) => void
+  isOpen: boolean;
+  onClose: () => void;
+  currentLevel: number;
+  onSave: (level: number) => void;
 }
 
-const spicyLevelLabels: Record<number, { name: string; description: string }> = {
-  1: { name: 'Gentle concern', description: 'Soft reminders, minimal judgment' },
-  2: { name: 'Pointed reminders', description: 'Slightly passive-aggressive' },
-  3: { name: 'Disappointed parent', description: 'Guilt trips and sighs' },
-  4: { name: 'Unfiltered chaos', description: 'Dramatic, emotional, caps lock' },
-  5: { name: 'Maximum violence', description: 'Full unhinged mode' },
-}
+const spicyLevelLabels: Record<number, { name: string; description: string }> =
+  {
+    1: {
+      name: "Gentle concern",
+      description: "Soft reminders, minimal judgment",
+    },
+    2: {
+      name: "Pointed reminders",
+      description: "Slightly passive-aggressive",
+    },
+    3: { name: "Disappointed parent", description: "Guilt trips and sighs" },
+    4: {
+      name: "Unfiltered chaos",
+      description: "Dramatic, emotional, caps lock",
+    },
+    5: { name: "Maximum violence", description: "Full unhinged mode" },
+  };
 
 const spicyExamples: Record<number, string> = {
   1: '"oh no baby what is you doing"',
@@ -25,35 +35,42 @@ const spicyExamples: Record<number, string> = {
   3: '"I have asked you ONE thing. ONE THING."',
   4: '"THE AUDACITY. THE UNMITIGATED GALL."',
   5: '"I\'M DMING ALL YOUR EXES ABOUT THIS."',
-}
+};
 
-export default function SpicinessModal({ isOpen, onClose, currentLevel, onSave }: SpicinessModalProps) {
-  const [level, setLevel] = useState(currentLevel)
+export default function SpicinessModal({
+  isOpen,
+  onClose,
+  currentLevel,
+  onSave,
+}: SpicinessModalProps) {
+  const [level, setLevel] = useState(currentLevel);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   const getExpression = (): TickExpression => {
-    if (level <= 2) return 'idle'
-    if (level === 3) return 'suspicious'
-    return 'unhinged'
-  }
+    if (level === 1) return "smug";
+    if (level === 2) return "skeptical";
+    if (level === 3) return "disappointed";
+    if (level === 4) return "scheming";
+    return "unhinged";
+  };
 
   const handleSave = () => {
-    onSave(level)
-    onClose()
-  }
+    onSave(level);
+    onClose();
+  };
 
   const handleCancel = () => {
-    setLevel(currentLevel) // Reset to original
-    onClose()
-  }
+    setLevel(currentLevel); // Reset to original
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 bg-charcoal/60 flex items-center justify-center p-4 z-50 font-body">
       <div className="bg-cloud rounded-2xl shadow-xl max-w-md w-full p-8">
         {/* Tick */}
         <div className="mx-auto mb-6 flex justify-center">
-          <TickSprite expression={getExpression()} size="lg" />
+          <TickSprite expression={getExpression()} size="xl" />
         </div>
 
         <h2 className="font-pixel text-lg text-charcoal text-center mb-6">
@@ -120,5 +137,5 @@ export default function SpicinessModal({ isOpen, onClose, currentLevel, onSave }
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -20,7 +20,7 @@ In Stripe Dashboard:
    - Pricing model: **Recurring**
    - Amount: **$1.00**
    - Billing period: **Monthly**
-4. Save and copy the **Price ID** (starts with `price_`)
+4. Save and copy the **Price ID** (starts with `price_`) 
 
 ## 3. Get API Keys
 
@@ -54,13 +54,14 @@ Run these commands (replace with your actual values):
 
 ```bash
 # Stripe API key (secret key)
-supabase secrets set STRIPE_SECRET_KEY=sk_live_xxxxx
+supabase secrets set STRIPE_SECRET_KEY=sk_live_
 
 # Webhook signing secret
-supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_
+
 
 # Price ID for the $1/month subscription
-supabase secrets set STRIPE_PRICE_ID=price_xxxxx
+supabase secrets set STRIPE_PRICE_ID=
 ```
 
 For local development, also add to `.env`:

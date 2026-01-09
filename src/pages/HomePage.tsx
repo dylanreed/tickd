@@ -52,7 +52,9 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
             Get Started
           </button>
 
-          <p className="text-warm-gray mt-4 text-sm">14-day free trial, then $1/month</p>
+          <p className="text-warm-gray mt-4 text-sm">
+            14-day free trial, then $1/month
+          </p>
 
           <p className="mt-6 text-dusty-purple">
             Already have an account?{" "}
@@ -314,7 +316,9 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
             Start Free Trial
           </button>
 
-          <p className="text-cloud/70 mt-4 text-sm">14 days free, then $1/month</p>
+          <p className="text-cloud/70 mt-4 text-sm">
+            14 days free, then $1/month
+          </p>
         </div>
       </section>
 

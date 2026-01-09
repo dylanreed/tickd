@@ -1,34 +1,58 @@
 // ABOUTME: Tick mascot component that lives in the corner of the app.
 // ABOUTME: Shows contextual expressions and displays quips on tap.
 
-import { useState, useCallback, useRef } from 'react'
-import { getRandomQuip, determineContext, type AppContext } from '../data/tickQuips'
+import { useState, useCallback, useRef } from "react";
+import {
+  getRandomQuip,
+  determineContext,
+  type AppContext,
+} from "../data/tickQuips";
 
 // Import sprite sheets at appropriate sizes for display
-import coreSprites128 from '../assets/tick/sprites/core_expressions_128.png'
-import secondarySprites128 from '../assets/tick/sprites/secondary_expressions_128.png'
+import coreSprites128 from "../assets/tick/sprites/core_expressions_256.png";
+import secondarySprites128 from "../assets/tick/sprites/secondary_expressions_256.png";
 
 interface TickProps {
-  totalTasks: number
-  completedTasks: number
-  overdueTasks: number
-  approachingTasks: number
-  spicyLevel?: number
-  justCompleted?: boolean
-  justRevealed?: boolean
-  userName?: string
-  onLongPress?: () => void
+  totalTasks: number;
+  completedTasks: number;
+  overdueTasks: number;
+  approachingTasks: number;
+  spicyLevel?: number;
+  justCompleted?: boolean;
+  justRevealed?: boolean;
+  userName?: string;
+  onLongPress?: () => void;
 }
 
 // Core expressions (sheet 1, positions 0-9)
 // idle, happy, suspicious, concerned, disappointed, judgmental, unhinged, celebrating, shocked, smug
-type CoreExpression = 'idle' | 'happy' | 'suspicious' | 'concerned' | 'disappointed' | 'judgmental' | 'unhinged' | 'celebrating' | 'shocked' | 'smug'
+type CoreExpression =
+  | "idle"
+  | "happy"
+  | "suspicious"
+  | "concerned"
+  | "disappointed"
+  | "judgmental"
+  | "unhinged"
+  | "celebrating"
+  | "shocked"
+  | "smug";
 
 // Secondary expressions (sheet 2, positions 0-9)
 // eager, scheming, relaxed, confused, apologetic, pleading, skeptical, annoyed, waving, tapping_foot
-type SecondaryExpression = 'eager' | 'scheming' | 'relaxed' | 'confused' | 'apologetic' | 'pleading' | 'skeptical' | 'annoyed' | 'waving' | 'tapping_foot'
+type SecondaryExpression =
+  | "eager"
+  | "scheming"
+  | "relaxed"
+  | "confused"
+  | "apologetic"
+  | "pleading"
+  | "skeptical"
+  | "annoyed"
+  | "waving"
+  | "tapping_foot";
 
-type TickExpression = CoreExpression | SecondaryExpression
+type TickExpression = CoreExpression | SecondaryExpression;
 
 const coreExpressionIndex: Record<CoreExpression, number> = {
   idle: 0,
@@ -41,7 +65,7 @@ const coreExpressionIndex: Record<CoreExpression, number> = {
   concerned: 7,
   celebrating: 8,
   judgmental: 9,
-}
+};
 
 const secondaryExpressionIndex: Record<SecondaryExpression, number> = {
   eager: 0,
@@ -54,33 +78,33 @@ const secondaryExpressionIndex: Record<SecondaryExpression, number> = {
   apologetic: 7,
   relaxed: 8,
   scheming: 9,
-}
+};
 
 function isCoreExpression(expr: TickExpression): expr is CoreExpression {
-  return expr in coreExpressionIndex
+  return expr in coreExpressionIndex;
 }
 
 function getExpressionForContext(context: AppContext): TickExpression {
   switch (context) {
-    case 'all_complete':
-    case 'just_completed':
-      return 'celebrating'
-    case 'after_reveal':
-      return 'smug'
-    case 'no_tasks':
-      return 'relaxed'
-    case 'on_track':
-      return 'idle'
-    case 'approaching_deadline':
-      return 'suspicious'
-    case 'overdue_mild':
-      return 'disappointed'
-    case 'overdue_medium':
-      return 'judgmental'
-    case 'overdue_spicy':
-      return 'unhinged'
+    case "all_complete":
+    case "just_completed":
+      return "celebrating";
+    case "after_reveal":
+      return "smug";
+    case "no_tasks":
+      return "relaxed";
+    case "on_track":
+      return "idle";
+    case "approaching_deadline":
+      return "suspicious";
+    case "overdue_mild":
+      return "disappointed";
+    case "overdue_medium":
+      return "judgmental";
+    case "overdue_spicy":
+      return "unhinged";
     default:
-      return 'idle'
+      return "idle";
   }
 }
 
@@ -95,10 +119,10 @@ export default function Tick({
   userName,
   onLongPress,
 }: TickProps) {
-  const [quip, setQuip] = useState<string | null>(null)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const isLongPress = useRef(false)
+  const [quip, setQuip] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isLongPress = useRef(false);
 
   const context = determineContext(
     totalTasks,
@@ -107,55 +131,55 @@ export default function Tick({
     approachingTasks,
     spicyLevel,
     justCompleted,
-    justRevealed
-  )
+    justRevealed,
+  );
 
-  const expression = getExpressionForContext(context)
+  const expression = getExpressionForContext(context);
 
   // Get sprite sheet and position for current expression
-  const isCore = isCoreExpression(expression)
-  const spriteSheet = isCore ? coreSprites128 : secondarySprites128
+  const isCore = isCoreExpression(expression);
+  const spriteSheet = isCore ? coreSprites128 : secondarySprites128;
   const spriteIndex = isCore
     ? coreExpressionIndex[expression]
-    : secondaryExpressionIndex[expression as SecondaryExpression]
+    : secondaryExpressionIndex[expression as SecondaryExpression];
   // Each frame is 1/10 of the sheet, position as percentage of (imageWidth - containerWidth)
-  const backgroundPositionX = `${spriteIndex * -11.111}%`
+  const backgroundPositionX = `${spriteIndex * -11.111}%`;
 
   const showQuip = useCallback(() => {
-    const newQuip = getRandomQuip(context, userName)
-    setQuip(newQuip)
-    setIsAnimating(true)
+    const newQuip = getRandomQuip(context, userName);
+    setQuip(newQuip);
+    setIsAnimating(true);
 
     // Hide quip after 4 seconds
     setTimeout(() => {
-      setQuip(null)
-      setIsAnimating(false)
-    }, 4000)
-  }, [context, userName])
+      setQuip(null);
+      setIsAnimating(false);
+    }, 4000);
+  }, [context, userName]);
 
   const handleTouchStart = useCallback(() => {
-    isLongPress.current = false
+    isLongPress.current = false;
     longPressTimer.current = setTimeout(() => {
-      isLongPress.current = true
+      isLongPress.current = true;
       if (onLongPress) {
-        onLongPress()
+        onLongPress();
       }
-    }, 500)
-  }, [onLongPress])
+    }, 500);
+  }, [onLongPress]);
 
   const handleTouchEnd = useCallback(() => {
     if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current)
+      clearTimeout(longPressTimer.current);
     }
     if (!isLongPress.current) {
-      showQuip()
+      showQuip();
     }
-  }, [showQuip])
+  }, [showQuip]);
 
   const handleClick = useCallback(() => {
     // For mouse clicks (desktop)
-    showQuip()
-  }, [showQuip])
+    showQuip();
+  }, [showQuip]);
 
   return (
     <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2">
@@ -177,7 +201,7 @@ export default function Tick({
         onMouseUp={handleTouchEnd}
         onMouseLeave={() => {
           if (longPressTimer.current) {
-            clearTimeout(longPressTimer.current)
+            clearTimeout(longPressTimer.current);
           }
         }}
         className={`
@@ -186,7 +210,7 @@ export default function Tick({
           hover:scale-110
           active:scale-95
           focus:outline-none focus:ring-2 focus:ring-hot-pink focus:ring-offset-2
-          ${isAnimating ? 'animate-bounce' : ''}
+          ${isAnimating ? "animate-bounce" : ""}
         `}
         aria-label="Tick the mascot - tap for a message"
         title="Tap me!"
@@ -195,7 +219,7 @@ export default function Tick({
           className="w-full h-full"
           style={{
             backgroundImage: `url(${spriteSheet})`,
-            backgroundSize: '1000% 100%',
+            backgroundSize: "1000% 100%",
             backgroundPosition: `${backgroundPositionX} center`,
           }}
           role="img"
@@ -203,5 +227,5 @@ export default function Tick({
         />
       </button>
     </div>
-  )
+  );
 }

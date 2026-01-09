@@ -12,12 +12,51 @@ import LandingPage from './pages/LandingPage'
 import OnboardingPage from './pages/OnboardingPage'
 import SpriteReferencePage from './pages/SpriteReferencePage'
 import ColorPreviewPage from './pages/ColorPreviewPage'
+import Tick from './components/Tick'
+import SpicinessModal from './components/SpicinessModal'
 
 // Set to true to show landing page, false to show the app
 const SHOW_LANDING_PAGE = import.meta.env.VITE_SHOW_LANDING_PAGE !== 'false'
 
 const ONBOARDING_KEY = 'liars-todo-onboarding-complete'
 const SPICY_LEVEL_KEY = 'liars-todo-spicy-level'
+
+function DevPreview() {
+  const [spicinessModalOpen, setSpicinessModalOpen] = useState(false)
+  const [spicyLevel, setSpicyLevel] = useState(3)
+
+  return (
+    <div className="min-h-screen bg-lavender relative">
+      <div className="p-8">
+        <h1 className="font-pixel text-xl text-charcoal mb-4">Dev Preview</h1>
+        <p className="text-dusty-purple mb-4">Current spicy level: {spicyLevel}</p>
+        <button
+          onClick={() => setSpicinessModalOpen(true)}
+          className="px-4 py-2 bg-hot-pink text-white rounded-full font-bold hover:bg-coral transition-colors"
+        >
+          Open Spiciness Modal
+        </button>
+      </div>
+      <Tick
+        totalTasks={5}
+        completedTasks={2}
+        overdueTasks={1}
+        approachingTasks={1}
+        spicyLevel={spicyLevel}
+        justCompleted={false}
+        justRevealed={false}
+        userName="Dev"
+        onLongPress={() => setSpicinessModalOpen(true)}
+      />
+      <SpicinessModal
+        isOpen={spicinessModalOpen}
+        onClose={() => setSpicinessModalOpen(false)}
+        currentLevel={spicyLevel}
+        onSave={setSpicyLevel}
+      />
+    </div>
+  )
+}
 
 function AppContent() {
   const { user, loading } = useAuth()
@@ -58,6 +97,9 @@ function AppContent() {
   }
   if (hash === '#colors') {
     return <ColorPreviewPage />
+  }
+  if (hash === '#dev') {
+    return <DevPreview />
   }
 
   // Show landing page if enabled (pre-launch mode)
