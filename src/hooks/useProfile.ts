@@ -9,6 +9,7 @@ export interface Profile {
   id: string
   email: string
   reliability_score: number
+  spicy_level: number
   theme: 'hinged' | 'unhinged'
   notification_preferences: 'email' | 'browser' | 'both' | 'none'
   subscription_status: 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired'
