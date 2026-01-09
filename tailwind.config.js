@@ -24,10 +24,11 @@ export default {
         'dusty-purple': '#6B5B7A',
         'warm-gray': '#9E9494',
         // Tick colors
-        'tick-body': '#8B6B4F',
-        'tick-face': '#F5F0E1',
-        'tick-nose': '#6B4423',
-        'tick-cheeks': '#E8A0A0',
+        'tick-body': '#818FAA',
+        'tick-face': '#FEFCF8',
+        'tick-accent': '#FD6D64',
+        'tick-details': '#2E3C56',
+        'tick-outline': '#00001E',
         // Hinged mode (standard UI) colors
         'hinged-bg': '#F9FAFB',
         'hinged-card': '#FFFFFF',

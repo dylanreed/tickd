@@ -24,12 +24,11 @@ Tick is a warm brown pixel art alarm clock with a Pinocchio nose (because he lie
 
 | Role | Color | Hex |
 |------|-------|-----|
-| Clock Body | Warm Brown | `#8B6B4F` |
-| Clock Face | Cream | `#F5F0E1` |
-| Nose/Details | Chestnut | `#6B4423` |
-| Cheeks | Rosy Pink | `#E8A0A0` |
-| Clock Hands | Dark Brown | `#4A3728` |
-| Feet/Base | Warm Brown | `#8B6B4F` |
+| Clock Body | Slate Blue | `#818FAA` |
+| Clock Face | Cream White | `#FEFCF8` |
+| Cheeks/Accent | Coral Red | `#FD6D64` |
+| Details/Hands | Navy | `#2E3C56` |
+| Outline/Base | Deep Navy | `#00001E` |
 
 ### Tick's Expressions
 

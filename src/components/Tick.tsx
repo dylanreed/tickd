@@ -4,12 +4,9 @@
 import { useState, useCallback, useRef } from 'react'
 import { getRandomQuip, determineContext, type AppContext } from '../data/tickQuips'
 
-// Import mascot images
-import neutralImg from '../assets/tick/neutral.png'
-import shiftyImg from '../assets/tick/shifty.png'
-import disappointedImg from '../assets/tick/disappointed.png'
-import evilImg from '../assets/tick/evil.png'
-import celebrateImg from '../assets/tick/celebrate.png'
+// Import sprite sheets
+import coreSprites from '../assets/tick/sprites/Core Expressions from Pixelorama.png'
+import secondarySprites from '../assets/tick/sprites/Secondary Expressions from Pixelorama.png'
 
 interface TickProps {
   totalTasks: number
@@ -23,34 +20,67 @@ interface TickProps {
   onLongPress?: () => void
 }
 
-type TickExpression = 'neutral' | 'shifty' | 'disappointed' | 'evil' | 'celebrate'
+// Core expressions (sheet 1, positions 0-9)
+// idle, happy, suspicious, concerned, disappointed, judgmental, unhinged, celebrating, shocked, smug
+type CoreExpression = 'idle' | 'happy' | 'suspicious' | 'concerned' | 'disappointed' | 'judgmental' | 'unhinged' | 'celebrating' | 'shocked' | 'smug'
 
-const expressionImages: Record<TickExpression, string> = {
-  neutral: neutralImg,
-  shifty: shiftyImg,
-  disappointed: disappointedImg,
-  evil: evilImg,
-  celebrate: celebrateImg,
+// Secondary expressions (sheet 2, positions 0-9)
+// eager, scheming, relaxed, confused, apologetic, pleading, skeptical, annoyed, waving, tapping_foot
+type SecondaryExpression = 'eager' | 'scheming' | 'relaxed' | 'confused' | 'apologetic' | 'pleading' | 'skeptical' | 'annoyed' | 'waving' | 'tapping_foot'
+
+type TickExpression = CoreExpression | SecondaryExpression
+
+const coreExpressionIndex: Record<CoreExpression, number> = {
+  idle: 0,
+  happy: 1,
+  suspicious: 2,
+  concerned: 3,
+  disappointed: 4,
+  judgmental: 5,
+  unhinged: 6,
+  celebrating: 7,
+  shocked: 8,
+  smug: 9,
+}
+
+const secondaryExpressionIndex: Record<SecondaryExpression, number> = {
+  eager: 0,
+  scheming: 1,
+  relaxed: 2,
+  confused: 3,
+  apologetic: 4,
+  pleading: 5,
+  skeptical: 6,
+  annoyed: 7,
+  waving: 8,
+  tapping_foot: 9,
+}
+
+function isCoreExpression(expr: TickExpression): expr is CoreExpression {
+  return expr in coreExpressionIndex
 }
 
 function getExpressionForContext(context: AppContext): TickExpression {
   switch (context) {
     case 'all_complete':
     case 'just_completed':
+      return 'celebrating'
     case 'after_reveal':
-      return 'celebrate'
+      return 'smug'
     case 'no_tasks':
+      return 'relaxed'
     case 'on_track':
-      return 'neutral'
+      return 'idle'
     case 'approaching_deadline':
-      return 'shifty'
+      return 'suspicious'
     case 'overdue_mild':
       return 'disappointed'
     case 'overdue_medium':
+      return 'judgmental'
     case 'overdue_spicy':
-      return 'evil'
+      return 'unhinged'
     default:
-      return 'neutral'
+      return 'idle'
   }
 }
 
@@ -81,7 +111,15 @@ export default function Tick({
   )
 
   const expression = getExpressionForContext(context)
-  const imageSrc = expressionImages[expression]
+
+  // Get sprite sheet and position for current expression
+  const isCore = isCoreExpression(expression)
+  const spriteSheet = isCore ? coreSprites : secondarySprites
+  const spriteIndex = isCore
+    ? coreExpressionIndex[expression]
+    : secondaryExpressionIndex[expression as SecondaryExpression]
+  // Each frame is 256px wide, sheet is 2560px total (10 frames)
+  const backgroundPositionX = `${-spriteIndex * 100 / 9}%`
 
   const showQuip = useCallback(() => {
     const newQuip = getRandomQuip(context, userName)
@@ -156,10 +194,15 @@ export default function Tick({
         aria-label="Tick the mascot - tap for a message"
         title="Tap me!"
       >
-        <img
-          src={imageSrc}
-          alt={`Tick looking ${expression}`}
-          className="w-full h-full object-cover"
+        <div
+          className="w-full h-full rounded-full"
+          style={{
+            backgroundImage: `url(${spriteSheet})`,
+            backgroundSize: '1000% 100%',
+            backgroundPosition: `${backgroundPositionX} 0`,
+          }}
+          role="img"
+          aria-label={`Tick looking ${expression}`}
         />
       </button>
     </div>

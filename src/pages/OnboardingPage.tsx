@@ -3,25 +3,11 @@
 
 import { useState } from 'react'
 import type { CreateTaskInput } from '../types/task'
-
-// Import mascot images
-import neutralImg from '../assets/tick/neutral.png'
-import shiftyImg from '../assets/tick/shifty.png'
-import evilImg from '../assets/tick/evil.png'
-import celebrateImg from '../assets/tick/celebrate.png'
+import TickSprite, { type TickExpression } from '../components/TickSprite'
 
 interface OnboardingPageProps {
   onComplete: (spicyLevel: number) => void
   onAddTask?: (task: CreateTaskInput) => Promise<{ error: Error | null }>
-}
-
-type TickExpression = 'neutral' | 'shifty' | 'evil' | 'celebrate'
-
-const expressionImages: Record<TickExpression, string> = {
-  neutral: neutralImg,
-  shifty: shiftyImg,
-  evil: evilImg,
-  celebrate: celebrateImg,
 }
 
 const spicyLevelLabels: Record<number, { name: string; description: string }> = {
@@ -81,7 +67,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
   const screens = [
     // Screen 1: Welcome
     {
-      expression: 'neutral' as TickExpression,
+      expression: 'idle' as TickExpression,
       headline: "Hi! I'm Tick.",
       body: (
         <>
@@ -93,7 +79,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
     },
     // Screen 2: The Problem
     {
-      expression: 'shifty' as TickExpression,
+      expression: 'suspicious' as TickExpression,
       headline: 'Let me guess...',
       body: (
         <>
@@ -111,7 +97,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
     },
     // Screen 3: The Solution
     {
-      expression: 'evil' as TickExpression,
+      expression: 'unhinged' as TickExpression,
       headline: "Here's my evil plan:",
       body: (
         <>
@@ -129,7 +115,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
     },
     // Screen 4: The Spiciness Intro
     {
-      expression: 'shifty' as TickExpression,
+      expression: 'suspicious' as TickExpression,
       headline: 'One more thing...',
       body: (
         <>
@@ -152,7 +138,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
     },
     // Screen 5: Spiciness Selection (special - has slider)
     {
-      expression: 'neutral' as TickExpression, // Will change dynamically
+      expression: 'idle' as TickExpression, // Will change dynamically
       headline: 'How mean should I be?',
       body: null, // Custom rendering
       cta: "That's perfect",
@@ -160,7 +146,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
     },
     // Screen 6: First Task Prompt (with inline form)
     {
-      expression: 'celebrate' as TickExpression,
+      expression: 'celebrating' as TickExpression,
       headline: "Add your first task!",
       body: null, // Custom rendering for task form
       cta: 'Add task',
@@ -168,7 +154,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
     },
     // Screen 7: Setup Complete
     {
-      expression: 'neutral' as TickExpression,
+      expression: 'idle' as TickExpression,
       headline: "We're all set!",
       body: (
         <>
@@ -190,9 +176,9 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
 
   // Dynamic expression for spicy selector
   const getSpicyExpression = (): TickExpression => {
-    if (spicyLevel <= 2) return 'neutral'
-    if (spicyLevel === 3) return 'shifty'
-    return 'evil'
+    if (spicyLevel <= 2) return 'idle'
+    if (spicyLevel === 3) return 'suspicious'
+    return 'unhinged'
   }
 
   const expression = currentScreen.isSpicySelector
@@ -214,12 +200,8 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
       </div>
 
       {/* Tick */}
-      <div className="w-32 h-32 mb-8">
-        <img
-          src={expressionImages[expression]}
-          alt={`Tick looking ${expression}`}
-          className="w-full h-full object-cover rounded-full shadow-lg"
-        />
+      <div className="mb-8">
+        <TickSprite expression={expression} size="lg" className="shadow-lg" />
       </div>
 
       {/* Content */}

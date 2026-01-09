@@ -2,11 +2,7 @@
 // ABOUTME: Shows before login with sign-up CTA and how it works section.
 
 import { useState } from 'react'
-
-// Import mascot images
-import neutralImg from '../assets/tick/neutral.png'
-import shiftyImg from '../assets/tick/shifty.png'
-import evilImg from '../assets/tick/evil.png'
+import TickSprite from '../components/TickSprite'
 
 interface HomePageProps {
   onGetStarted: () => void
@@ -21,12 +17,8 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
       <section className="min-h-screen flex flex-col items-center justify-center px-4 py-16 text-center">
         <div className="max-w-3xl mx-auto">
           {/* Tick */}
-          <div className="w-32 h-32 mx-auto mb-8">
-            <img
-              src={neutralImg}
-              alt="Tick the mascot"
-              className="w-full h-full object-cover rounded-full shadow-lg"
-            />
+          <div className="mx-auto mb-8">
+            <TickSprite expression="idle" size="lg" className="shadow-lg" />
           </div>
 
           <h1 className="font-pixel text-2xl md:text-3xl text-charcoal mb-6 leading-relaxed">
@@ -236,15 +228,15 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
 
           <div className="flex justify-center gap-6 mb-8">
             <div className="text-center">
-              <img src={neutralImg} alt="Tick neutral" className="w-20 h-20 rounded-full shadow-md mx-auto mb-2" />
+              <TickSprite expression="idle" size="md" className="shadow-md mx-auto mb-2" />
               <p className="text-sm text-dusty-purple">Friendly</p>
             </div>
             <div className="text-center">
-              <img src={shiftyImg} alt="Tick shifty" className="w-20 h-20 rounded-full shadow-md mx-auto mb-2" />
+              <TickSprite expression="suspicious" size="md" className="shadow-md mx-auto mb-2" />
               <p className="text-sm text-dusty-purple">Suspicious</p>
             </div>
             <div className="text-center">
-              <img src={evilImg} alt="Tick evil" className="w-20 h-20 rounded-full shadow-md mx-auto mb-2" />
+              <TickSprite expression="unhinged" size="md" className="shadow-md mx-auto mb-2" />
               <p className="text-sm text-dusty-purple">Unhinged</p>
             </div>
           </div>

@@ -2,25 +2,13 @@
 // ABOUTME: Opened by long-pressing Tick in the corner.
 
 import { useState } from 'react'
-
-// Import mascot images
-import neutralImg from '../assets/tick/neutral.png'
-import shiftyImg from '../assets/tick/shifty.png'
-import evilImg from '../assets/tick/evil.png'
+import TickSprite, { type TickExpression } from './TickSprite'
 
 interface SpicinessModalProps {
   isOpen: boolean
   onClose: () => void
   currentLevel: number
   onSave: (level: number) => void
-}
-
-type TickExpression = 'neutral' | 'shifty' | 'evil'
-
-const expressionImages: Record<TickExpression, string> = {
-  neutral: neutralImg,
-  shifty: shiftyImg,
-  evil: evilImg,
 }
 
 const spicyLevelLabels: Record<number, { name: string; description: string }> = {
@@ -45,9 +33,9 @@ export default function SpicinessModal({ isOpen, onClose, currentLevel, onSave }
   if (!isOpen) return null
 
   const getExpression = (): TickExpression => {
-    if (level <= 2) return 'neutral'
-    if (level === 3) return 'shifty'
-    return 'evil'
+    if (level <= 2) return 'idle'
+    if (level === 3) return 'suspicious'
+    return 'unhinged'
   }
 
   const handleSave = () => {
@@ -64,12 +52,8 @@ export default function SpicinessModal({ isOpen, onClose, currentLevel, onSave }
     <div className="fixed inset-0 bg-charcoal/60 flex items-center justify-center p-4 z-50 font-body">
       <div className="bg-cloud rounded-2xl shadow-xl max-w-md w-full p-8">
         {/* Tick */}
-        <div className="w-24 h-24 mx-auto mb-6">
-          <img
-            src={expressionImages[getExpression()]}
-            alt={`Tick looking ${getExpression()}`}
-            className="w-full h-full object-cover rounded-full shadow-lg"
-          />
+        <div className="mx-auto mb-6 flex justify-center">
+          <TickSprite expression={getExpression()} size="lg" className="shadow-lg" />
         </div>
 
         <h2 className="font-pixel text-lg text-charcoal text-center mb-6">
