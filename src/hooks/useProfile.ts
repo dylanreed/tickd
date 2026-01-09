@@ -11,6 +11,10 @@ export interface Profile {
   reliability_score: number
   theme: 'hinged' | 'unhinged'
   notification_preferences: 'email' | 'browser' | 'both' | 'none'
+  subscription_status: 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired'
+  trial_ends_at: string | null
+  stripe_customer_id: string | null
+  subscription_id: string | null
   created_at: string
 }
 

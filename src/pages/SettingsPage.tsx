@@ -2,6 +2,7 @@
 // ABOUTME: Wraps NotificationSettings with consistent layout and back navigation.
 
 import NotificationSettings from '../components/NotificationSettings'
+import SubscriptionSettings from '../components/SubscriptionSettings'
 import { useProfile } from '../hooks/useProfile'
 
 interface SettingsPageProps {
@@ -53,7 +54,8 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6">
+      <main className="max-w-2xl mx-auto px-4 py-6 space-y-8">
+        <SubscriptionSettings />
         <NotificationSettings />
       </main>
     </div>

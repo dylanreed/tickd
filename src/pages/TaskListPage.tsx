@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { useTasks } from '../hooks/useTasks'
 import { useProfile } from '../hooks/useProfile'
 import { useExcuses } from '../hooks/useExcuses'
+import { useSubscription } from '../hooks/useSubscription'
 import { useAuth } from '../contexts/AuthContext'
 import TaskCard from '../components/TaskCard'
 import AddTaskForm from '../components/AddTaskForm'
@@ -13,6 +14,7 @@ import ExcuseModal from '../components/ExcuseModal'
 import ThemeToggle from '../components/ThemeToggle'
 import Tick from '../components/Tick'
 import SpicinessModal from '../components/SpicinessModal'
+import SubscriptionLockOverlay from '../components/SubscriptionLockOverlay'
 
 const SPICY_LEVEL_KEY = 'liars-todo-spicy-level'
 
@@ -28,6 +30,7 @@ export default function TaskListPage() {
   const { profile, updateProfile, adjustReliabilityScore } = useProfile()
   const { tasks, addTask, completeTask, deleteTask, loading } = useTasks()
   const { makeExcuse } = useExcuses()
+  const { isLocked, status: subscriptionStatus } = useSubscription()
   const [completionData, setCompletionData] = useState<CompletionData | null>(null)
   const [justCompleted, setJustCompleted] = useState(false)
   const [justRevealed, setJustRevealed] = useState(false)
@@ -250,6 +253,10 @@ export default function TaskListPage() {
         onSubmit={handleExcuseSubmit}
         taskTitle={excuseTask?.title || 'Unknown Task'}
       />
+
+      {isLocked && (subscriptionStatus === 'expired' || subscriptionStatus === 'canceled') && (
+        <SubscriptionLockOverlay status={subscriptionStatus} />
+      )}
     </div>
   )
 }

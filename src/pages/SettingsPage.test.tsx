@@ -25,9 +25,33 @@ vi.mock('../hooks/useProfile', () => ({
       reliability_score: 75,
       theme: 'hinged',
       notification_preferences: 'none',
+      subscription_status: 'trialing',
+      trial_ends_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      stripe_customer_id: null,
+      subscription_id: null,
     },
     updateProfile: vi.fn(),
     loading: false,
+  }),
+}))
+
+vi.mock('../hooks/useSubscription', () => ({
+  useSubscription: () => ({
+    status: 'trialing',
+    isLocked: false,
+    isTrialing: true,
+    trialDaysRemaining: 7,
+    loading: false,
+  }),
+}))
+
+vi.mock('../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 'user-123', email: 'test@example.com' },
+    session: null,
+    loading: false,
+    signIn: vi.fn(),
+    signOut: vi.fn(),
   }),
 }))
 
