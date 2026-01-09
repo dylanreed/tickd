@@ -2,7 +2,7 @@
 // ABOUTME: Verifies fake due dates are calculated correctly based on real dates and reliability.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { calculateFakeDueDate, formatTimeRemaining } from './lieCalculator'
+import { calculateFakeDueDate, formatTimeRemaining, getNotificationTier } from './lieCalculator'
 
 describe('calculateFakeDueDate', () => {
   beforeEach(() => {
@@ -82,5 +82,41 @@ describe('formatTimeRemaining', () => {
   it('shows overdue for past dates', () => {
     const date = new Date('2026-01-07T12:00:00Z') // 1 day ago
     expect(formatTimeRemaining(date)).toBe('overdue')
+  })
+})
+
+describe('getNotificationTier', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-08T12:00:00Z'))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('returns null for tasks more than 4 fake days away', () => {
+    const fakeDue = new Date('2026-01-15T12:00:00Z') // 7 days
+    expect(getNotificationTier(fakeDue)).toBeNull()
+  })
+
+  it('returns 4_day for tasks 3-4 fake days away', () => {
+    const fakeDue = new Date('2026-01-12T12:00:00Z') // 4 days
+    expect(getNotificationTier(fakeDue)).toBe('4_day')
+  })
+
+  it('returns 1_day for tasks 1-2 fake days away', () => {
+    const fakeDue = new Date('2026-01-09T18:00:00Z') // ~1.25 days
+    expect(getNotificationTier(fakeDue)).toBe('1_day')
+  })
+
+  it('returns day_of for tasks due within 24 hours', () => {
+    const fakeDue = new Date('2026-01-09T06:00:00Z') // 18 hours
+    expect(getNotificationTier(fakeDue)).toBe('day_of')
+  })
+
+  it('returns overdue for past fake dates', () => {
+    const fakeDue = new Date('2026-01-07T12:00:00Z') // yesterday
+    expect(getNotificationTier(fakeDue)).toBe('overdue')
   })
 })

@@ -81,3 +81,18 @@ export function getUrgencyLevel(fakeDueDate: Date): 'low' | 'medium' | 'high' | 
   if (hoursRemaining < 72) return 'medium'
   return 'low'
 }
+
+export type NotificationTier = '4_day' | '1_day' | 'day_of' | 'overdue'
+
+export function getNotificationTier(fakeDueDate: Date): NotificationTier | null {
+  const now = Date.now()
+  const msRemaining = fakeDueDate.getTime() - now
+  const hoursRemaining = msRemaining / MS_IN_HOUR
+  const daysRemaining = hoursRemaining / HOURS_IN_DAY
+
+  if (hoursRemaining < 0) return 'overdue'
+  if (hoursRemaining < 24) return 'day_of'
+  if (daysRemaining < 2) return '1_day'
+  if (daysRemaining < 5) return '4_day'
+  return null // No notification needed yet
+}
