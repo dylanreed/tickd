@@ -19,6 +19,11 @@ export interface Database {
           reliability_score: number
           theme: 'hinged' | 'unhinged'
           notification_preferences: 'email' | 'browser' | 'both' | 'none'
+          subscription_status: 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired'
+          trial_ends_at: string | null
+          stripe_customer_id: string | null
+          subscription_id: string | null
+          spicy_level: number
           created_at: string
         }
         Insert: {
@@ -27,6 +32,11 @@ export interface Database {
           reliability_score?: number
           theme?: 'hinged' | 'unhinged'
           notification_preferences?: 'email' | 'browser' | 'both' | 'none'
+          subscription_status?: 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired'
+          trial_ends_at?: string | null
+          stripe_customer_id?: string | null
+          subscription_id?: string | null
+          spicy_level?: number
           created_at?: string
         }
         Update: {
@@ -35,6 +45,11 @@ export interface Database {
           reliability_score?: number
           theme?: 'hinged' | 'unhinged'
           notification_preferences?: 'email' | 'browser' | 'both' | 'none'
+          subscription_status?: 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired'
+          trial_ends_at?: string | null
+          stripe_customer_id?: string | null
+          subscription_id?: string | null
+          spicy_level?: number
           created_at?: string
         }
       }
@@ -100,6 +115,26 @@ export interface Database {
           excuse_text?: string
           postponed_until?: string
           created_at?: string
+        }
+      }
+      monthly_stats_log: {
+        Row: {
+          id: string
+          user_id: string
+          month_year: string
+          sent_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          month_year: string
+          sent_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          month_year?: string
+          sent_at?: string
         }
       }
     }
