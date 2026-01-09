@@ -68,7 +68,7 @@ export default function LoginPage({ onBack }: LoginPageProps) {
             </svg>
           </button>
         )}
-        <h1 className="font-pixel text-xl text-charcoal mb-2 leading-relaxed">TICK IS A LIAR</h1>
+        <h1 className="font-pixel text-xl text-charcoal mb-2 leading-relaxed">TICK'D</h1>
         <p className="text-dusty-purple mb-6">Your friendly neighborhood gaslighter.</p>
 
         <form onSubmit={handleSubmit}>

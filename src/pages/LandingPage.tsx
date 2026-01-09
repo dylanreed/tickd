@@ -271,7 +271,7 @@ export default function LandingPage() {
           Built by someone who also can't handle the truth
         </p>
         <p className="text-dusty-purple text-xs mt-2">
-          Tick is a Liar © 2026 — Strategic deception for chaos goblins
+          Tick'd © 2026 — Strategic deception for chaos goblins
         </p>
       </footer>
     </div>

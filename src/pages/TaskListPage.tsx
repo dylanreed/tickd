@@ -118,7 +118,7 @@ export default function TaskListPage() {
         <div className="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
           <div>
             <h1 className={isHinged ? 'font-medium text-hinged-text' : 'font-pixel text-sm text-charcoal'}>
-              {theme === 'unhinged' ? 'TICK IS A LIAR 🤥' : 'Tick is a Liar'}
+              {theme === 'unhinged' ? "TICK'D 🤥" : "Tick'd"}
             </h1>
             <p className={`text-xs ${isHinged ? 'text-hinged-text-secondary' : 'text-dusty-purple'}`}>{user?.email}</p>
           </div>

@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage'
 import TaskListPage from './pages/TaskListPage'
 import LandingPage from './pages/LandingPage'
 import OnboardingPage from './pages/OnboardingPage'
+import SpriteReferencePage from './pages/SpriteReferencePage'
 
 // Set to true to show landing page, false to show the app
 const SHOW_LANDING_PAGE = import.meta.env.VITE_SHOW_LANDING_PAGE !== 'false'
@@ -21,6 +22,14 @@ function AppContent() {
   const { addTask } = useTasks()
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean | null>(null)
   const [showLogin, setShowLogin] = useState(false)
+  const [hash, setHash] = useState(window.location.hash)
+
+  // Listen for hash changes
+  useEffect(() => {
+    const handleHashChange = () => setHash(window.location.hash)
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
+  }, [])
 
   // Check onboarding status on mount and when user changes
   useEffect(() => {
@@ -39,6 +48,11 @@ function AppContent() {
       localStorage.setItem(`${SPICY_LEVEL_KEY}-${user.id}`, String(spicyLevel))
       setHasCompletedOnboarding(true)
     }
+  }
+
+  // Dev route: sprite reference page
+  if (hash === '#sprites') {
+    return <SpriteReferencePage />
   }
 
   // Show landing page if enabled (pre-launch mode)

@@ -33,28 +33,28 @@ export type TickExpression = CoreExpression | SecondaryExpression
 
 const coreExpressionIndex: Record<CoreExpression, number> = {
   idle: 0,
-  happy: 1,
-  suspicious: 2,
-  concerned: 3,
-  disappointed: 4,
-  judgmental: 5,
-  unhinged: 6,
-  celebrating: 7,
-  shocked: 8,
-  smug: 9,
+  smug: 1,
+  shocked: 2,
+  happy: 3,
+  unhinged: 4,
+  suspicious: 5,
+  disappointed: 6,
+  concerned: 7,
+  celebrating: 8,
+  judgmental: 9,
 }
 
 const secondaryExpressionIndex: Record<SecondaryExpression, number> = {
   eager: 0,
-  scheming: 1,
-  relaxed: 2,
-  confused: 3,
-  apologetic: 4,
+  skeptical: 1,
+  waving: 2,
+  annoyed: 3,
+  tapping_foot: 4,
   pleading: 5,
-  skeptical: 6,
-  annoyed: 7,
-  waving: 8,
-  tapping_foot: 9,
+  confused: 6,
+  apologetic: 7,
+  relaxed: 8,
+  scheming: 9,
 }
 
 function isCoreExpression(expr: TickExpression): expr is CoreExpression {
