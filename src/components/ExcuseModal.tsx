@@ -39,13 +39,28 @@ function ExcuseModalContent({ onClose, onSubmit, taskTitle }: ExcuseModalContent
   const [excuse, setExcuse] = useState('')
   // Placeholder is determined once when the component mounts (modal opens)
   const [placeholder] = useState(() => placeholderExcuses[getPlaceholderIndex()])
+  const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const isValid = excuse.length >= MIN_EXCUSE_LENGTH
   const charsRemaining = MIN_EXCUSE_LENGTH - excuse.length
 
   const handleSubmit = async () => {
-    if (isValid) {
-      await onSubmit(excuse)
+    if (isValid && !isSubmitting) {
+      setIsSubmitting(true)
+      setError(null)
+      const result = await onSubmit(excuse)
+      setIsSubmitting(false)
+      if (!result.success) {
+        setError('Failed to save excuse')
+      }
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && e.ctrlKey && isValid && !isSubmitting) {
+      e.preventDefault()
+      handleSubmit()
     }
   }
 
@@ -76,11 +91,18 @@ function ExcuseModalContent({ onClose, onSubmit, taskTitle }: ExcuseModalContent
         {/* Textarea */}
         <div className="mb-4">
           <textarea
+            aria-label="Enter your excuse"
             value={excuse}
             onChange={(e) => setExcuse(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder={placeholder}
             className="w-full h-24 p-3 rounded-xl border-2 border-lavender focus:border-hot-pink focus:outline-none resize-none text-charcoal placeholder:text-dusty-purple/50"
           />
+
+          {/* Error message */}
+          {error && (
+            <p className="text-sm text-coral mt-1">{error}</p>
+          )}
 
           {/* Character count */}
           <div className="flex justify-between items-center mt-1">

@@ -194,4 +194,136 @@ describe('ExcuseModal', () => {
     expect(textarea).toHaveAttribute('placeholder')
     expect(textarea.getAttribute('placeholder')?.length).toBeGreaterThan(0)
   })
+
+  it('has aria-label on textarea for accessibility', () => {
+    render(
+      <ExcuseModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSubmit={mockOnSubmit}
+        taskTitle="Test Task"
+      />
+    )
+
+    const textarea = screen.getByRole('textbox')
+    expect(textarea).toHaveAttribute('aria-label', 'Enter your excuse')
+  })
+
+  it('submits on Ctrl+Enter keyboard shortcut', async () => {
+    mockOnSubmit.mockResolvedValue({ success: true })
+
+    render(
+      <ExcuseModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSubmit={mockOnSubmit}
+        taskTitle="Test Task"
+      />
+    )
+
+    const textarea = screen.getByRole('textbox')
+    fireEvent.change(textarea, { target: { value: 'I have a very important meeting' } })
+
+    fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true })
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith('I have a very important meeting')
+    })
+  })
+
+  it('does not submit on plain Enter (for multi-line text)', () => {
+    mockOnSubmit.mockResolvedValue({ success: true })
+
+    render(
+      <ExcuseModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSubmit={mockOnSubmit}
+        taskTitle="Test Task"
+      />
+    )
+
+    const textarea = screen.getByRole('textbox')
+    fireEvent.change(textarea, { target: { value: 'I have a very important meeting' } })
+
+    fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: false })
+
+    expect(mockOnSubmit).not.toHaveBeenCalled()
+  })
+
+  it('does not submit on Ctrl+Enter when excuse is invalid', () => {
+    mockOnSubmit.mockResolvedValue({ success: true })
+
+    render(
+      <ExcuseModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSubmit={mockOnSubmit}
+        taskTitle="Test Task"
+      />
+    )
+
+    const textarea = screen.getByRole('textbox')
+    fireEvent.change(textarea, { target: { value: 'short' } })
+
+    fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true })
+
+    expect(mockOnSubmit).not.toHaveBeenCalled()
+  })
+
+  it('displays error message when submission fails', async () => {
+    mockOnSubmit.mockResolvedValue({ success: false })
+
+    render(
+      <ExcuseModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSubmit={mockOnSubmit}
+        taskTitle="Test Task"
+      />
+    )
+
+    const textarea = screen.getByRole('textbox')
+    fireEvent.change(textarea, { target: { value: 'I have a very important meeting' } })
+
+    const submitButton = screen.getByRole('button', { name: /believe/i })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to save excuse/)).toBeInTheDocument()
+    })
+  })
+
+  it('clears error message when user submits valid excuse after failure', async () => {
+    const mockOnSubmitFailing = vi.fn()
+      .mockResolvedValueOnce({ success: false })
+      .mockResolvedValueOnce({ success: true })
+
+    const { rerender } = render(
+      <ExcuseModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSubmit={mockOnSubmitFailing}
+        taskTitle="Test Task"
+      />
+    )
+
+    const textarea = screen.getByRole('textbox')
+    fireEvent.change(textarea, { target: { value: 'I have a very important meeting' } })
+
+    const submitButton = screen.getByRole('button', { name: /believe/i })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to save excuse/)).toBeInTheDocument()
+    })
+
+    // Clear and try again
+    fireEvent.change(textarea, { target: { value: 'A different excuse that works' } })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.queryByText(/Failed to save excuse/)).not.toBeInTheDocument()
+    })
+  })
 })
