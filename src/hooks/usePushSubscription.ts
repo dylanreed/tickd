@@ -114,8 +114,8 @@ export function usePushSubscription(): PushSubscriptionHookResult {
       const { error: dbError } = await (supabase as any).from('push_subscriptions').insert({
         user_id: user.id,
         endpoint: subscriptionJson.endpoint ?? '',
-        p256dh: subscriptionJson.keys?.p256dh ?? '',
-        auth: subscriptionJson.keys?.auth ?? '',
+        p256dh_key: subscriptionJson.keys?.p256dh ?? '',
+        auth_key: subscriptionJson.keys?.auth ?? '',
       })
 
       if (dbError) {
