@@ -23,14 +23,14 @@ describe('LoginPage', () => {
   it('renders email input and submit button', () => {
     render(<LoginPage />)
     expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /send/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /lie to me/i })).toBeInTheDocument()
   })
 
   it('submits email and shows success message', async () => {
     render(<LoginPage />)
 
     const input = screen.getByPlaceholderText(/email/i)
-    const button = screen.getByRole('button', { name: /send/i })
+    const button = screen.getByRole('button', { name: /lie to me/i })
 
     fireEvent.change(input, { target: { value: 'test@example.com' } })
     fireEvent.click(button)

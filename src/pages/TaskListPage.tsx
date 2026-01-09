@@ -4,10 +4,12 @@
 import { useState, useEffect } from 'react'
 import { useTasks } from '../hooks/useTasks'
 import { useProfile } from '../hooks/useProfile'
+import { useExcuses } from '../hooks/useExcuses'
 import { useAuth } from '../contexts/AuthContext'
 import TaskCard from '../components/TaskCard'
 import AddTaskForm from '../components/AddTaskForm'
 import CompletionModal from '../components/CompletionModal'
+import ExcuseModal from '../components/ExcuseModal'
 import ThemeToggle from '../components/ThemeToggle'
 import Tick from '../components/Tick'
 import SpicinessModal from '../components/SpicinessModal'
@@ -25,11 +27,13 @@ export default function TaskListPage() {
   const { user, signOut } = useAuth()
   const { profile, updateProfile, adjustReliabilityScore } = useProfile()
   const { tasks, addTask, completeTask, deleteTask, loading } = useTasks()
+  const { makeExcuse } = useExcuses()
   const [completionData, setCompletionData] = useState<CompletionData | null>(null)
   const [justCompleted, setJustCompleted] = useState(false)
   const [justRevealed, setJustRevealed] = useState(false)
   const [spicinessModalOpen, setSpicinessModalOpen] = useState(false)
   const [spicyLevel, setSpicyLevel] = useState(3)
+  const [excuseTaskId, setExcuseTaskId] = useState<string | null>(null)
 
   // Load spicy level from localStorage
   useEffect(() => {
@@ -46,6 +50,21 @@ export default function TaskListPage() {
       localStorage.setItem(`${SPICY_LEVEL_KEY}-${user.id}`, String(level))
       setSpicyLevel(level)
     }
+  }
+
+  const excuseTask = tasks.find(t => t.id === excuseTaskId)
+
+  const handleExcuse = (taskId: string) => {
+    setExcuseTaskId(taskId)
+  }
+
+  const handleExcuseSubmit = async (excuse: string) => {
+    if (!excuseTaskId) return { success: false, error: 'No task selected' }
+    const result = await makeExcuse(excuseTaskId, excuse)
+    if (result.success) {
+      setExcuseTaskId(null)
+    }
+    return result
   }
 
   const theme = profile?.theme ?? 'hinged'
@@ -157,6 +176,7 @@ export default function TaskListPage() {
                 task={task}
                 onComplete={handleComplete}
                 onDelete={deleteTask}
+                onExcuse={handleExcuse}
                 theme={theme}
               />
             ))}
@@ -200,6 +220,13 @@ export default function TaskListPage() {
         onClose={() => setSpicinessModalOpen(false)}
         currentLevel={spicyLevel}
         onSave={handleSpicySave}
+      />
+
+      <ExcuseModal
+        isOpen={!!excuseTaskId}
+        onClose={() => setExcuseTaskId(null)}
+        onSubmit={handleExcuseSubmit}
+        taskTitle={excuseTask?.title || ''}
       />
     </div>
   )

@@ -38,7 +38,7 @@ describe('TaskListPage', () => {
   it('renders task list with header and add form', () => {
     render(<TaskListPage />)
 
-    expect(screen.getByText('Liars Todo')).toBeInTheDocument()
+    expect(screen.getByText("Tick'd")).toBeInTheDocument()
     expect(screen.getByText('test@example.com')).toBeInTheDocument()
     expect(screen.getByText('Test Task')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Task title')).toBeInTheDocument()
@@ -47,7 +47,8 @@ describe('TaskListPage', () => {
   it('shows reliability score', () => {
     render(<TaskListPage />)
 
-    expect(screen.getByText(/Reliability score: 75%/)).toBeInTheDocument()
+    expect(screen.getByText(/Reliability score:/)).toBeInTheDocument()
+    expect(screen.getByText('75%')).toBeInTheDocument()
   })
 
   it('calls signOut when sign out button is clicked', () => {
@@ -67,7 +68,7 @@ describe('TaskListPage', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('Task Completed')).toBeInTheDocument()
+      expect(screen.getByText('TASK COMPLETED')).toBeInTheDocument()
     })
   })
 

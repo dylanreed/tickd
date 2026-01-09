@@ -19,11 +19,11 @@ vi.mock('./lib/supabase', () => ({
 }))
 
 describe('App', () => {
-  it('shows login page when not authenticated', async () => {
+  it('shows landing page when not authenticated', async () => {
     render(<App />)
     await waitFor(() => {
-      expect(screen.getByText('Liars Todo')).toBeInTheDocument()
-      expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument()
+      expect(screen.getByText("TICK'D")).toBeInTheDocument()
+      expect(screen.getByText('Get Started')).toBeInTheDocument()
     })
   })
 })
