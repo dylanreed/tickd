@@ -17,8 +17,8 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
       <section className="min-h-screen flex flex-col items-center justify-center px-4 py-16 text-center">
         <div className="max-w-3xl mx-auto">
           {/* Tick */}
-          <div className="mx-auto mb-8">
-            <TickSprite expression="idle" size="lg" className="shadow-lg" />
+          <div className="flex justify-center mb-8">
+            <TickSprite expression="idle" size="xl" />
           </div>
 
           <h1 className="font-pixel text-2xl md:text-3xl text-charcoal mb-6 leading-relaxed">
@@ -228,15 +228,15 @@ export default function HomePage({ onGetStarted }: HomePageProps) {
 
           <div className="flex justify-center gap-6 mb-8">
             <div className="text-center">
-              <TickSprite expression="idle" size="md" className="shadow-md mx-auto mb-2" />
+              <TickSprite expression="happy" size="md" className="mx-auto mb-2" />
               <p className="text-sm text-dusty-purple">Friendly</p>
             </div>
             <div className="text-center">
-              <TickSprite expression="suspicious" size="md" className="shadow-md mx-auto mb-2" />
+              <TickSprite expression="scheming" size="md" className="mx-auto mb-2" />
               <p className="text-sm text-dusty-purple">Suspicious</p>
             </div>
             <div className="text-center">
-              <TickSprite expression="unhinged" size="md" className="shadow-md mx-auto mb-2" />
+              <TickSprite expression="tapping_foot" size="md" className="mx-auto mb-2" />
               <p className="text-sm text-dusty-purple">Unhinged</p>
             </div>
           </div>

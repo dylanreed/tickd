@@ -201,7 +201,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
 
       {/* Tick */}
       <div className="mb-8">
-        <TickSprite expression={expression} size="lg" className="shadow-lg" />
+        <TickSprite expression={expression} size="lg" />
       </div>
 
       {/* Content */}

@@ -1,8 +1,27 @@
 // ABOUTME: Reusable component for rendering static Tick expressions from sprite sheets.
 // ABOUTME: Used in pages where Tick appears but doesn't need full interactivity.
 
-import coreSprites from '../assets/tick/sprites/Core Expressions from Pixelorama.png'
-import secondarySprites from '../assets/tick/sprites/Secondary Expressions from Pixelorama.png'
+// Import sprite sheets at different sizes for optimal display
+import coreSprites48 from '../assets/tick/sprites/core_expressions_48.png'
+import coreSprites128 from '../assets/tick/sprites/core_expressions_128.png'
+import coreSprites256 from '../assets/tick/sprites/core_expressions_256.png'
+import secondarySprites48 from '../assets/tick/sprites/secondary_expressions_48.png'
+import secondarySprites128 from '../assets/tick/sprites/secondary_expressions_128.png'
+import secondarySprites256 from '../assets/tick/sprites/secondary_expressions_256.png'
+
+const coreSpritesBySize = {
+  sm: coreSprites48,
+  md: coreSprites128,
+  lg: coreSprites128,
+  xl: coreSprites256,
+}
+
+const secondarySpritesBySize = {
+  sm: secondarySprites48,
+  md: secondarySprites128,
+  lg: secondarySprites128,
+  xl: secondarySprites256,
+}
 
 // Core expressions (sheet 1, positions 0-9)
 type CoreExpression = 'idle' | 'happy' | 'suspicious' | 'concerned' | 'disappointed' | 'judgmental' | 'unhinged' | 'celebrating' | 'shocked' | 'smug'
@@ -57,19 +76,20 @@ const sizeClasses = {
 
 export default function TickSprite({ expression, className = '', size = 'md' }: TickSpriteProps) {
   const isCore = isCoreExpression(expression)
-  const spriteSheet = isCore ? coreSprites : secondarySprites
+  const spriteSheet = isCore ? coreSpritesBySize[size] : secondarySpritesBySize[size]
   const spriteIndex = isCore
     ? coreExpressionIndex[expression]
     : secondaryExpressionIndex[expression as SecondaryExpression]
-  const backgroundPositionX = `${-spriteIndex * 100 / 9}%`
+  // Each frame is 1/10 of the sheet, position as percentage of (imageWidth - containerWidth)
+  const backgroundPositionX = `${spriteIndex * -11.111}%`
 
   return (
     <div
-      className={`${sizeClasses[size]} rounded-full ${className}`}
+      className={`${sizeClasses[size]} ${className}`}
       style={{
         backgroundImage: `url(${spriteSheet})`,
         backgroundSize: '1000% 100%',
-        backgroundPosition: `${backgroundPositionX} 0`,
+        backgroundPosition: `${backgroundPositionX} center`,
       }}
       role="img"
       aria-label={`Tick looking ${expression}`}

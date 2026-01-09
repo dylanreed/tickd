@@ -53,7 +53,7 @@ export default function SpicinessModal({ isOpen, onClose, currentLevel, onSave }
       <div className="bg-cloud rounded-2xl shadow-xl max-w-md w-full p-8">
         {/* Tick */}
         <div className="mx-auto mb-6 flex justify-center">
-          <TickSprite expression={getExpression()} size="lg" className="shadow-lg" />
+          <TickSprite expression={getExpression()} size="lg" />
         </div>
 
         <h2 className="font-pixel text-lg text-charcoal text-center mb-6">

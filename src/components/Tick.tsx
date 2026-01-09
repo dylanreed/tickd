@@ -4,9 +4,9 @@
 import { useState, useCallback, useRef } from 'react'
 import { getRandomQuip, determineContext, type AppContext } from '../data/tickQuips'
 
-// Import sprite sheets
-import coreSprites from '../assets/tick/sprites/Core Expressions from Pixelorama.png'
-import secondarySprites from '../assets/tick/sprites/Secondary Expressions from Pixelorama.png'
+// Import sprite sheets at appropriate sizes for display
+import coreSprites128 from '../assets/tick/sprites/core_expressions_128.png'
+import secondarySprites128 from '../assets/tick/sprites/secondary_expressions_128.png'
 
 interface TickProps {
   totalTasks: number
@@ -114,12 +114,12 @@ export default function Tick({
 
   // Get sprite sheet and position for current expression
   const isCore = isCoreExpression(expression)
-  const spriteSheet = isCore ? coreSprites : secondarySprites
+  const spriteSheet = isCore ? coreSprites128 : secondarySprites128
   const spriteIndex = isCore
     ? coreExpressionIndex[expression]
     : secondaryExpressionIndex[expression as SecondaryExpression]
-  // Each frame is 256px wide, sheet is 2560px total (10 frames)
-  const backgroundPositionX = `${-spriteIndex * 100 / 9}%`
+  // Each frame is 1/10 of the sheet, position as percentage of (imageWidth - containerWidth)
+  const backgroundPositionX = `${spriteIndex * -11.111}%`
 
   const showQuip = useCallback(() => {
     const newQuip = getRandomQuip(context, userName)
@@ -181,10 +181,7 @@ export default function Tick({
           }
         }}
         className={`
-          w-16 h-16 md:w-20 md:h-20
-          rounded-full
-          overflow-hidden
-          shadow-lg
+          w-20 h-20 md:w-24 md:h-24
           transition-transform
           hover:scale-110
           active:scale-95
@@ -195,11 +192,11 @@ export default function Tick({
         title="Tap me!"
       >
         <div
-          className="w-full h-full rounded-full"
+          className="w-full h-full"
           style={{
             backgroundImage: `url(${spriteSheet})`,
             backgroundSize: '1000% 100%',
-            backgroundPosition: `${backgroundPositionX} 0`,
+            backgroundPosition: `${backgroundPositionX} center`,
           }}
           role="img"
           aria-label={`Tick looking ${expression}`}
