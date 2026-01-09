@@ -30,7 +30,11 @@ export default defineConfig({
             type: 'image/svg+xml'
           }
         ]
-      }
+      },
+      workbox: {
+        // Import the push handler into the generated SW
+        importScripts: ['sw-push.js'],
+      },
     })
   ],
 })
