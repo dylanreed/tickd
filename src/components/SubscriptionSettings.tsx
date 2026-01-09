@@ -28,36 +28,18 @@ export default function SubscriptionSettings() {
     setError(null)
 
     try {
-      const { data: sessionData } = await supabase.auth.getSession()
-      const accessToken = sessionData.session?.access_token
+      const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          success_url: `${window.location.origin}/#settings?success=true`,
+          cancel_url: `${window.location.origin}/#settings?canceled=true`,
+        },
+      })
 
-      if (!accessToken) {
-        setError('Not authenticated')
-        setCheckoutLoading(false)
-        return
-      }
-
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-          },
-          body: JSON.stringify({
-            success_url: `${window.location.origin}/#settings?success=true`,
-            cancel_url: `${window.location.origin}/#settings?canceled=true`,
-          }),
-        }
-      )
-
-      const data = await response.json()
-
-      if (data.error) {
+      if (fnError) {
+        setError(fnError.message)
+      } else if (data?.error) {
         setError(data.error)
-      } else if (data.url) {
+      } else if (data?.url) {
         window.location.href = data.url
       }
     } catch (err) {
