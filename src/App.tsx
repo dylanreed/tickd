@@ -4,7 +4,6 @@
 import { useState, useEffect } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { useTasks } from './hooks/useTasks'
-import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import TaskListPage from './pages/TaskListPage'
 import SettingsPage from './pages/SettingsPage'
@@ -116,9 +115,9 @@ function AppContent() {
   }
 
   if (!user) {
-    // Show HomePage first, then LoginPage when they click Get Started
+    // Show LandingPage first, then LoginPage when they click Get Started
     if (!showLogin) {
-      return <HomePage onGetStarted={() => setShowLogin(true)} />
+      return <LandingPage onGetStarted={() => setShowLogin(true)} />
     }
     return <LoginPage onBack={() => setShowLogin(false)} />
   }

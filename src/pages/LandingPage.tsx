@@ -6,7 +6,11 @@ import TickSprite, { type TickExpression } from '../components/TickSprite'
 
 const heroExpressions: TickExpression[] = ['scheming', 'unhinged', 'judgmental', 'smug', 'suspicious']
 
-export default function LandingPage() {
+interface LandingPageProps {
+  onGetStarted?: () => void
+}
+
+export default function LandingPage({ onGetStarted }: LandingPageProps) {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -85,8 +89,15 @@ export default function LandingPage() {
             (it's not a character flaw. it's neuroscience. we gotchu.)
           </p>
 
-          {/* Email Capture */}
-          {!submitted ? (
+          {/* CTA */}
+          {onGetStarted ? (
+            <button
+              onClick={onGetStarted}
+              className="px-10 py-4 bg-clock-red text-clock-ivory font-bold border-3 border-clock-black hover:bg-clock-black transition-colors text-lg shadow-[4px_4px_0_0_#1c1917] hover:shadow-[2px_2px_0_0_#1c1917] hover:translate-x-0.5 hover:translate-y-0.5 active:shadow-none active:translate-x-1 active:translate-y-1"
+            >
+              LIE TO ME
+            </button>
+          ) : !submitted ? (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <input
                 type="email"
@@ -101,7 +112,7 @@ export default function LandingPage() {
                 disabled={submitting}
                 className="px-8 py-4 bg-clock-red text-clock-ivory font-bold border-3 border-clock-black hover:bg-clock-black transition-colors disabled:opacity-50 text-lg whitespace-nowrap shadow-[4px_4px_0_0_#1c1917] hover:shadow-[2px_2px_0_0_#1c1917] hover:translate-x-0.5 hover:translate-y-0.5 active:shadow-none active:translate-x-1 active:translate-y-1"
               >
-                {submitting ? 'PROCESSING...' : 'LIE TO ME'}
+                {submitting ? 'PROCESSING...' : 'JOIN WAITLIST'}
               </button>
             </form>
           ) : (
@@ -410,7 +421,14 @@ export default function LandingPage() {
             Work with your chaos. Not against it.
           </p>
 
-          {!submitted ? (
+          {onGetStarted ? (
+            <button
+              onClick={onGetStarted}
+              className="px-10 py-4 bg-clock-red text-clock-ivory font-bold border-3 border-clock-red hover:bg-clock-brass hover:border-clock-brass hover:text-clock-black transition-colors text-lg"
+            >
+              GASLIGHT ME
+            </button>
+          ) : !submitted ? (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <input
                 type="email"
@@ -425,7 +443,7 @@ export default function LandingPage() {
                 disabled={submitting}
                 className="px-8 py-4 bg-clock-red text-clock-ivory font-bold border-3 border-clock-red hover:bg-clock-brass hover:border-clock-brass hover:text-clock-black transition-colors disabled:opacity-50 text-lg whitespace-nowrap"
               >
-                {submitting ? '...' : 'GASLIGHT ME'}
+                {submitting ? '...' : 'JOIN WAITLIST'}
               </button>
             </form>
           ) : (

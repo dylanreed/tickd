@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192"><rect fill="#1f2937" width="192" height="192" rx="24"/><text x="96" y="120" text-anchor="middle" fill="white" font-size="80" font-family="sans-serif">L</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <!-- Background -->
+  <rect fill="#1c1917" width="192" height="192" rx="24"/>
+  <!-- Tick/Checkmark with attitude -->
+  <path d="M48 102L78 132L144 60" stroke="#FD6D64" stroke-width="24" stroke-linecap="square" fill="none"/>
+  <!-- Chaos spark -->
+  <circle cx="150" cy="48" r="12" fill="#ca8a04"/>
+</svg>
