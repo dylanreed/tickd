@@ -65,7 +65,7 @@ function ExcuseModalContent({ onClose, onSubmit, taskTitle }: ExcuseModalContent
   }
 
   return (
-    <div className="fixed inset-0 bg-charcoal/60 flex items-center justify-center p-4 z-50 font-body">
+    <div className="fixed inset-0 bg-charcoal/60 flex items-center justify-center p-4 z-[100] font-body">
       <div className="bg-cloud rounded-2xl shadow-xl max-w-md w-full p-8">
         {/* Tick */}
         <div className="mx-auto mb-4 flex justify-center">
