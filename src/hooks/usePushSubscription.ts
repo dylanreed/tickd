@@ -1,0 +1,169 @@
+// ABOUTME: Hook for managing browser push notification subscriptions.
+// ABOUTME: Handles permission requests, subscribing to push, and Supabase storage.
+
+import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
+
+export type PermissionState = 'granted' | 'denied' | 'prompt' | 'not_supported'
+
+interface PushSubscriptionHookResult {
+  permissionState: PermissionState
+  isSubscribed: boolean
+  isSupported: boolean
+  loading: boolean
+  subscribe: () => Promise<{ error: Error | null }>
+  unsubscribe: () => Promise<{ error: Error | null }>
+}
+
+function isPushSupported(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    'serviceWorker' in navigator &&
+    'PushManager' in window &&
+    'Notification' in window
+  )
+}
+
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const rawData = window.atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
+}
+
+export function usePushSubscription(): PushSubscriptionHookResult {
+  const { user } = useAuth()
+  const [permissionState, setPermissionState] = useState<PermissionState>('prompt')
+  const [isSubscribed, setIsSubscribed] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const isSupported = isPushSupported()
+
+  useEffect(() => {
+    if (!isSupported) {
+      setPermissionState('not_supported')
+      setLoading(false)
+      return
+    }
+
+    const checkPermissionAndSubscription = async () => {
+      const permission = Notification.permission
+      if (permission === 'granted') {
+        setPermissionState('granted')
+      } else if (permission === 'denied') {
+        setPermissionState('denied')
+      } else {
+        setPermissionState('prompt')
+      }
+
+      try {
+        const registration = await navigator.serviceWorker.ready
+        const subscription = await registration.pushManager.getSubscription()
+        setIsSubscribed(!!subscription)
+      } catch {
+        setIsSubscribed(false)
+      }
+
+      setLoading(false)
+    }
+
+    checkPermissionAndSubscription()
+  }, [isSupported])
+
+  const subscribe = useCallback(async (): Promise<{ error: Error | null }> => {
+    if (!user) {
+      return { error: new Error('User not authenticated') }
+    }
+
+    if (!isSupported) {
+      return { error: new Error('Push notifications not supported') }
+    }
+
+    try {
+      const permission = await Notification.requestPermission()
+      if (permission === 'granted') {
+        setPermissionState('granted')
+      } else if (permission === 'denied') {
+        setPermissionState('denied')
+        return { error: new Error('Notification permission denied') }
+      }
+
+      const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY
+      if (!vapidPublicKey) {
+        return { error: new Error('VAPID public key not configured') }
+      }
+
+      const registration = await navigator.serviceWorker.ready
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+      })
+
+      const subscriptionJson = subscription.toJSON()
+      const { error: dbError } = await supabase.from('push_subscriptions').insert({
+        user_id: user.id,
+        endpoint: subscriptionJson.endpoint,
+        p256dh: subscriptionJson.keys?.p256dh,
+        auth: subscriptionJson.keys?.auth,
+      } as never)
+
+      if (dbError) {
+        await subscription.unsubscribe()
+        return { error: new Error(dbError.message) }
+      }
+
+      setIsSubscribed(true)
+      return { error: null }
+    } catch (err) {
+      return { error: err instanceof Error ? err : new Error('Unknown error') }
+    }
+  }, [user, isSupported])
+
+  const unsubscribe = useCallback(async (): Promise<{ error: Error | null }> => {
+    if (!user) {
+      return { error: new Error('User not authenticated') }
+    }
+
+    if (!isSupported) {
+      return { error: new Error('Push notifications not supported') }
+    }
+
+    try {
+      const registration = await navigator.serviceWorker.ready
+      const subscription = await registration.pushManager.getSubscription()
+
+      if (subscription) {
+        const endpoint = subscription.endpoint
+        await subscription.unsubscribe()
+
+        const { error: dbError } = await supabase
+          .from('push_subscriptions')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('endpoint', endpoint)
+
+        if (dbError) {
+          return { error: new Error(dbError.message) }
+        }
+      }
+
+      setIsSubscribed(false)
+      return { error: null }
+    } catch (err) {
+      return { error: err instanceof Error ? err : new Error('Unknown error') }
+    }
+  }, [user, isSupported])
+
+  return {
+    permissionState,
+    isSubscribed,
+    isSupported,
+    loading,
+    subscribe,
+    unsubscribe,
+  }
+}
