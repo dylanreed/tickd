@@ -162,5 +162,29 @@ describe('TaskCard', () => {
 
       expect(screen.queryByText(/make an excuse/i)).not.toBeInTheDocument()
     })
+
+    it('closes menu when Escape key pressed', () => {
+      const mockOnExcuse = vi.fn()
+      render(
+        <TaskCard
+          task={mockTask}
+          onComplete={vi.fn()}
+          onExcuse={mockOnExcuse}
+          theme="unhinged"
+        />
+      )
+
+      const menuButton = screen.getByLabelText('Task options')
+      fireEvent.click(menuButton)
+
+      // Menu should be open
+      expect(screen.getByText(/make an excuse/i)).toBeInTheDocument()
+
+      // Press Escape
+      fireEvent.keyDown(document, { key: 'Escape' })
+
+      // Menu should be closed
+      expect(screen.queryByText(/make an excuse/i)).not.toBeInTheDocument()
+    })
   })
 })

@@ -61,12 +61,20 @@ export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme }
       }
     }
 
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setMenuOpen(false)
+      }
+    }
+
     if (menuOpen) {
       document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', handleKeyDown)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
     }
   }, [menuOpen])
 
@@ -138,6 +146,7 @@ export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme }
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label="Task options"
+                aria-expanded={menuOpen}
                 className={`p-2 transition-colors ${
                   isHinged
                     ? 'text-hinged-text-secondary hover:text-hinged-text rounded-md hover:bg-gray-100'
@@ -154,13 +163,17 @@ export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme }
                 </svg>
               </button>
               {menuOpen && (
-                <div className={`absolute right-0 top-full mt-1 min-w-[160px] py-1 z-10 shadow-lg ${
-                  isHinged
-                    ? 'bg-white border border-gray-200 rounded-md'
-                    : 'bg-cloud border-2 border-lavender rounded-xl'
-                }`}>
+                <div
+                  role="menu"
+                  className={`absolute right-0 top-full mt-1 min-w-[160px] py-1 z-50 shadow-lg ${
+                    isHinged
+                      ? 'bg-white border border-gray-200 rounded-md'
+                      : 'bg-cloud border-2 border-lavender rounded-xl'
+                  }`}
+                >
                   {onExcuse && (
                     <button
+                      role="menuitem"
                       onClick={handleExcuse}
                       className={`w-full text-left px-4 py-2 text-sm transition-colors ${
                         isHinged
@@ -173,6 +186,7 @@ export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme }
                   )}
                   {onDelete && (
                     <button
+                      role="menuitem"
                       onClick={handleDelete}
                       className={`w-full text-left px-4 py-2 text-sm transition-colors ${
                         isHinged
