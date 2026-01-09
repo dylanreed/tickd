@@ -44,6 +44,7 @@ export default function SubscriptionSettings() {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${accessToken}`,
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
           },
           body: JSON.stringify({
             success_url: `${window.location.origin}/#settings?success=true`,

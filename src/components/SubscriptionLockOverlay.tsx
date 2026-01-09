@@ -47,6 +47,7 @@ export default function SubscriptionLockOverlay({ status }: SubscriptionLockOver
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${accessToken}`,
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
           },
           body: JSON.stringify({
             success_url: `${window.location.origin}/?success=true`,
