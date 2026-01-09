@@ -42,7 +42,6 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
 
   const handleAddFirstTask = async () => {
     if (!taskTitle.trim() || !taskDueDate || !onAddTask) {
-      // If no task entered, just skip to next screen
       nextStep()
       return
     }
@@ -59,7 +58,6 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
     }
   }
 
-  // Calculate min date (tomorrow)
   const tomorrow = new Date()
   tomorrow.setDate(tomorrow.getDate() + 1)
   const minDate = tomorrow.toISOString().split('T')[0]
@@ -72,7 +70,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
       body: (
         <>
           <p className="mb-4">I'm going to lie to you about your deadlines. Constantly.</p>
-          <p className="text-dusty-purple">It's for your own good.</p>
+          <p className="text-clock-black/60 font-mono text-sm">It's for your own good.</p>
         </>
       ),
       cta: 'Tell me more',
@@ -85,10 +83,10 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
         <>
           <p className="mb-4">
             You only do things when they're urgent. A deadline two weeks away?
-            <span className="text-dusty-purple"> Doesn't exist to your brain.</span>
+            <span className="text-clock-black/60"> Doesn't exist to your brain.</span>
           </p>
           <p>
-            But a deadline <span className="text-hot-pink font-bold">TOMORROW</span>?
+            But a deadline <span className="text-clock-red font-bold">TOMORROW</span>?
             Suddenly you're a productivity machine.
           </p>
         </>
@@ -103,11 +101,11 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
         <>
           <p className="mb-4">
             You tell me the <span className="font-bold">REAL</span> deadline.
-            I show you a <span className="text-hot-pink font-bold">FAKE</span> earlier one.
+            I show you a <span className="text-clock-red font-bold">FAKE</span> earlier one.
           </p>
           <p>
             You panic. You work. You finish "just in time" — and discover you're actually
-            <span className="text-mint font-bold"> EARLY</span>.
+            <span className="text-clock-brass font-bold"> EARLY</span>.
           </p>
         </>
       ),
@@ -121,34 +119,34 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
         <>
           <p className="mb-6">You get to choose how mean I am when you ignore your tasks.</p>
           <div className="space-y-3 text-left">
-            <div className="bg-mint/30 p-3 rounded-xl">
+            <div className="bg-mint/30 border-2 border-clock-black p-3">
               <span className="font-bold">Level 1:</span>
-              <span className="text-dusty-purple"> "gentle concern"</span>
-              <p className="text-sm text-charcoal italic mt-1">"oh no baby what is you doing"</p>
+              <span className="text-clock-black/60 font-mono text-sm"> "gentle concern"</span>
+              <p className="text-sm text-clock-black italic mt-1">"oh no baby what is you doing"</p>
             </div>
-            <div className="bg-hot-pink/30 p-3 rounded-xl">
+            <div className="bg-clock-red/20 border-2 border-clock-black p-3">
               <span className="font-bold">Level 5:</span>
-              <span className="text-dusty-purple"> "maximum violence"</span>
-              <p className="text-sm text-charcoal italic mt-1">"I'M DMING ALL YOUR EXES ABOUT THIS"</p>
+              <span className="text-clock-black/60 font-mono text-sm"> "maximum violence"</span>
+              <p className="text-sm text-clock-black italic mt-1">"I'M DMING ALL YOUR EXES ABOUT THIS"</p>
             </div>
           </div>
         </>
       ),
       cta: 'Set my spiciness level',
     },
-    // Screen 5: Spiciness Selection (special - has slider)
+    // Screen 5: Spiciness Selection
     {
-      expression: 'idle' as TickExpression, // Will change dynamically
+      expression: 'idle' as TickExpression,
       headline: 'How mean should I be?',
-      body: null, // Custom rendering
+      body: null,
       cta: "That's perfect",
       isSpicySelector: true,
     },
-    // Screen 6: First Task Prompt (with inline form)
+    // Screen 6: First Task Prompt
     {
       expression: 'celebrating' as TickExpression,
       headline: "Add your first task!",
-      body: null, // Custom rendering for task form
+      body: null,
       cta: 'Add task',
       isFirstTask: true,
     },
@@ -164,7 +162,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
             <br />
             <span className="font-bold">Long-press</span> to adjust how mean I am.
           </p>
-          <p className="text-hot-pink font-bold">Let's get you on track.</p>
+          <p className="text-clock-red font-bold">Let's get you on track.</p>
         </>
       ),
       cta: "Let's do this",
@@ -174,7 +172,6 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
 
   const currentScreen = screens[step]
 
-  // Dynamic expression for spicy selector
   const getSpicyExpression = (): TickExpression => {
     if (spicyLevel <= 2) return 'idle'
     if (spicyLevel === 3) return 'suspicious'
@@ -186,14 +183,14 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
     : currentScreen.expression
 
   return (
-    <div className="min-h-screen bg-lavender font-body flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-clock-parchment font-body flex flex-col items-center justify-center p-6">
       {/* Progress dots */}
       <div className="flex gap-2 mb-8">
         {screens.map((_, i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              i === step ? 'bg-hot-pink' : i < step ? 'bg-mint' : 'bg-cloud'
+            className={`w-3 h-3 border-2 border-clock-black transition-colors ${
+              i === step ? 'bg-clock-red' : i < step ? 'bg-clock-brass' : 'bg-clock-ivory'
             }`}
           />
         ))}
@@ -201,18 +198,18 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
 
       {/* Tick */}
       <div className="mb-8">
-        <TickSprite expression={expression} size="lg" />
+        <TickSprite expression={expression} size="lg" className="drop-shadow-[4px_4px_0_rgba(28,25,23,0.3)]" />
       </div>
 
       {/* Content */}
-      <div className="bg-cloud rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
-        <h1 className="font-pixel text-lg text-charcoal mb-6 leading-relaxed">
+      <div className="bg-clock-ivory border-3 border-clock-black shadow-[6px_6px_0_0_#1c1917] p-8 max-w-md w-full text-center">
+        <h1 className="font-pixel text-lg text-clock-black mb-6 leading-relaxed">
           {currentScreen.headline}
         </h1>
 
         {/* Regular body content */}
         {currentScreen.body && (
-          <div className="text-charcoal text-lg mb-8">
+          <div className="text-clock-black text-lg mb-8">
             {currentScreen.body}
           </div>
         )}
@@ -220,50 +217,50 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
         {/* Spiciness Selector */}
         {currentScreen.isSpicySelector && (
           <div className="mb-8">
-            {/* Slider */}
-            <div className="mb-6">
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={spicyLevel}
-                onChange={(e) => setSpicyLevel(Number(e.target.value))}
-                className="w-full h-3 rounded-full appearance-none cursor-pointer"
-                style={{
-                  background: `linear-gradient(to right,
-                    #B8E0D2 0%,
-                    #FFCDB2 25%,
-                    #FFD166 50%,
-                    #FF7F6B 75%,
-                    #FF5E8A 100%
-                  )`,
-                }}
-              />
-              <div className="flex justify-between text-xs text-dusty-purple mt-2">
-                <span>Gentle</span>
-                <span>Unhinged</span>
-              </div>
+            {/* Level buttons */}
+            <div className="flex justify-center gap-2 mb-6">
+              {[1, 2, 3, 4, 5].map((level) => (
+                <button
+                  key={level}
+                  onClick={() => setSpicyLevel(level)}
+                  className={`w-12 h-12 border-3 border-clock-black font-bold transition-all ${
+                    level === 1
+                      ? "bg-mint/50"
+                      : level === 2
+                        ? "bg-clock-parchment"
+                        : level === 3
+                          ? "bg-clock-brass/30"
+                          : level === 4
+                            ? "bg-clock-red/30"
+                            : "bg-clock-red/50"
+                  } ${spicyLevel === level
+                      ? "shadow-[1px_1px_0_0_#1c1917] translate-x-0.5 translate-y-0.5 ring-2 ring-clock-red"
+                      : "shadow-[3px_3px_0_0_#1c1917] opacity-60 hover:opacity-100"}`}
+                >
+                  {level}
+                </button>
+              ))}
             </div>
 
             {/* Current level display */}
-            <div className="bg-lavender/50 rounded-xl p-4 mb-4">
-              <p className="font-bold text-charcoal text-xl mb-1">
+            <div className="bg-clock-parchment border-2 border-clock-black p-4 mb-4">
+              <p className="font-bold text-clock-black text-xl mb-1">
                 Level {spicyLevel}: {spicyLevelLabels[spicyLevel].name}
               </p>
-              <p className="text-dusty-purple text-sm">
+              <p className="text-clock-black/60 text-sm font-mono">
                 {spicyLevelLabels[spicyLevel].description}
               </p>
             </div>
 
             {/* Preview */}
             <div className="text-left">
-              <p className="text-sm text-dusty-purple mb-2">Preview:</p>
-              <p className="text-charcoal italic bg-white/50 p-3 rounded-xl">
+              <p className="text-sm text-clock-black/60 mb-2 font-mono">Preview:</p>
+              <p className="text-clock-black italic bg-clock-parchment border-2 border-clock-black p-3">
                 {spicyExamples[spicyLevel]}
               </p>
             </div>
 
-            <p className="text-warm-gray text-xs mt-4">
+            <p className="text-clock-black/40 text-xs mt-4 font-mono">
               You can change this anytime by long-pressing Tick.
             </p>
           </div>
@@ -272,7 +269,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
         {/* First Task Form */}
         {currentScreen.isFirstTask && !taskAdded && (
           <div className="mb-6 space-y-4">
-            <p className="text-dusty-purple text-sm mb-4">
+            <p className="text-clock-black/60 text-sm mb-4 font-mono">
               Be honest about the real deadline. I'll handle the lying.
             </p>
             <input
@@ -280,18 +277,18 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
               value={taskTitle}
               onChange={(e) => setTaskTitle(e.target.value)}
               placeholder="What do you need to do?"
-              className="w-full px-4 py-3 rounded-xl bg-white text-charcoal placeholder-warm-gray border-2 border-transparent focus:border-hot-pink focus:outline-none"
+              className="w-full px-4 py-3 bg-clock-parchment text-clock-black placeholder-clock-black/40 border-3 border-clock-black focus:border-clock-red focus:outline-none shadow-[2px_2px_0_0_#1c1917] focus:shadow-none focus:translate-x-0.5 focus:translate-y-0.5 transition-all"
             />
             <div>
-              <label className="block text-sm text-dusty-purple mb-1 text-left">
-                Real deadline <span className="text-hot-pink">(I'll lie about this)</span>
+              <label className="block text-sm text-clock-black/60 mb-1 text-left font-mono">
+                Real deadline <span className="text-clock-red">(I'll lie about this)</span>
               </label>
               <input
                 type="date"
                 value={taskDueDate}
                 onChange={(e) => setTaskDueDate(e.target.value)}
                 min={minDate}
-                className="w-full px-4 py-3 rounded-xl bg-white text-charcoal border-2 border-transparent focus:border-hot-pink focus:outline-none"
+                className="w-full px-4 py-3 bg-clock-parchment text-clock-black border-3 border-clock-black focus:border-clock-red focus:outline-none shadow-[2px_2px_0_0_#1c1917] focus:shadow-none focus:translate-x-0.5 focus:translate-y-0.5 transition-all"
               />
             </div>
           </div>
@@ -299,9 +296,9 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
 
         {/* Task Added Celebration */}
         {currentScreen.isFirstTask && taskAdded && (
-          <div className="mb-6 bg-mint/30 rounded-xl p-4">
-            <p className="text-charcoal font-bold text-lg">Your first task!</p>
-            <p className="text-dusty-purple">I've already started lying about the deadline.</p>
+          <div className="mb-6 bg-clock-brass/20 border-2 border-clock-black p-4">
+            <p className="text-clock-black font-bold text-lg">Your first task!</p>
+            <p className="text-clock-black/60 font-mono text-sm">I've already started lying about the deadline.</p>
           </div>
         )}
 
@@ -315,7 +312,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
                 : nextStep
           }
           disabled={isAddingTask}
-          className="w-full bg-hot-pink text-cloud font-bold py-4 px-6 rounded-full hover:bg-coral transition-colors disabled:opacity-50"
+          className="w-full bg-clock-red text-clock-ivory font-bold py-4 px-6 border-3 border-clock-black hover:bg-clock-black transition-colors disabled:opacity-50 shadow-[4px_4px_0_0_#1c1917] hover:shadow-[2px_2px_0_0_#1c1917] hover:translate-x-0.5 hover:translate-y-0.5 active:shadow-none active:translate-x-1 active:translate-y-1"
         >
           {isAddingTask ? 'Adding...' : taskAdded ? 'Continue' : currentScreen.cta}
         </button>
@@ -324,7 +321,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
         {currentScreen.isFirstTask && !taskAdded && (
           <button
             onClick={nextStep}
-            className="w-full mt-3 text-dusty-purple hover:text-charcoal transition-colors text-sm"
+            className="w-full mt-3 text-clock-black/60 hover:text-clock-black transition-colors text-sm font-mono"
           >
             Skip for now
           </button>

@@ -33,14 +33,14 @@ export default function LoginPage({ onBack }: LoginPageProps) {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-lavender flex items-center justify-center p-4 font-body">
-        <div className="bg-cloud rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-clock-parchment flex items-center justify-center p-4 font-body">
+        <div className="bg-clock-ivory border-3 border-clock-black shadow-[6px_6px_0_0_#1c1917] p-8 max-w-md w-full text-center">
           <div className="text-5xl mb-4">✉️</div>
-          <h2 className="text-2xl font-bold text-charcoal mb-4">Check your email</h2>
-          <p className="text-charcoal">
-            We sent a magic link to <strong className="text-hot-pink">{email}</strong>
+          <h2 className="font-pixel text-lg text-clock-black mb-4">CHECK YOUR EMAIL</h2>
+          <p className="text-clock-black">
+            We sent a magic link to <strong className="text-clock-red">{email}</strong>
           </p>
-          <p className="text-dusty-purple mt-2 text-sm">
+          <p className="text-clock-black/60 mt-2 text-sm font-mono">
             Click the link in the email to sign in. We promise it's real.
           </p>
         </div>
@@ -55,12 +55,12 @@ export default function LoginPage({ onBack }: LoginPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-lavender flex items-center justify-center p-4 font-body">
-      <div className="bg-cloud rounded-2xl shadow-lg p-8 max-w-md w-full relative">
+    <div className="min-h-screen bg-clock-parchment flex items-center justify-center p-4 font-body">
+      <div className="bg-clock-ivory border-3 border-clock-black shadow-[6px_6px_0_0_#1c1917] p-8 max-w-md w-full relative">
         {onBack && (
           <button
             onClick={onBack}
-            className="absolute top-4 left-4 text-dusty-purple hover:text-charcoal transition-colors"
+            className="absolute top-4 left-4 text-clock-black/60 hover:text-clock-black transition-colors"
             aria-label="Go back"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,8 +68,8 @@ export default function LoginPage({ onBack }: LoginPageProps) {
             </svg>
           </button>
         )}
-        <h1 className="font-pixel text-xl text-charcoal mb-2 leading-relaxed">TICK'D</h1>
-        <p className="text-dusty-purple mb-6">Your friendly neighborhood gaslighter.</p>
+        <h1 className="font-pixel text-xl text-clock-black mb-2 leading-relaxed">TICK'D</h1>
+        <p className="text-clock-black/70 mb-6 font-mono text-sm">Your friendly neighborhood gaslighter.</p>
 
         <form onSubmit={handleSubmit}>
           <input
@@ -78,17 +78,17 @@ export default function LoginPage({ onBack }: LoginPageProps) {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
             required
-            className="w-full px-6 py-4 rounded-full bg-white text-charcoal placeholder-warm-gray border-2 border-transparent focus:border-hot-pink focus:outline-none mb-4"
+            className="w-full px-6 py-4 bg-clock-parchment text-clock-black placeholder-clock-black/40 border-3 border-clock-black focus:border-clock-red focus:outline-none mb-4 shadow-[3px_3px_0_0_#1c1917] focus:shadow-[1px_1px_0_0_#1c1917] focus:translate-x-0.5 focus:translate-y-0.5 transition-all font-mono"
           />
 
           {error && (
-            <p className="text-coral text-sm mb-4">{error}</p>
+            <p className="text-clock-red text-sm mb-4 font-mono">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-hot-pink text-cloud font-bold py-4 px-6 rounded-full hover:bg-coral transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-clock-red text-clock-ivory font-bold py-4 px-6 border-3 border-clock-black hover:bg-clock-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[4px_4px_0_0_#1c1917] hover:shadow-[2px_2px_0_0_#1c1917] hover:translate-x-0.5 hover:translate-y-0.5 active:shadow-none active:translate-x-1 active:translate-y-1"
           >
             {submitting ? 'Sending...' : 'Lie to me'}
           </button>
