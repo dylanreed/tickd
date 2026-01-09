@@ -51,7 +51,11 @@ export default function SpriteReferencePage() {
                 key={name}
                 className="bg-cloud rounded-xl p-4 text-center hover:scale-105 transition-transform"
               >
-                <TickSprite expression={name} size="lg" className="mx-auto mb-3" />
+                <TickSprite
+                  expression={name}
+                  size="xl"
+                  className="mx-auto mb-3"
+                />
                 <p className="font-bold text-charcoal">{name}</p>
                 <p className="text-sm text-dusty-purple">Core {index}</p>
               </div>
@@ -70,7 +74,11 @@ export default function SpriteReferencePage() {
                 key={name}
                 className="bg-cloud rounded-xl p-4 text-center hover:scale-105 transition-transform"
               >
-                <TickSprite expression={name} size="lg" className="mx-auto mb-3" />
+                <TickSprite
+                  expression={name}
+                  size="xl"
+                  className="mx-auto mb-3"
+                />
                 <p className="font-bold text-charcoal">{name}</p>
                 <p className="text-sm text-dusty-purple">Secondary {index}</p>
               </div>

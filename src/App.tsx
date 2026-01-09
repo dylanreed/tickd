@@ -10,6 +10,7 @@ import TaskListPage from './pages/TaskListPage'
 import LandingPage from './pages/LandingPage'
 import OnboardingPage from './pages/OnboardingPage'
 import SpriteReferencePage from './pages/SpriteReferencePage'
+import ColorPreviewPage from './pages/ColorPreviewPage'
 
 // Set to true to show landing page, false to show the app
 const SHOW_LANDING_PAGE = import.meta.env.VITE_SHOW_LANDING_PAGE !== 'false'
@@ -50,9 +51,12 @@ function AppContent() {
     }
   }
 
-  // Dev route: sprite reference page
+  // Dev routes
   if (hash === '#sprites') {
     return <SpriteReferencePage />
+  }
+  if (hash === '#colors') {
+    return <ColorPreviewPage />
   }
 
   // Show landing page if enabled (pre-launch mode)

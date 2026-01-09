@@ -10,20 +10,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary palette
-        'lavender': '#C4B7EB',
-        'peach': '#FFCDB2',
-        'mint': '#B8E0D2',
-        'cloud': '#FFF8F0',
+        // Primary palette (Neutral theme - see src/data/palettes.ts for all themes)
+        'lavender': '#F7F5F3',      // Main background (warm off-white)
+        'peach': '#EDE9E4',         // Secondary background
+        'mint': '#B8E0D2',          // Success/positive accent
+        'cloud': '#FFFFFF',         // Card background
         // Accent colors
-        'hot-pink': '#FF5E8A',
-        'coral': '#FF7F6B',
-        'golden': '#FFD166',
+        'hot-pink': '#E85D4C',      // Primary accent (matches Tick's red)
+        'coral': '#D14B3A',         // Accent hover state
+        'golden': '#FFD166',        // Warning/medium accent
         // Text colors
-        'charcoal': '#3D3D3D',
-        'dusty-purple': '#6B5B7A',
-        'warm-gray': '#9E9494',
-        // Tick colors
+        'charcoal': '#3D3D3D',      // Primary text
+        'dusty-purple': '#6B6B6B',  // Secondary text
+        'warm-gray': '#9E9E9E',     // Muted text
+        // Tick colors (kept for reference)
         'tick-body': '#818FAA',
         'tick-face': '#FEFCF8',
         'tick-accent': '#FD6D64',
