@@ -45,4 +45,122 @@ describe('TaskCard', () => {
     render(<TaskCard task={mockTask} onComplete={vi.fn()} theme="hinged" />)
     expect(screen.getByText('work')).toBeInTheDocument()
   })
+
+  describe('Menu functionality', () => {
+    it('shows menu button with excuse option', async () => {
+      const mockOnExcuse = vi.fn()
+      render(
+        <TaskCard
+          task={mockTask}
+          onComplete={vi.fn()}
+          onExcuse={mockOnExcuse}
+          theme="unhinged"
+        />
+      )
+
+      const menuButton = screen.getByLabelText('Task options')
+      fireEvent.click(menuButton)
+
+      expect(screen.getByText(/make an excuse/i)).toBeInTheDocument()
+    })
+
+    it('calls onExcuse when excuse option clicked', async () => {
+      const mockOnExcuse = vi.fn()
+
+      render(
+        <TaskCard
+          task={mockTask}
+          onComplete={vi.fn()}
+          onExcuse={mockOnExcuse}
+          theme="unhinged"
+        />
+      )
+
+      const menuButton = screen.getByLabelText('Task options')
+      fireEvent.click(menuButton)
+
+      const excuseOption = screen.getByText(/make an excuse/i)
+      fireEvent.click(excuseOption)
+
+      expect(mockOnExcuse).toHaveBeenCalledWith(mockTask.id)
+    })
+
+    it('shows delete option in menu when onDelete provided', () => {
+      const mockOnDelete = vi.fn()
+      render(
+        <TaskCard
+          task={mockTask}
+          onComplete={vi.fn()}
+          onDelete={mockOnDelete}
+          theme="hinged"
+        />
+      )
+
+      const menuButton = screen.getByLabelText('Task options')
+      fireEvent.click(menuButton)
+
+      expect(screen.getByText(/delete task/i)).toBeInTheDocument()
+    })
+
+    it('calls onDelete when delete option clicked in menu', () => {
+      const mockOnDelete = vi.fn()
+      render(
+        <TaskCard
+          task={mockTask}
+          onComplete={vi.fn()}
+          onDelete={mockOnDelete}
+          theme="hinged"
+        />
+      )
+
+      const menuButton = screen.getByLabelText('Task options')
+      fireEvent.click(menuButton)
+
+      const deleteOption = screen.getByText(/delete task/i)
+      fireEvent.click(deleteOption)
+
+      expect(mockOnDelete).toHaveBeenCalledWith(mockTask.id)
+    })
+
+    it('closes menu when clicking outside', () => {
+      const mockOnExcuse = vi.fn()
+      render(
+        <TaskCard
+          task={mockTask}
+          onComplete={vi.fn()}
+          onExcuse={mockOnExcuse}
+          theme="unhinged"
+        />
+      )
+
+      const menuButton = screen.getByLabelText('Task options')
+      fireEvent.click(menuButton)
+
+      // Menu should be open
+      expect(screen.getByText(/make an excuse/i)).toBeInTheDocument()
+
+      // Click outside the menu
+      fireEvent.mouseDown(document.body)
+
+      // Menu should be closed
+      expect(screen.queryByText(/make an excuse/i)).not.toBeInTheDocument()
+    })
+
+    it('does not show excuse option when onExcuse not provided', () => {
+      const mockOnDelete = vi.fn()
+      render(
+        <TaskCard
+          task={mockTask}
+          onComplete={vi.fn()}
+          onDelete={mockOnDelete}
+          theme="hinged"
+        />
+      )
+
+      const menuButton = screen.getByLabelText('Task options')
+      fireEvent.click(menuButton)
+
+      expect(screen.queryByText(/make an excuse/i)).not.toBeInTheDocument()
+    })
+  })
 })

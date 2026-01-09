@@ -1,6 +1,7 @@
 // ABOUTME: Card component displaying a single task with fake due date.
 // ABOUTME: Adapts styling based on urgency level and theme (hinged/unhinged).
 
+import { useEffect, useRef, useState } from 'react'
 import type { TaskWithFakeDate } from '../types/task'
 import { formatTimeRemaining } from '../lib/lieCalculator'
 
@@ -8,6 +9,7 @@ interface TaskCardProps {
   task: TaskWithFakeDate
   onComplete: (taskId: string) => void
   onDelete?: (taskId: string) => void
+  onExcuse?: (taskId: string) => void
   theme: 'hinged' | 'unhinged'
 }
 
@@ -45,16 +47,49 @@ const urgencyMessages = {
   },
 }
 
-export default function TaskCard({ task, onComplete, onDelete, theme }: TaskCardProps) {
+export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme }: TaskCardProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
   const timeRemaining = formatTimeRemaining(task.fake_due_date)
   const urgencyStyle = urgencyStyles[theme][task.urgency]
   const urgencyMessage = urgencyMessages[theme][task.urgency]
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+
+    if (menuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [menuOpen])
 
   if (task.status === 'completed') {
     return null // Completed tasks handled separately
   }
 
   const isHinged = theme === 'hinged'
+  const hasMenuItems = onDelete || onExcuse
+
+  const handleExcuse = () => {
+    if (onExcuse) {
+      onExcuse(task.id)
+    }
+    setMenuOpen(false)
+  }
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(task.id)
+    }
+    setMenuOpen(false)
+  }
 
   return (
     <div className={`${isHinged ? 'rounded-lg' : 'rounded-2xl'} border-2 p-4 ${urgencyStyle} transition-all`}>
@@ -86,7 +121,7 @@ export default function TaskCard({ task, onComplete, onDelete, theme }: TaskCard
             </p>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <button
             onClick={() => onComplete(task.id)}
             aria-label="Complete task"
@@ -98,18 +133,59 @@ export default function TaskCard({ task, onComplete, onDelete, theme }: TaskCard
           >
             {theme === 'unhinged' ? 'DONE (finally)' : 'Complete'}
           </button>
-          {onDelete && (
-            <button
-              onClick={() => onDelete(task.id)}
-              aria-label="Delete task"
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
-                isHinged
-                  ? 'bg-gray-100 text-hinged-text-secondary rounded-md hover:bg-gray-200'
-                  : 'bg-lavender text-dusty-purple rounded-full hover:bg-lavender/80'
-              }`}
-            >
-              Delete
-            </button>
+          {hasMenuItems && (
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                aria-label="Task options"
+                className={`p-2 transition-colors ${
+                  isHinged
+                    ? 'text-hinged-text-secondary hover:text-hinged-text rounded-md hover:bg-gray-100'
+                    : 'text-dusty-purple hover:text-charcoal rounded-full hover:bg-lavender/50'
+                }`}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
+                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+              </button>
+              {menuOpen && (
+                <div className={`absolute right-0 top-full mt-1 min-w-[160px] py-1 z-10 shadow-lg ${
+                  isHinged
+                    ? 'bg-white border border-gray-200 rounded-md'
+                    : 'bg-cloud border-2 border-lavender rounded-xl'
+                }`}>
+                  {onExcuse && (
+                    <button
+                      onClick={handleExcuse}
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                        isHinged
+                          ? 'text-hinged-text hover:bg-gray-100'
+                          : 'text-charcoal hover:bg-lavender/30 font-medium'
+                      }`}
+                    >
+                      {isHinged ? 'Make an excuse...' : 'Make an excuse... (we get it)'}
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      onClick={handleDelete}
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                        isHinged
+                          ? 'text-red-600 hover:bg-red-50'
+                          : 'text-hot-pink hover:bg-hot-pink/10 font-medium'
+                      }`}
+                    >
+                      {isHinged ? 'Delete task' : 'Delete task (yeet it)'}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
