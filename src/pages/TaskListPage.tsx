@@ -226,7 +226,7 @@ export default function TaskListPage() {
         isOpen={!!excuseTaskId}
         onClose={() => setExcuseTaskId(null)}
         onSubmit={handleExcuseSubmit}
-        taskTitle={excuseTask?.title || ''}
+        taskTitle={excuseTask?.title || 'Unknown Task'}
       />
     </div>
   )

@@ -7,7 +7,7 @@ import TickSprite from './TickSprite'
 interface ExcuseModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (excuse: string) => Promise<{ success: boolean }>
+  onSubmit: (excuse: string) => Promise<{ success: boolean; error?: string }>
   taskTitle: string
 }
 
@@ -31,7 +31,7 @@ function getPlaceholderIndex(): number {
 
 interface ExcuseModalContentProps {
   onClose: () => void
-  onSubmit: (excuse: string) => Promise<{ success: boolean }>
+  onSubmit: (excuse: string) => Promise<{ success: boolean; error?: string }>
   taskTitle: string
 }
 
@@ -52,7 +52,7 @@ function ExcuseModalContent({ onClose, onSubmit, taskTitle }: ExcuseModalContent
       const result = await onSubmit(excuse)
       setIsSubmitting(false)
       if (!result.success) {
-        setError('Failed to save excuse')
+        setError(result.error || 'Failed to save excuse')
       }
     }
   }
@@ -130,7 +130,7 @@ function ExcuseModalContent({ onClose, onSubmit, taskTitle }: ExcuseModalContent
             disabled={!isValid}
             className="flex-1 px-6 py-3 bg-hot-pink text-cloud font-bold rounded-full hover:bg-coral transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Fine, I'll believe you
+            {isSubmitting ? 'Saving...' : "Fine, I'll believe you"}
           </button>
         </div>
       </div>
