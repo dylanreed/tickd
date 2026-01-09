@@ -38,21 +38,30 @@ export default function TaskListPage() {
   const [spicyLevel, setSpicyLevel] = useState(3)
   const [excuseTaskId, setExcuseTaskId] = useState<string | null>(null)
 
-  // Load spicy level from localStorage
+  // Load spicy level - migrate from localStorage to DB if needed
   useEffect(() => {
-    if (user) {
-      const saved = localStorage.getItem(`${SPICY_LEVEL_KEY}-${user.id}`)
-      if (saved) {
-        setSpicyLevel(Number(saved))
+    if (user && profile) {
+      const localKey = `${SPICY_LEVEL_KEY}-${user.id}`
+      const localValue = localStorage.getItem(localKey)
+
+      if (localValue && profile.spicy_level === 3) {
+        // Migrate localStorage value to database
+        const level = Number(localValue)
+        if (level >= 1 && level <= 5) {
+          updateProfile({ spicy_level: level })
+          setSpicyLevel(level)
+        }
+        localStorage.removeItem(localKey)
+      } else {
+        // Use database value
+        setSpicyLevel(profile.spicy_level)
       }
     }
-  }, [user])
+  }, [user, profile, updateProfile])
 
-  const handleSpicySave = (level: number) => {
-    if (user) {
-      localStorage.setItem(`${SPICY_LEVEL_KEY}-${user.id}`, String(level))
-      setSpicyLevel(level)
-    }
+  const handleSpicySave = async (level: number) => {
+    setSpicyLevel(level)
+    await updateProfile({ spicy_level: level })
   }
 
   const excuseTask = tasks.find(t => t.id === excuseTaskId)
@@ -97,13 +106,13 @@ export default function TaskListPage() {
     if (!task) return
 
     setJustCompleted(true)
-    const { wasOnTime, realDueDate } = await completeTask(taskId)
+    const { wasOnTime, realDueDate, completedAt } = await completeTask(taskId)
 
     if (wasOnTime !== undefined && realDueDate) {
       setCompletionData({
         taskTitle: task.title,
         realDueDate,
-        completedAt: new Date(),
+        completedAt: completedAt ?? new Date(),
         wasOnTime,
       })
       await adjustReliabilityScore(wasOnTime)
