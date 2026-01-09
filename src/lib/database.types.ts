@@ -76,6 +76,32 @@ export interface Database {
           created_at?: string
         }
       }
+      excuses: {
+        Row: {
+          id: string
+          task_id: string
+          user_id: string
+          excuse_text: string
+          postponed_until: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          task_id: string
+          user_id: string
+          excuse_text: string
+          postponed_until: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          task_id?: string
+          user_id?: string
+          excuse_text?: string
+          postponed_until?: string
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
