@@ -241,21 +241,27 @@ async function sendEmail(to: string, subject: string, body: string): Promise<boo
 }
 
 /**
- * Sends a browser push notification via @negrel/webpush library.
+ * Result of a push notification attempt.
  */
-let lastPushError = ''
+interface PushResult {
+  success: boolean
+  expired: boolean
+  error?: string
+}
 
+/**
+ * Sends a browser push notification via @negrel/webpush library.
+ * Returns success status and whether the subscription is expired (should be deleted).
+ */
 async function sendPushNotification(
   subscription: PushSubscription,
   title: string,
   body: string,
   taskId: string
-): Promise<boolean> {
+): Promise<PushResult> {
   try {
-    console.log('Attempting to send push to:', subscription.endpoint.substring(0, 50) + '...')
     const server = await getAppServer()
 
-    // Create subscription object in web push format
     const pushSubscription = {
       endpoint: subscription.endpoint,
       keys: {
@@ -264,35 +270,42 @@ async function sendPushNotification(
       },
     }
 
-    // Create subscriber and send message
     const subscriber = server.subscribe(pushSubscription)
     const payload = JSON.stringify({
       title,
       body,
       taskId,
-      url: 'https://liars.todo',
+      url: 'https://tick-d.com',
     })
 
-    console.log('Sending push message with payload length:', payload.length)
     await subscriber.pushTextMessage(payload, {})
-    console.log('Push notification sent successfully')
-    return true
+    return { success: true, expired: false }
   } catch (err) {
-    // Handle PushMessageError from @negrel/webpush which has a response property
+    let errorMsg = 'Unknown error'
+    let httpStatus = 0
+
     const errWithResponse = err as { response?: Response }
     if (errWithResponse.response instanceof Response) {
+      httpStatus = errWithResponse.response.status
       const text = await errWithResponse.response.text().catch(() => 'no body')
-      lastPushError = `HTTP ${errWithResponse.response.status}: ${text}`
+      errorMsg = `HTTP ${httpStatus}: ${text}`
     } else if (err instanceof Response) {
+      httpStatus = err.status
       const text = await err.text().catch(() => 'no body')
-      lastPushError = `HTTP ${err.status}: ${text}`
+      errorMsg = `HTTP ${httpStatus}: ${text}`
     } else if (err instanceof Error) {
-      lastPushError = `${err.constructor.name}: ${err.message}`
-    } else {
-      lastPushError = `${typeof err}: ${JSON.stringify(err)}`
+      errorMsg = `${err.constructor.name}: ${err.message}`
     }
-    console.error('Failed to send push notification:', lastPushError)
-    return false
+
+    // 410 Gone means subscription is expired/unsubscribed
+    const expired = httpStatus === 410
+    if (expired) {
+      console.log('Subscription expired, will be deleted:', subscription.endpoint.substring(0, 50))
+    } else {
+      console.error('Push notification failed:', errorMsg)
+    }
+
+    return { success: false, expired, error: errorMsg }
   }
 }
 
@@ -464,12 +477,26 @@ serve(async (_req) => {
         debugInfo.push(`Push subs for user: ${userSubs.length}`)
         for (const sub of userSubs) {
           debugInfo.push(`Sending push for ${task.title}`)
-          const success = await sendPushNotification(sub, message.title, message.body, task.id)
-          debugInfo.push(`Push result: ${success}${success ? '' : ` (${lastPushError})`}`)
+          const result = await sendPushNotification(sub, message.title, message.body, task.id)
+          debugInfo.push(`Push result: ${result.success}${result.success ? '' : ` (${result.error})`}`)
           if (vapidDebug && !debugInfo.includes(`VAPID: ${vapidDebug}`)) {
             debugInfo[1] = `VAPID: ${vapidDebug}`
           }
-          if (success) {
+
+          // Delete expired subscriptions (410 Gone responses)
+          if (result.expired) {
+            const { error: deleteError } = await supabase
+              .from('push_subscriptions')
+              .delete()
+              .eq('endpoint', sub.endpoint)
+            if (deleteError) {
+              console.error('Failed to delete expired subscription:', deleteError)
+            } else {
+              console.log('Deleted expired subscription:', sub.endpoint.substring(0, 50))
+            }
+          }
+
+          if (result.success) {
             const { error: logError } = await supabase.from('notification_log').insert({
               task_id: task.id,
               user_id: task.user_id,
