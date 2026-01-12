@@ -4,6 +4,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import * as webpush from 'jsr:@negrel/webpush'
+import { generateReminderEmail } from './email-template.ts'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
@@ -209,10 +210,18 @@ function getMessage(
 
 /**
  * Sends an email notification via Resend API.
+ * Supports both plain text and HTML emails.
  */
 let lastEmailError = ''
 
-async function sendEmail(to: string, subject: string, body: string): Promise<boolean> {
+interface EmailOptions {
+  to: string
+  subject: string
+  text: string
+  html?: string
+}
+
+async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -222,9 +231,10 @@ async function sendEmail(to: string, subject: string, body: string): Promise<boo
       },
       body: JSON.stringify({
         from: 'Tick <tick@tick-d.com>',
-        to: [to],
-        subject,
-        text: body,
+        to: [options.to],
+        subject: options.subject,
+        text: options.text,
+        ...(options.html && { html: options.html }),
       }),
     })
     if (!response.ok) {
@@ -453,8 +463,19 @@ serve(async (_req) => {
       // Send email (only for 4_day and 1_day tiers to avoid spam)
       if ((prefs === 'email' || prefs === 'both') && (tier === '4_day' || tier === '1_day')) {
         debugInfo.push(`Sending email to ${profile.email} for ${task.title}`)
-        const emailBody = `${message.body}\n\nView your tasks: https://liars.todo\n\n- Tick`
-        const success = await sendEmail(profile.email, `${message.title}: ${task.title}`, emailBody)
+        const plainText = `${message.body}\n\nView your tasks: https://tick-d.com\n\n- Tick`
+        const htmlEmail = generateReminderEmail({
+          taskTitle: task.title,
+          message: message.body,
+          tier,
+          theme: profile.theme,
+        })
+        const success = await sendEmail({
+          to: profile.email,
+          subject: `${message.title}: ${task.title}`,
+          text: plainText,
+          html: htmlEmail,
+        })
         debugInfo.push(`Email result: ${success}${success ? '' : ` (${lastEmailError})`}`)
         if (success) {
           const { error: logError } = await supabase.from('notification_log').insert({
