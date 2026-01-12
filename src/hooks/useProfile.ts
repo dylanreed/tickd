@@ -9,13 +9,14 @@ export interface Profile {
   id: string
   email: string
   reliability_score: number
-  spicy_level: number
+  spicy_level: number | null
   theme: 'hinged' | 'unhinged'
   notification_preferences: 'email' | 'browser' | 'both' | 'none'
   subscription_status: 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired'
   trial_ends_at: string | null
   stripe_customer_id: string | null
   subscription_id: string | null
+  onboarding_completed: boolean
   created_at: string
 }
 
@@ -42,7 +43,7 @@ export function useProfile() {
       if (error) {
         setError(error)
       } else {
-        setProfile(data)
+        setProfile(data as Profile)
       }
       setLoading(false)
     }
@@ -61,7 +62,7 @@ export function useProfile() {
       .single()
 
     if (!error && data) {
-      setProfile(data)
+      setProfile(data as Profile)
     }
 
     return { data, error }

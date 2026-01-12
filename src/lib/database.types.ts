@@ -1,6 +1,3 @@
-// ABOUTME: TypeScript types for Supabase database schema.
-// ABOUTME: Auto-generated from Supabase, manually maintained for now.
-
 export type Json =
   | string
   | number
@@ -9,133 +6,253 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
   public: {
     Tables: {
-      profiles: {
-        Row: {
-          id: string
-          email: string
-          reliability_score: number
-          theme: 'hinged' | 'unhinged'
-          notification_preferences: 'email' | 'browser' | 'both' | 'none'
-          subscription_status: 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired'
-          trial_ends_at: string | null
-          stripe_customer_id: string | null
-          subscription_id: string | null
-          spicy_level: number
-          created_at: string
-        }
-        Insert: {
-          id: string
-          email: string
-          reliability_score?: number
-          theme?: 'hinged' | 'unhinged'
-          notification_preferences?: 'email' | 'browser' | 'both' | 'none'
-          subscription_status?: 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired'
-          trial_ends_at?: string | null
-          stripe_customer_id?: string | null
-          subscription_id?: string | null
-          spicy_level?: number
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          email?: string
-          reliability_score?: number
-          theme?: 'hinged' | 'unhinged'
-          notification_preferences?: 'email' | 'browser' | 'both' | 'none'
-          subscription_status?: 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired'
-          trial_ends_at?: string | null
-          stripe_customer_id?: string | null
-          subscription_id?: string | null
-          spicy_level?: number
-          created_at?: string
-        }
-      }
-      tasks: {
-        Row: {
-          id: string
-          user_id: string
-          title: string
-          description: string | null
-          real_due_date: string
-          category: string | null
-          status: 'pending' | 'completed' | 'overdue'
-          completed_at: string | null
-          was_on_time: boolean | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          title: string
-          description?: string | null
-          real_due_date: string
-          category?: string | null
-          status?: 'pending' | 'completed' | 'overdue'
-          completed_at?: string | null
-          was_on_time?: boolean | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          title?: string
-          description?: string | null
-          real_due_date?: string
-          category?: string | null
-          status?: 'pending' | 'completed' | 'overdue'
-          completed_at?: string | null
-          was_on_time?: boolean | null
-          created_at?: string
-        }
-      }
       excuses: {
         Row: {
+          created_at: string
+          excuse_text: string
           id: string
+          postponed_until: string
           task_id: string
           user_id: string
-          excuse_text: string
-          postponed_until: string
-          created_at: string
         }
         Insert: {
+          created_at?: string
+          excuse_text: string
           id?: string
+          postponed_until: string
           task_id: string
           user_id: string
-          excuse_text: string
-          postponed_until: string
-          created_at?: string
         }
         Update: {
+          created_at?: string
+          excuse_text?: string
           id?: string
+          postponed_until?: string
           task_id?: string
           user_id?: string
-          excuse_text?: string
-          postponed_until?: string
-          created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "excuses_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "excuses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       monthly_stats_log: {
         Row: {
           id: string
-          user_id: string
           month_year: string
-          sent_at: string
+          sent_at: string | null
+          user_id: string | null
         }
         Insert: {
           id?: string
-          user_id: string
           month_year: string
-          sent_at?: string
+          sent_at?: string | null
+          user_id?: string | null
         }
         Update: {
           id?: string
-          user_id?: string
           month_year?: string
-          sent_at?: string
+          sent_at?: string | null
+          user_id?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_stats_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_log: {
+        Row: {
+          channel: string
+          id: string
+          notification_type: string
+          sent_at: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          id?: string
+          notification_type: string
+          sent_at?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          id?: string
+          notification_type?: string
+          sent_at?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_log_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          notification_preferences: string
+          onboarding_completed: boolean
+          reliability_score: number
+          spicy_level: number | null
+          stripe_customer_id: string | null
+          subscription_id: string | null
+          subscription_status: string
+          theme: string
+          trial_ends_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          notification_preferences?: string
+          onboarding_completed?: boolean
+          reliability_score?: number
+          spicy_level?: number | null
+          stripe_customer_id?: string | null
+          subscription_id?: string | null
+          subscription_status?: string
+          theme?: string
+          trial_ends_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          notification_preferences?: string
+          onboarding_completed?: boolean
+          reliability_score?: number
+          spicy_level?: number | null
+          stripe_customer_id?: string | null
+          subscription_id?: string | null
+          subscription_status?: string
+          theme?: string
+          trial_ends_at?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth_key: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh_key: string
+          user_id: string
+        }
+        Insert: {
+          auth_key: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh_key: string
+          user_id: string
+        }
+        Update: {
+          auth_key?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh_key?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          category: string | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          id: string
+          real_due_date: string
+          status: string
+          title: string
+          user_id: string
+          was_on_time: boolean | null
+        }
+        Insert: {
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          real_due_date: string
+          status?: string
+          title: string
+          user_id: string
+          was_on_time?: boolean | null
+        }
+        Update: {
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          real_due_date?: string
+          status?: string
+          title?: string
+          user_id?: string
+          was_on_time?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -147,5 +264,131 @@ export interface Database {
     Enums: {
       [_ in never]: never
     }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
 }
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const

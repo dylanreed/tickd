@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { useTasks } from './hooks/useTasks'
+import { supabase } from './lib/supabase'
 import LoginPage from './pages/LoginPage'
 import TaskListPage from './pages/TaskListPage'
 import SettingsPage from './pages/SettingsPage'
@@ -73,17 +74,53 @@ function AppContent() {
 
   // Check onboarding status on mount and when user changes
   useEffect(() => {
-    if (user) {
-      const completed = localStorage.getItem(`${ONBOARDING_KEY}-${user.id}`)
-      setHasCompletedOnboarding(completed === 'true')
-      setShowLogin(false) // Reset when user logs in
-    } else {
-      setHasCompletedOnboarding(null)
+    async function checkOnboardingStatus() {
+      if (user) {
+        // Check database first (persists across devices)
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', user.id)
+          .single()
+
+        if (profile?.onboarding_completed) {
+          setHasCompletedOnboarding(true)
+          // Sync to localStorage for faster future checks
+          localStorage.setItem(`${ONBOARDING_KEY}-${user.id}`, 'true')
+        } else {
+          // Fall back to localStorage (for users who completed before this update)
+          const localCompleted = localStorage.getItem(`${ONBOARDING_KEY}-${user.id}`)
+          if (localCompleted === 'true') {
+            // Sync to database
+            await supabase
+              .from('profiles')
+              .update({ onboarding_completed: true })
+              .eq('id', user.id)
+            setHasCompletedOnboarding(true)
+          } else {
+            setHasCompletedOnboarding(false)
+          }
+        }
+        setShowLogin(false) // Reset when user logs in
+      } else {
+        setHasCompletedOnboarding(null)
+      }
     }
+    checkOnboardingStatus()
   }, [user])
 
-  const handleOnboardingComplete = (spicyLevel: number) => {
+  const handleOnboardingComplete = async (spicyLevel: number) => {
     if (user) {
+      // Save to database (persists across devices)
+      await supabase
+        .from('profiles')
+        .update({
+          onboarding_completed: true,
+          spicy_level: spicyLevel,
+        })
+        .eq('id', user.id)
+
+      // Also save to localStorage for faster checks
       localStorage.setItem(`${ONBOARDING_KEY}-${user.id}`, 'true')
       localStorage.setItem(`${SPICY_LEVEL_KEY}-${user.id}`, String(spicyLevel))
       setHasCompletedOnboarding(true)

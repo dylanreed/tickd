@@ -38,7 +38,7 @@ export function useTasks() {
       setError(error)
     } else {
       setError(null)
-      setTasks((data || []).map(enrichTask))
+      setTasks((data || []).map(d => enrichTask(d as Task)))
     }
     setLoading(false)
   }, [user, enrichTask])
@@ -63,7 +63,7 @@ export function useTasks() {
       .single()
 
     if (!error && data) {
-      setTasks(prev => [...prev, enrichTask(data)].sort(
+      setTasks(prev => [...prev, enrichTask(data as Task)].sort(
         (a, b) => new Date(a.real_due_date).getTime() - new Date(b.real_due_date).getTime()
       ))
     }
@@ -93,7 +93,7 @@ export function useTasks() {
       .single()
 
     if (!error && data) {
-      setTasks(prev => prev.map(t => t.id === taskId ? enrichTask(data) : t))
+      setTasks(prev => prev.map(t => t.id === taskId ? enrichTask(data as Task) : t))
     }
 
     const taskData = data as Task | null

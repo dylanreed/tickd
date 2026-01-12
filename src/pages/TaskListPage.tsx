@@ -53,8 +53,8 @@ export default function TaskListPage() {
         }
         localStorage.removeItem(localKey)
       } else {
-        // Use database value
-        setSpicyLevel(profile.spicy_level)
+        // Use database value (default to 3 if not set)
+        setSpicyLevel(profile.spicy_level ?? 3)
       }
     }
   }, [user, profile, updateProfile])
