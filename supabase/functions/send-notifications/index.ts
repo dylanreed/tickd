@@ -3,10 +3,89 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import * as webpush from 'jsr:@negrel/webpush'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+const VAPID_PUBLIC_KEY = Deno.env.get('VAPID_PUBLIC_KEY')!
+const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY')!
+
+/**
+ * Converts base64url VAPID keys to JWK format for use with @negrel/webpush.
+ * The standard web-push keys are P-256 ECDSA keys in raw format.
+ */
+function base64UrlToBuffer(base64url: string): Uint8Array {
+  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/')
+  const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4)
+  const binary = atob(padded)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return bytes
+}
+
+function bufferToBase64Url(buffer: Uint8Array): string {
+  let binary = ''
+  for (let i = 0; i < buffer.length; i++) {
+    binary += String.fromCharCode(buffer[i])
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+/**
+ * Creates JWK format VAPID keys from base64url encoded keys.
+ * Public key is 65 bytes (0x04 || x || y), private key is 32 bytes (d).
+ */
+function createVapidJwk() {
+  const publicKeyBytes = base64UrlToBuffer(VAPID_PUBLIC_KEY)
+  const privateKeyBytes = base64UrlToBuffer(VAPID_PRIVATE_KEY)
+
+  // Public key format: 0x04 || x (32 bytes) || y (32 bytes)
+  const x = publicKeyBytes.slice(1, 33)
+  const y = publicKeyBytes.slice(33, 65)
+
+  return {
+    publicKey: {
+      kty: 'EC',
+      crv: 'P-256',
+      x: bufferToBase64Url(x),
+      y: bufferToBase64Url(y),
+    },
+    privateKey: {
+      kty: 'EC',
+      crv: 'P-256',
+      x: bufferToBase64Url(x),
+      y: bufferToBase64Url(y),
+      d: bufferToBase64Url(privateKeyBytes),
+    },
+  }
+}
+
+// Application server instance (initialized lazily)
+let appServer: webpush.ApplicationServer | null = null
+
+let vapidDebug = ''
+
+async function getAppServer(): Promise<webpush.ApplicationServer> {
+  if (!appServer) {
+    try {
+      const jwk = createVapidJwk()
+      vapidDebug = `Public key x len: ${jwk.publicKey.x.length}, y len: ${jwk.publicKey.y.length}, d len: ${jwk.privateKey.d.length}`
+      const vapidKeys = await webpush.importVapidKeys(jwk)
+      appServer = await webpush.ApplicationServer.new({
+        contactInformation: 'mailto:tick@tick-d.com',
+        vapidKeys,
+      })
+      vapidDebug += ' - Server created OK'
+    } catch (err) {
+      vapidDebug = `VAPID init error: ${err instanceof Error ? err.message : String(err)}`
+      throw err
+    }
+  }
+  return appServer
+}
 
 const MS_IN_HOUR = 1000 * 60 * 60
 const MS_IN_DAY = MS_IN_HOUR * 24
@@ -131,6 +210,8 @@ function getMessage(
 /**
  * Sends an email notification via Resend API.
  */
+let lastEmailError = ''
+
 async function sendEmail(to: string, subject: string, body: string): Promise<boolean> {
   try {
     const response = await fetch('https://api.resend.com/emails', {
@@ -140,15 +221,77 @@ async function sendEmail(to: string, subject: string, body: string): Promise<boo
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Tick <tick@updates.liars.todo>',
+        from: 'Tick <tick@tick-d.com>',
         to: [to],
         subject,
         text: body,
       }),
     })
+    if (!response.ok) {
+      const errorBody = await response.text()
+      lastEmailError = `Status ${response.status}: ${errorBody}`
+      console.error('Email API error:', lastEmailError)
+    }
     return response.ok
   } catch (err) {
+    lastEmailError = String(err)
     console.error('Failed to send email:', err)
+    return false
+  }
+}
+
+/**
+ * Sends a browser push notification via @negrel/webpush library.
+ */
+let lastPushError = ''
+
+async function sendPushNotification(
+  subscription: PushSubscription,
+  title: string,
+  body: string,
+  taskId: string
+): Promise<boolean> {
+  try {
+    console.log('Attempting to send push to:', subscription.endpoint.substring(0, 50) + '...')
+    const server = await getAppServer()
+
+    // Create subscription object in web push format
+    const pushSubscription = {
+      endpoint: subscription.endpoint,
+      keys: {
+        p256dh: subscription.p256dh_key,
+        auth: subscription.auth_key,
+      },
+    }
+
+    // Create subscriber and send message
+    const subscriber = server.subscribe(pushSubscription)
+    const payload = JSON.stringify({
+      title,
+      body,
+      taskId,
+      url: 'https://liars.todo',
+    })
+
+    console.log('Sending push message with payload length:', payload.length)
+    await subscriber.pushTextMessage(payload, {})
+    console.log('Push notification sent successfully')
+    return true
+  } catch (err) {
+    // Handle PushMessageError from @negrel/webpush which has a response property
+    const errWithResponse = err as { response?: Response }
+    if (errWithResponse.response instanceof Response) {
+      const text = await errWithResponse.response.text().catch(() => 'no body')
+      lastPushError = `HTTP ${errWithResponse.response.status}: ${text}`
+    } else if (err instanceof Response) {
+      const text = await err.text().catch(() => 'no body')
+      lastPushError = `HTTP ${err.status}: ${text}`
+    } else if (err instanceof Error) {
+      lastPushError = `${err.constructor.name}: ${err.message}`
+    } else {
+      lastPushError = `${typeof err}: ${JSON.stringify(err)}`
+    }
+    console.error('Failed to send push notification:', lastPushError)
     return false
   }
 }
@@ -244,13 +387,26 @@ serve(async (_req) => {
     })
 
     let notificationsSent = 0
+    const debugInfo: string[] = []
+
+    debugInfo.push(`Tasks: ${tasks.length}, Profiles: ${profileMap.size}, Push subs: ${subscriptionMap.size}`)
+    debugInfo.push(`VAPID: ${vapidDebug || 'not initialized yet'}`)
+    console.log(`Processing ${tasks.length} tasks, ${profileMap.size} profiles, ${subscriptionMap.size} users with push subs`)
 
     for (const task of tasks) {
+      console.log(`Task: ${task.title}, due: ${task.real_due_date}`)
+
       // Skip postponed tasks
-      if (postponedTasks.has(task.id)) continue
+      if (postponedTasks.has(task.id)) {
+        console.log('  -> Skipped: postponed')
+        continue
+      }
 
       const profile = profileMap.get(task.user_id)
-      if (!profile || profile.notification_preferences === 'none') continue
+      if (!profile || profile.notification_preferences === 'none') {
+        console.log('  -> Skipped: no profile or notifications disabled')
+        continue
+      }
 
       // Validate email before proceeding
       if (!profile.email || !profile.email.includes('@')) {
@@ -260,6 +416,8 @@ serve(async (_req) => {
 
       const fakeDueDate = calculateFakeDueDate(new Date(task.real_due_date), profile.reliability_score)
       const tier = getNotificationTier(fakeDueDate)
+      debugInfo.push(`${task.title}: fake=${fakeDueDate.toISOString()}, tier=${tier}`)
+      console.log(`  -> Fake due: ${fakeDueDate.toISOString()}, tier: ${tier}`)
       if (!tier) continue
 
       // Check if already sent this tier (for 4_day and 1_day which are one-time)
@@ -281,8 +439,10 @@ serve(async (_req) => {
 
       // Send email (only for 4_day and 1_day tiers to avoid spam)
       if ((prefs === 'email' || prefs === 'both') && (tier === '4_day' || tier === '1_day')) {
+        debugInfo.push(`Sending email to ${profile.email} for ${task.title}`)
         const emailBody = `${message.body}\n\nView your tasks: https://liars.todo\n\n- Tick`
         const success = await sendEmail(profile.email, `${message.title}: ${task.title}`, emailBody)
+        debugInfo.push(`Email result: ${success}${success ? '' : ` (${lastEmailError})`}`)
         if (success) {
           const { error: logError } = await supabase.from('notification_log').insert({
             task_id: task.id,
@@ -298,29 +458,35 @@ serve(async (_req) => {
         }
       }
 
-      // Log browser notification intent (actual push sending requires web-push library)
-      // Browser push implementation will be completed in Task 11 with VAPID key setup
+      // Send browser push notifications
       if (prefs === 'browser' || prefs === 'both') {
         const userSubs = subscriptionMap.get(task.user_id) || []
-        if (userSubs.length > 0) {
-          // TODO: Implement actual web-push sending with VAPID keys in Task 11
-          const { error: logError } = await supabase.from('notification_log').insert({
-            task_id: task.id,
-            user_id: task.user_id,
-            notification_type: tier,
-            channel: 'browser',
-          })
-          if (logError) {
-            console.error('Failed to log browser notification:', logError)
-          } else {
-            notificationsSent++
+        debugInfo.push(`Push subs for user: ${userSubs.length}`)
+        for (const sub of userSubs) {
+          debugInfo.push(`Sending push for ${task.title}`)
+          const success = await sendPushNotification(sub, message.title, message.body, task.id)
+          debugInfo.push(`Push result: ${success}${success ? '' : ` (${lastPushError})`}`)
+          if (vapidDebug && !debugInfo.includes(`VAPID: ${vapidDebug}`)) {
+            debugInfo[1] = `VAPID: ${vapidDebug}`
           }
-          console.log(`Would send browser push to ${profile.email}: ${message.body}`)
+          if (success) {
+            const { error: logError } = await supabase.from('notification_log').insert({
+              task_id: task.id,
+              user_id: task.user_id,
+              notification_type: tier,
+              channel: 'browser',
+            })
+            if (logError) {
+              console.error('Failed to log browser notification:', logError)
+            } else {
+              notificationsSent++
+            }
+          }
         }
       }
     }
 
-    return new Response(JSON.stringify({ success: true, notificationsSent }), {
+    return new Response(JSON.stringify({ success: true, notificationsSent, debug: debugInfo }), {
       headers: { 'Content-Type': 'application/json' },
     })
   } catch (err) {
