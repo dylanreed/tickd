@@ -2,18 +2,24 @@
 // ABOUTME: Handles incoming push events and notification clicks.
 
 self.addEventListener('push', (event) => {
-  if (!event.data) return
+  console.log('Push event received:', event)
+  console.log('Push data:', event.data)
 
-  let data
-  try {
-    data = event.data.json()
-  } catch (err) {
-    console.error('Failed to parse push notification data:', err)
-    return
+  let data = {}
+  if (event.data) {
+    try {
+      data = event.data.json()
+      console.log('Parsed JSON data:', data)
+    } catch (err) {
+      // If JSON parse fails, try text
+      const text = event.data.text()
+      console.log('Push data as text:', text)
+      data = { title: 'Tick Reminder', body: text }
+    }
   }
 
   const options = {
-    body: data.body,
+    body: data.body || 'You have a task reminder',
     icon: '/icon-192.svg',
     badge: '/icon-192.svg',
     tag: data.tag || 'tick-notification',
@@ -24,8 +30,12 @@ self.addEventListener('push', (event) => {
     requireInteraction: data.requireInteraction || false,
   }
 
+  console.log('Showing notification with options:', options)
+
   event.waitUntil(
     self.registration.showNotification(data.title || 'Tick Reminder', options)
+      .then(() => console.log('Notification shown successfully'))
+      .catch((err) => console.error('Failed to show notification:', err))
   )
 })
 
