@@ -76,30 +76,75 @@
 
           <!-- Main Message -->
           <tr>
-            <td style="padding: 25px 30px; font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;">
-              Someone (hopefully you) requested access to your Tick account. Click the button below to sign in. This link expires in 24 hours.
+            <td style="padding: 25px 30px 15px 30px; font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;">
+              Someone (hopefully you) requested access to your Tick account.
+            </td>
+          </tr>
+
+          <!-- OTP Code Box -->
+          <tr>
+            <td align="center" style="padding: 0 30px 20px 30px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="
+                    background-color: #1a1a1a;
+                    padding: 20px;
+                    text-align: center;
+                  ">
+                    <div style="
+                      font-family: 'Courier New', Courier, monospace;
+                      font-size: 11px;
+                      font-weight: bold;
+                      color: #8b7355;
+                      text-transform: uppercase;
+                      letter-spacing: 2px;
+                      margin-bottom: 12px;
+                    ">Your login code</div>
+                    <div style="
+                      font-family: 'Courier New', Courier, monospace;
+                      font-size: 36px;
+                      font-weight: bold;
+                      color: #f5f0e6;
+                      letter-spacing: 8px;
+                    ">{{ .Token }}</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Or divider -->
+          <tr>
+            <td align="center" style="padding: 0 30px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="border-bottom: 1px solid #d4cfc4; width: 45%;"></td>
+                  <td style="font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #8b7355; text-align: center; padding: 0 10px;">or</td>
+                  <td style="border-bottom: 1px solid #d4cfc4; width: 45%;"></td>
+                </tr>
+              </table>
             </td>
           </tr>
 
           <!-- CTA Button -->
           <tr>
-            <td align="center" style="padding: 10px 30px 30px 30px;">
+            <td align="center" style="padding: 20px 30px 30px 30px;">
               <table role="presentation" cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="
-                    background-color: #1a1a1a;
-                    border-radius: 0;
-                    padding: 14px 32px;
+                    background-color: #f5f0e6;
+                    border: 2px solid #1a1a1a;
+                    padding: 12px 28px;
                   ">
                     <a href="{{ .ConfirmationURL }}" style="
                       font-family: 'Courier New', Courier, monospace;
-                      font-size: 14px;
+                      font-size: 13px;
                       font-weight: bold;
-                      color: #f5f0e6;
+                      color: #1a1a1a;
                       text-decoration: none;
                       text-transform: uppercase;
                       letter-spacing: 1px;
-                    ">SIGN IN TO TICK &rarr;</a>
+                    ">Click to sign in &rarr;</a>
                   </td>
                 </tr>
               </table>
@@ -118,7 +163,7 @@
           <!-- Footer -->
           <tr>
             <td style="background-color: #e8e4dc; padding: 20px 30px; font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #8b7355; text-align: center;">
-              This link will expire in 24 hours.
+              Code expires in 1 hour.
               <br><br>
               <a href="https://tick-d.com" style="color: #8b7355;">tick-d.com</a>
             </td>
