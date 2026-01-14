@@ -18,8 +18,8 @@ import SpicinessModal from './components/SpicinessModal'
 // Set to true to show landing page, false to show the app
 const SHOW_LANDING_PAGE = import.meta.env.VITE_SHOW_LANDING_PAGE !== 'false'
 
-const ONBOARDING_KEY = 'liars-todo-onboarding-complete'
-const SPICY_LEVEL_KEY = 'liars-todo-spicy-level'
+const ONBOARDING_KEY = 'tickd-onboarding-complete'
+const SPICY_LEVEL_KEY = 'tickd-spicy-level'
 
 function DevPreview() {
   const [spicinessModalOpen, setSpicinessModalOpen] = useState(false)

@@ -1,6 +1,7 @@
 // ABOUTME: Hook for checking subscription status and lock state.
 // ABOUTME: Determines if user can access app based on trial/subscription.
 
+import { useState, useEffect } from 'react'
 import { useProfile } from './useProfile'
 
 export type SubscriptionStatus = 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired'
@@ -13,8 +14,20 @@ interface SubscriptionHookResult {
   loading: boolean
 }
 
+// Check every minute for trial expiration
+const EXPIRATION_CHECK_INTERVAL = 60 * 1000
+
 export function useSubscription(): SubscriptionHookResult {
   const { profile, loading } = useProfile()
+  // Force re-render periodically to re-check trial expiration
+  const [, forceUpdate] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      forceUpdate(t => t + 1)
+    }, EXPIRATION_CHECK_INTERVAL)
+    return () => clearInterval(interval)
+  }, [])
 
   if (loading || !profile) {
     return {

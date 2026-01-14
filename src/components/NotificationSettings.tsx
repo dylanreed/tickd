@@ -10,18 +10,20 @@ export default function NotificationSettings() {
   const { permissionState, isSubscribed, isSupported, subscribe, unsubscribe, loading } =
     usePushSubscription()
   const [saving, setSaving] = useState(false)
+  const [browserError, setBrowserError] = useState<string | null>(null)
 
   if (!profile) return null
 
   const prefs = profile.notification_preferences
 
   const handleBrowserToggle = async () => {
+    setBrowserError(null)
     if (isSubscribed) {
       await unsubscribe()
     } else {
       const result = await subscribe()
       if (result.error) {
-        alert(result.error.message)
+        setBrowserError(result.error.message)
       }
     }
   }
@@ -82,6 +84,9 @@ export default function NotificationSettings() {
             </button>
           )}
         </div>
+        {browserError && (
+          <p className="text-sm text-coral mt-2">{browserError}</p>
+        )}
       </div>
 
       {/* Email Notifications */}

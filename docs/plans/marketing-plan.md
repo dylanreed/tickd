@@ -1,4 +1,4 @@
-# Liars Todo - Marketing Plan
+# Tickd - Marketing Plan
 
 ## Brand Identity & Positioning
 
@@ -27,10 +27,10 @@
 "Other productivity apps shame you for being bad at deadlines. We just lie to you instead. It's called strategy."
 
 ### Differentiator
-Every other todo app is trying to fix you. Liars Todo accepts that you're a chaos goblin and works WITH your broken brain, not against it.
+Every other todo app is trying to fix you. Tickd accepts that you're a chaos goblin and works WITH your broken brain, not against it.
 
 ### The Elevator Pitch
-"You know how you only do things when they're urgent? Liars Todo shows you fake earlier deadlines so everything feels urgent. The worse you are at deadlines, the more we lie. You can't handle the truth, so we handle it for you."
+"You know how you only do things when they're urgent? Tickd shows you fake earlier deadlines so everything feels urgent. The worse you are at deadlines, the more we lie. You can't handle the truth, so we handle it for you."
 
 ### Hero Moment (for landing page/ads)
 Screenshot of the app showing "DUE IN 3 HOURS" with an unhinged notification, then the reveal: "You finished 2 days early! (You thought you had 3 hours. You had 3 days. You're welcome.)"
@@ -43,8 +43,8 @@ Screenshot of the app showing "DUE IN 3 HOURS" with an unhinged notification, th
 
 - [ ] Go to Namecheap or your preferred registrar
 - [ ] Search for these domains in order of preference:
-  - `liarsto.do`
-  - `liarstodo.com`
+  - `tick-d.com`
+  - `tick-d.com`
   - `liarstodo.app`
   - `youcanthandlethe.truth` (probably not real but check)
   - `canthandlethetruth.app`
@@ -105,7 +105,7 @@ Don't stare at a blank page. Copy/paste these and edit:
 
 - [ ] Go to Buttondown.email (free, simple) or ConvertKit or Mailchimp
 - [ ] Create an account
-- [ ] Create a new list called "Liars Todo Waitlist"
+- [ ] Create a new list called "Tickd Waitlist"
 - [ ] Get the embed code or API endpoint
 - [ ] Add it to your landing page
 - [ ] Test it with your own email
@@ -145,11 +145,11 @@ Don't stare at a blank page. Copy/paste these and edit:
 ### Phase 2A: Account Setup (30 minutes)
 
 - [ ] Decide: new account or use existing?
-  - New account: @LiarsTodo, @LiarsToDoApp, @CantHandleTruth
+  - New account: @TickdApp, @LiarsToDoApp, @CantHandleTruth
   - Existing: fine if you have followers, just know it becomes "the app account"
 - [ ] Create account if new
-- [ ] Username: try @LiarsTodo first
-- [ ] Display name: "Liars Todo" or "Liars Todo 🤥" (one emoji max)
+- [ ] Username: try @TickdApp first
+- [ ] Display name: "Tickd" or "Tickd 🤥" (one emoji max)
 - [ ] Write bio (160 chars max):
   ```
   A todo app that lies to you about deadlines because you can't handle the truth. Built for chaos goblins. Coming soon.
@@ -166,12 +166,12 @@ Don't stare at a blank page. Copy/paste these and edit:
 - [ ] Post it
 
 **Day 2 - The Problem**
-- [ ] Write tweet: "Neurotypical productivity advice: 'Just do the task when you remember it!' My brain: forgets the task exists for 3 weeks then does it in a 2am panic That's why I'm building @LiarsTodo"
+- [ ] Write tweet: "Neurotypical productivity advice: 'Just do the task when you remember it!' My brain: forgets the task exists for 3 weeks then does it in a 2am panic That's why I'm building @TickdApp"
 - [ ] Schedule it
 
 **Day 3 - How It Works**
 - [ ] Write tweet thread (3-4 tweets):
-  - Tweet 1: "How Liars Todo works: a thread for my fellow chaos goblins 🧵"
+  - Tweet 1: "How Tickd works: a thread for my fellow chaos goblins 🧵"
   - Tweet 2: "1. You add a task with the REAL deadline. 'Report due Friday.'"
   - Tweet 3: "2. I show you a FAKE earlier deadline. 'Report due WEDNESDAY (tick tock)' You panic."
   - Tweet 4: "3. You finish 'just in time' on Wednesday. I reveal: 'You finished 2 days early! I lied. You're welcome.' Dopamine achieved. 🎉"
@@ -188,7 +188,7 @@ Don't stare at a blank page. Copy/paste these and edit:
 
 **Day 6 - Spiciness Reveal**
 - [ ] Create an image showing the 5 spiciness levels
-- [ ] Write tweet: "Liars Todo lets you choose how mean the app is to you. Introducing: the Spiciness Slider 🌶️ Level 1: 'oh no baby what is you doing' Level 5: 'I'M DMING ALL YOUR EXES ABOUT THIS' Which level are you?"
+- [ ] Write tweet: "Tickd lets you choose how mean the app is to you. Introducing: the Spiciness Slider 🌶️ Level 1: 'oh no baby what is you doing' Level 5: 'I'M DMING ALL YOUR EXES ABOUT THIS' Which level are you?"
 - [ ] Schedule it
 
 **Day 7 - Rest or Bonus**
@@ -241,7 +241,7 @@ Repeat this pattern, rotating through content types:
 ### Phase 2E: Prepare Launch Day Assets
 
 - [ ] Write your launch thread (8-10 tweets) in advance:
-  - Tweet 1: "It's here. Liars Todo - a productivity app that lies to you about deadlines because you can't handle the truth. 🧵"
+  - Tweet 1: "It's here. Tickd - a productivity app that lies to you about deadlines because you can't handle the truth. 🧵"
   - Tweet 2: The problem (ADHD brains + deadlines)
   - Tweet 3: The solution (lie about everything)
   - Tweet 4: How it works (with image)
@@ -263,8 +263,8 @@ Repeat this pattern, rotating through content types:
 
 - [ ] Download TikTok if you don't have it
 - [ ] Create account
-- [ ] Username: @liarstodo or similar
-- [ ] Display name: Liars Todo
+- [ ] Username: @tickdapp or similar
+- [ ] Display name: Tickd
 - [ ] Bio: "A todo app that lies to you about deadlines 🤥 Because you can't handle the truth"
 - [ ] Add website link (when you have 1k followers you can add clickable link, until then put it in bio text)
 - [ ] Switch to "Business Account" for analytics
@@ -479,7 +479,7 @@ Repeat this pattern, rotating through content types:
 
 **Create the Ship page:**
 - [ ] Go to producthunt.com/ship
-- [ ] Create a "coming soon" page for Liars Todo
+- [ ] Create a "coming soon" page for Tickd
 - [ ] Add logo, name, tagline
 - [ ] Add description
 - [ ] Add your Twitter/social links
@@ -492,7 +492,7 @@ Repeat this pattern, rotating through content types:
 - [ ] Find them on Twitter
 - [ ] Engage with their content (genuinely)
 - [ ] When appropriate, DM asking if they'd be interested in hunting your app
-- [ ] Pitch: "I built a todo app that psychologically manipulates users into productivity. It's called Liars Todo. Would you be interested in hunting it?"
+- [ ] Pitch: "I built a todo app that psychologically manipulates users into productivity. It's called Tickd. Would you be interested in hunting it?"
 
 **Option B: Hunt it yourself**
 - [ ] This is fine if you've built Twitter following
@@ -513,7 +513,7 @@ Repeat this pattern, rotating through content types:
 - [ ] Tagline (60 chars max): "A todo app that lies because you can't handle the truth"
 - [ ] Short description (260 chars max):
   ```
-  Liars Todo shows fake earlier deadlines to create artificial urgency. The worse you are at deadlines, the more we lie. Choose your roast level from gentle to unhinged. Finally, an app that works WITH your chaos goblin brain.
+  Tickd shows fake earlier deadlines to create artificial urgency. The worse you are at deadlines, the more we lie. Choose your roast level from gentle to unhinged. Finally, an app that works WITH your chaos goblin brain.
   ```
 - [ ] Full description (see earlier in this doc)
 - [ ] Maker comment (personal story, why you built it)
@@ -522,7 +522,7 @@ Repeat this pattern, rotating through content types:
 
 **Rally your troops:**
 - [ ] Make a list of everyone who might support your launch
-- [ ] Twitter followers who've engaged with Liars Todo content
+- [ ] Twitter followers who've engaged with Tickd content
 - [ ] Friends and family (who have PH accounts or will make them)
 - [ ] Fellow indie hackers you've connected with
 - [ ] Any ADHD creators who've shown interest
@@ -530,7 +530,7 @@ Repeat this pattern, rotating through content types:
 **Prepare outreach messages:**
 - [ ] Write a template DM:
   ```
-  Hey! I'm launching Liars Todo on Product Hunt next [Tuesday]. It's a todo app that lies to you about deadlines because some of us (me) only function under pressure.
+  Hey! I'm launching Tickd on Product Hunt next [Tuesday]. It's a todo app that lies to you about deadlines because some of us (me) only function under pressure.
 
   Would love your support on launch day - an upvote and comment would mean a lot! I'll send you the link right when it goes live.
   ```
@@ -640,8 +640,8 @@ Repeat this pattern, rotating through content types:
 - [ ] Landing page host (Carrd, Vercel, Netlify)
 - [ ] Email service (Buttondown, ConvertKit)
 - [ ] Analytics (Plausible, Vercel Analytics)
-- [ ] Twitter/X: @liarstodo
-- [ ] TikTok: @liarstodo
+- [ ] Twitter/X: @tickdapp
+- [ ] TikTok: @tickdapp
 - [ ] Product Hunt account
 - [ ] Reddit account (if new)
 - [ ] Optional: Instagram for reposting Reels

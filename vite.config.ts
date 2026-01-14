@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon-192.svg', 'icon-512.svg'],
       manifest: {
-        name: 'Liars Todo',
-        short_name: 'Liars',
-        description: 'A todo app that lies about due dates for your own good',
+        name: 'Tickd',
+        short_name: 'Tickd',
+        description: 'The todo app that keeps you on track',
         theme_color: '#1f2937',
         background_color: '#f3f4f6',
         display: 'standalone',

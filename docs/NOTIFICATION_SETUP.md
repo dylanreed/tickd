@@ -1,6 +1,6 @@
 # Notification System Setup
 
-This guide covers the setup required for Liars Todo's notification system, including push notifications and scheduled email reminders.
+This guide covers the setup required for Tickd's notification system, including push notifications and scheduled email reminders.
 
 ## Prerequisites
 

@@ -40,7 +40,12 @@ export default function SubscriptionSettings() {
       } else if (data?.error) {
         setError(data.error)
       } else if (data?.url) {
-        window.location.href = data.url
+        // Validate URL is a legitimate Stripe checkout URL
+        if (data.url.startsWith('https://checkout.stripe.com/')) {
+          window.location.href = data.url
+        } else {
+          setError('Invalid checkout URL')
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start checkout')
@@ -49,9 +54,34 @@ export default function SubscriptionSettings() {
     }
   }
 
-  const handleManageSubscription = () => {
-    // Stripe Customer Portal URL - would need to be set up
-    window.open('https://billing.stripe.com/p/login/test', '_blank')
+  const handleManageSubscription = async () => {
+    setCheckoutLoading(true)
+    setError(null)
+
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('create-portal-session', {
+        body: {
+          return_url: `${window.location.origin}/#settings`,
+        },
+      })
+
+      if (fnError) {
+        setError(fnError.message)
+      } else if (data?.error) {
+        setError(data.error)
+      } else if (data?.url) {
+        // Validate URL is a legitimate Stripe portal URL
+        if (data.url.startsWith('https://billing.stripe.com/')) {
+          window.location.href = data.url
+        } else {
+          setError('Invalid portal URL')
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to open portal')
+    } finally {
+      setCheckoutLoading(false)
+    }
   }
 
   return (

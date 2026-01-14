@@ -1,4 +1,4 @@
-# Liars Todo - App Copy
+# Tickd - App Copy
 
 All in-app copy organized by flow and context.
 

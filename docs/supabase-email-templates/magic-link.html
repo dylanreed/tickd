@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in to Tick</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #e8e4dc; font-family: Georgia, 'Times New Roman', serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color: #e8e4dc;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+
+        <!-- Main Container - Manila Folder Look -->
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width: 560px; background-color: #f5f0e6; border: 1px solid #d4cfc4; box-shadow: 2px 2px 8px rgba(0,0,0,0.1);">
+
+          <!-- Red Top Bar -->
+          <tr>
+            <td style="background-color: #c41e3a; height: 4px;"></td>
+          </tr>
+
+          <!-- Stamp Area -->
+          <tr>
+            <td align="right" style="padding: 20px 30px 0 30px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="
+                    font-family: 'Courier New', Courier, monospace;
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #8b7355;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
+                    border: 3px solid #8b7355;
+                    padding: 8px 16px;
+                  ">
+                    ACCESS GRANTED
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Memo Header -->
+          <tr>
+            <td style="padding: 20px 30px 10px 30px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Courier New', Courier, monospace; font-size: 13px; color: #5a5a5a;">
+                <tr>
+                  <td style="padding-bottom: 4px;">
+                    <strong>TO:</strong>&nbsp;&nbsp;&nbsp;{{ .Email }}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-bottom: 4px;">
+                    <strong>FROM:</strong>&nbsp;Tick
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-bottom: 4px;">
+                    <strong>RE:</strong>&nbsp;&nbsp;&nbsp;<span style="text-decoration: underline; color: #1a1a1a;">Your Login Request</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Divider Line -->
+          <tr>
+            <td style="padding: 0 30px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="border-bottom: 2px solid #1a1a1a;"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Main Message -->
+          <tr>
+            <td style="padding: 25px 30px; font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;">
+              Someone (hopefully you) requested access to your Tick account. Click the button below to sign in. This link expires in 24 hours.
+            </td>
+          </tr>
+
+          <!-- CTA Button -->
+          <tr>
+            <td align="center" style="padding: 10px 30px 30px 30px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="
+                    background-color: #1a1a1a;
+                    border-radius: 0;
+                    padding: 14px 32px;
+                  ">
+                    <a href="{{ .ConfirmationURL }}" style="
+                      font-family: 'Courier New', Courier, monospace;
+                      font-size: 14px;
+                      font-weight: bold;
+                      color: #f5f0e6;
+                      text-decoration: none;
+                      text-transform: uppercase;
+                      letter-spacing: 1px;
+                    ">SIGN IN TO TICK &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Sign Off -->
+          <tr>
+            <td style="padding: 0 30px 25px 30px; font-family: Georgia, 'Times New Roman', serif; font-size: 15px; line-height: 1.5; color: #1a1a1a;">
+              See you inside,<br>
+              Tick<br><br>
+              <span style="font-size: 13px; color: #8b7355;">P.S. If you didn't request this, just ignore it. Someone probably typed your email by mistake. It happens.</span>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #e8e4dc; padding: 20px 30px; font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #8b7355; text-align: center;">
+              This link will expire in 24 hours.
+              <br><br>
+              <a href="https://tick-d.com" style="color: #8b7355;">tick-d.com</a>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

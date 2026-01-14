@@ -1,4 +1,4 @@
-# Liars Todo - Brand Guide
+# Tickd - Brand Guide
 
 ## Brand Overview
 
@@ -286,7 +286,7 @@ Soft, inviting pastels that contrast with the unhinged messaging. Like getting y
 ### Font Pairing Example
 
 ```
-LIARS TODO          <- Press Start 2P, Hot Pink
+TICKD               <- Press Start 2P, Hot Pink
 You can't handle    <- Nunito Bold, Soft Charcoal
 the truth.          <- Nunito Bold, Soft Charcoal
 

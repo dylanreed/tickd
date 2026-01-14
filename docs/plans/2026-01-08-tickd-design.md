@@ -1,4 +1,4 @@
-# Liars Todo - Design Document
+# Tickd - Design Document
 
 ## Overview
 

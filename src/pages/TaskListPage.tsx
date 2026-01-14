@@ -16,7 +16,7 @@ import Tick from '../components/Tick'
 import SpicinessModal from '../components/SpicinessModal'
 import SubscriptionLockOverlay from '../components/SubscriptionLockOverlay'
 
-const SPICY_LEVEL_KEY = 'liars-todo-spicy-level'
+const SPICY_LEVEL_KEY = 'tickd-spicy-level'
 
 interface CompletionData {
   taskTitle: string

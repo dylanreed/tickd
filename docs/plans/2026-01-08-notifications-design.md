@@ -2,7 +2,7 @@
 
 ## Overview
 
-A notification system for Liars Todo that sends escalating reminders via browser push and email. Notifications are based on the fake due date (not real), with tone varying by hinged/unhinged theme.
+A notification system for Tickd that sends escalating reminders via browser push and email. Notifications are based on the fake due date (not real), with tone varying by hinged/unhinged theme.
 
 ## Architecture
 

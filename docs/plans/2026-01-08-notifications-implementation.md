@@ -1484,7 +1484,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon-192.svg', 'icon-512.svg'],
       manifest: {
-        name: 'Liars Todo',
+        name: 'Tickd',
         short_name: 'Liars',
         description: 'A todo app that lies about due dates for your own good',
         theme_color: '#1f2937',
@@ -1672,7 +1672,7 @@ async function sendEmail(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Tick <tick@updates.liars.todo>',
+        from: 'Tick <tick@updates.tick-d.com>',
         to: [to],
         subject,
         text: body,
@@ -1805,7 +1805,7 @@ serve(async (req) => {
 
     // Send email (only for 4_day and 1_day tiers)
     if ((prefs === 'email' || prefs === 'both') && (tier === '4_day' || tier === '1_day')) {
-      const body = `${message.body}\n\nView your tasks: https://liars.todo\n\n- Tick`
+      const body = `${message.body}\n\nView your tasks: https://tick-d.com\n\n- Tick`
       const success = await sendEmail(profile.email, message.title + ': ' + task.title, body)
       if (success) {
         await supabase.from('notification_log').insert({

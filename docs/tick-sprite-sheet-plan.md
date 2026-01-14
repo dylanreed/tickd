@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines all the pixel art sprites needed to bring Tick, the Liars Todo mascot, to life. Tick is a warm brown alarm clock with a Pinocchio nose who serves as the app's always-present companion and notification deliverer.
+This document outlines all the pixel art sprites needed to bring Tick, the Tickd mascot, to life. Tick is a warm brown alarm clock with a Pinocchio nose who serves as the app's always-present companion and notification deliverer.
 
 ---
 

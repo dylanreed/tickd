@@ -43,7 +43,12 @@ export default function SubscriptionLockOverlay({ status }: SubscriptionLockOver
       } else if (data?.error) {
         setError(data.error)
       } else if (data?.url) {
-        window.location.href = data.url
+        // Validate URL is a legitimate Stripe checkout URL
+        if (data.url.startsWith('https://checkout.stripe.com/')) {
+          window.location.href = data.url
+        } else {
+          setError('Invalid checkout URL')
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start checkout')
