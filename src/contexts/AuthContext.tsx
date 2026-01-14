@@ -10,6 +10,8 @@ interface AuthContextType {
   session: Session | null
   loading: boolean
   signIn: (email: string) => Promise<{ error: Error | null }>
+  signInWithCode: (email: string) => Promise<{ error: Error | null }>
+  verifyCode: (email: string, code: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
 }
 
@@ -48,6 +50,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error }
   }
 
+  const signInWithCode = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+    })
+    return { error }
+  }
+
+  const verifyCode = async (email: string, code: string) => {
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: 'email',
+    })
+    return { error }
+  }
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     if (error) {
@@ -56,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, signIn, signInWithCode, verifyCode, signOut }}>
       {children}
     </AuthContext.Provider>
   )
