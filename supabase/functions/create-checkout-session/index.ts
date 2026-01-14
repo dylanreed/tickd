@@ -63,8 +63,8 @@ serve(async (req) => {
 
     // Parse request body for success/cancel URLs
     const body = await req.json().catch(() => ({}))
-    const successUrl = body.success_url || 'https://liars.todo/settings?success=true'
-    const cancelUrl = body.cancel_url || 'https://liars.todo/settings?canceled=true'
+    const successUrl = body.success_url || 'https://tickd.app/settings?success=true'
+    const cancelUrl = body.cancel_url || 'https://tickd.app/settings?canceled=true'
 
     // Create checkout session options
     const sessionOptions: Stripe.Checkout.SessionCreateParams = {
