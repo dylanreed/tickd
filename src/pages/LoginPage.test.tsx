@@ -100,11 +100,11 @@ describe('LoginPage', () => {
       expect(screen.getByText(/enter your code/i)).toBeInTheDocument()
     })
 
-    const codeInput = screen.getByPlaceholderText('000000')
-    fireEvent.change(codeInput, { target: { value: '123456' } })
+    const codeInput = screen.getByPlaceholderText('00000000')
+    fireEvent.change(codeInput, { target: { value: '12345678' } })
 
     await waitFor(() => {
-      expect(mockVerifyCode).toHaveBeenCalledWith('test@example.com', '123456')
+      expect(mockVerifyCode).toHaveBeenCalledWith('test@example.com', '12345678')
     })
   })
 
@@ -123,8 +123,8 @@ describe('LoginPage', () => {
       expect(screen.getByText(/enter your code/i)).toBeInTheDocument()
     })
 
-    const codeInput = screen.getByPlaceholderText('000000')
-    fireEvent.change(codeInput, { target: { value: '123456' } })
+    const codeInput = screen.getByPlaceholderText('00000000')
+    fireEvent.change(codeInput, { target: { value: '12345678' } })
 
     await waitFor(() => {
       expect(screen.getByText(/invalid code/i)).toBeInTheDocument()

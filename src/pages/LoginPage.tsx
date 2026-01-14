@@ -79,10 +79,10 @@ export default function LoginPage({ onBack }: LoginPageProps) {
   }
 
   const handleCodeChange = async (value: string) => {
-    const cleaned = value.replace(/\D/g, '').slice(0, 6)
+    const cleaned = value.replace(/\D/g, '').slice(0, 8)
     setCode(cleaned)
 
-    if (cleaned.length === 6) {
+    if (cleaned.length === 8) {
       setSubmitting(true)
       setError(null)
       const { error } = await verifyCode(email, cleaned)
@@ -171,8 +171,8 @@ export default function LoginPage({ onBack }: LoginPageProps) {
               autoComplete="one-time-code"
               value={code}
               onChange={(e) => handleCodeChange(e.target.value)}
-              placeholder="000000"
-              maxLength={6}
+              placeholder="00000000"
+              maxLength={8}
               className="w-full px-6 py-4 bg-clock-parchment text-clock-black placeholder-clock-black/40 border-3 border-clock-black focus:border-clock-red focus:outline-none mb-4 shadow-[3px_3px_0_0_#1c1917] focus:shadow-[1px_1px_0_0_#1c1917] focus:translate-x-0.5 focus:translate-y-0.5 transition-all font-mono text-center text-2xl tracking-[0.5em]"
               disabled={submitting}
               autoFocus
@@ -184,7 +184,7 @@ export default function LoginPage({ onBack }: LoginPageProps) {
 
             <button
               type="submit"
-              disabled={submitting || code.length !== 6}
+              disabled={submitting || code.length !== 8}
               className="w-full bg-clock-red text-clock-ivory font-bold py-4 px-6 border-3 border-clock-black hover:bg-clock-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[4px_4px_0_0_#1c1917] hover:shadow-[2px_2px_0_0_#1c1917] hover:translate-x-0.5 hover:translate-y-0.5 active:shadow-none active:translate-x-1 active:translate-y-1"
             >
               {submitting ? 'VERIFYING...' : 'VERIFY CODE'}
