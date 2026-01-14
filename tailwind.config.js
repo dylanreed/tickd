@@ -35,8 +35,8 @@ export default {
         'hinged-border': '#E5E7EB',
         'hinged-text': '#111827',
         'hinged-text-secondary': '#6B7280',
-        'hinged-accent': '#10B981',
-        'hinged-accent-hover': '#059669',
+        'hinged-accent': '#FD6D64',
+        'hinged-accent-hover': '#E85D4C',
         // Pixel O'Clock palette (landing page)
         'clock-black': '#1c1917',       // Clock hands, authoritative
         'clock-ivory': '#faf7f2',       // Aged clock face

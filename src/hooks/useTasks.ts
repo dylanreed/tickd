@@ -15,30 +15,44 @@ export function useTasks() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
-  const enrichTask = useCallback((task: Task): TaskWithFakeDate => {
+  const enrichTask = useCallback((task: Task, snoozedTaskIds: Set<string>): TaskWithFakeDate => {
     const reliabilityScore = profile?.reliability_score ?? 50
     const fakeDueDate = calculateFakeDueDate(new Date(task.real_due_date), reliabilityScore)
     return {
       ...task,
       fake_due_date: fakeDueDate,
       urgency: getUrgencyLevel(fakeDueDate),
+      is_snoozed: snoozedTaskIds.has(task.id),
     }
   }, [profile?.reliability_score])
 
   const fetchTasks = useCallback(async () => {
     if (!user) return
 
-    const { data, error } = await supabase
-      .from('tasks')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('real_due_date', { ascending: true })
+    // Fetch tasks and active excuses in parallel
+    const now = new Date().toISOString()
+    const [tasksResult, excusesResult] = await Promise.all([
+      supabase
+        .from('tasks')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('real_due_date', { ascending: true }),
+      supabase
+        .from('excuses')
+        .select('task_id')
+        .eq('user_id', user.id)
+        .gt('postponed_until', now),
+    ])
 
-    if (error) {
-      setError(error)
+    if (tasksResult.error) {
+      setError(tasksResult.error)
     } else {
       setError(null)
-      setTasks((data || []).map(d => enrichTask(d as Task)))
+      // Build set of snoozed task IDs
+      const snoozedTaskIds = new Set<string>(
+        (excusesResult.data || []).map(e => e.task_id)
+      )
+      setTasks((tasksResult.data || []).map(d => enrichTask(d as Task, snoozedTaskIds)))
     }
     setLoading(false)
   }, [user, enrichTask])
@@ -63,7 +77,7 @@ export function useTasks() {
       .single()
 
     if (!error && data) {
-      setTasks(prev => [...prev, enrichTask(data as Task)].sort(
+      setTasks(prev => [...prev, enrichTask(data as Task, new Set())].sort(
         (a, b) => new Date(a.real_due_date).getTime() - new Date(b.real_due_date).getTime()
       ))
     }
@@ -93,7 +107,7 @@ export function useTasks() {
       .single()
 
     if (!error && data) {
-      setTasks(prev => prev.map(t => t.id === taskId ? enrichTask(data as Task) : t))
+      setTasks(prev => prev.map(t => t.id === taskId ? enrichTask(data as Task, new Set()) : t))
     }
 
     const taskData = data as Task | null

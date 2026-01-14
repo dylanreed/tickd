@@ -17,6 +17,7 @@ export interface Task {
 export interface TaskWithFakeDate extends Task {
   fake_due_date: Date
   urgency: 'low' | 'medium' | 'high' | 'critical' | 'overdue'
+  is_snoozed: boolean
 }
 
 export interface CreateTaskInput {

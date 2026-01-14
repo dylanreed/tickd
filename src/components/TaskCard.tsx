@@ -107,7 +107,7 @@ export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme }
           {task.description && (
             <p className={`text-sm mt-1 line-clamp-2 ${isHinged ? 'text-hinged-text-secondary' : 'text-dusty-purple'}`}>{task.description}</p>
           )}
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
             <span className={`text-sm font-medium ${
               task.urgency === 'overdue'
                 ? (isHinged ? 'text-red-600' : 'text-hot-pink')
@@ -115,6 +115,16 @@ export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme }
             }`}>
               {timeRemaining === 'overdue' ? (isHinged ? 'Overdue' : 'OVERDUE') : `Due in ${timeRemaining}`}
             </span>
+            {task.is_snoozed && (
+              <span className={`text-xs px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                isHinged ? 'bg-blue-100 text-blue-700' : 'bg-clock-brass/30 text-clock-black'
+              }`}>
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {isHinged ? 'Snoozed' : 'snoozed'}
+              </span>
+            )}
             {task.category && (
               <span className={`text-xs px-2 py-0.5 rounded-full ${
                 isHinged ? 'bg-gray-100 text-hinged-text-secondary' : 'bg-lavender text-dusty-purple'

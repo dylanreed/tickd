@@ -20,6 +20,7 @@ const mockTask: TaskWithFakeDate = {
   // 2.5 days from now to ensure it shows as "2 days" even with timing variations
   fake_due_date: new Date(Date.now() + 2.5 * 24 * 60 * 60 * 1000),
   urgency: 'medium',
+  is_snoozed: false,
 }
 
 describe('TaskCard', () => {

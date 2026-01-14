@@ -84,10 +84,15 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-        {/* Tick greeting */}
-        <div className="flex items-center gap-4 bg-clock-ivory border-3 border-clock-black p-4 shadow-[4px_4px_0_0_#1c1917]">
-          <TickSprite expression="idle" size="sm" />
-          <div>
+        {/* Tick greeting with speech bubble */}
+        <div className="flex items-start gap-4">
+          <TickSprite expression="judgmental" size="md" className="flex-shrink-0" />
+          <div className="relative bg-clock-ivory border-3 border-clock-black p-4 shadow-[4px_4px_0_0_#1c1917]">
+            {/* Speech bubble tail */}
+            <div className="absolute left-0 top-6 -translate-x-full">
+              <div className="w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[12px] border-r-clock-black" />
+              <div className="absolute top-[3px] left-[3px] w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-r-[9px] border-r-clock-ivory" />
+            </div>
             <p className="text-clock-black font-bold">Adjusting my settings?</p>
             <p className="text-clock-black/60 text-sm font-mono">fine. but I'm still judging you.</p>
           </div>

@@ -22,13 +22,34 @@ const mockTasks = [
 
 vi.mock('../lib/supabase', () => ({
   supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          order: vi.fn(() => Promise.resolve({ data: mockTasks, error: null }))
-        }))
-      })),
-    }))
+    from: vi.fn((table: string) => {
+      if (table === 'tasks') {
+        return {
+          select: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              order: vi.fn(() => Promise.resolve({ data: mockTasks, error: null }))
+            }))
+          })),
+        }
+      }
+      if (table === 'excuses') {
+        return {
+          select: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              gt: vi.fn(() => Promise.resolve({ data: [], error: null }))
+            }))
+          })),
+        }
+      }
+      return {
+        select: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            order: vi.fn(() => Promise.resolve({ data: [], error: null })),
+            gt: vi.fn(() => Promise.resolve({ data: [], error: null }))
+          }))
+        })),
+      }
+    })
   }
 }))
 
