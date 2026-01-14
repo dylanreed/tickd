@@ -209,7 +209,7 @@ export default function Tick({
           transition-transform
           hover:scale-110
           active:scale-95
-          focus:outline-none focus:ring-2 focus:ring-hot-pink focus:ring-offset-2
+          focus:outline-none focus-visible:scale-110
           ${isAnimating ? "animate-bounce" : ""}
         `}
         aria-label="Tick the mascot - tap for a message"

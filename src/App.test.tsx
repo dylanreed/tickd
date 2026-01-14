@@ -22,8 +22,8 @@ describe('App', () => {
   it('shows landing page when not authenticated', async () => {
     render(<App />)
     await waitFor(() => {
-      expect(screen.getByText("TICK'D")).toBeInTheDocument()
-      expect(screen.getByText('Get Started')).toBeInTheDocument()
+      expect(screen.getByText(/YOUR BRAIN IS/)).toBeInTheDocument()
+      expect(screen.getAllByText('JOIN WAITLIST').length).toBeGreaterThan(0)
     })
   })
 })

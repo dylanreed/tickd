@@ -20,7 +20,7 @@ interface MakeExcuseResult {
   error?: string
 }
 
-const POSTPONE_HOURS = 6
+const POSTPONE_HOURS = 12
 const MIN_EXCUSE_LENGTH = 10
 
 export function useExcuses() {

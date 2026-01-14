@@ -111,7 +111,7 @@ describe('useExcuses', () => {
     expect(response!.data).toBeDefined()
   })
 
-  it('postpones notifications for 6 hours when making excuse', async () => {
+  it('postpones notifications for 12 hours when making excuse', async () => {
     const now = Date.now()
     vi.useFakeTimers()
     vi.setSystemTime(now)
@@ -127,13 +127,13 @@ describe('useExcuses', () => {
     expect(supabase.from).toHaveBeenCalledWith('excuses')
     expect(mockInsert).toHaveBeenCalled()
 
-    // Check that postponed_until is approximately 6 hours from now
+    // Check that postponed_until is approximately 12 hours from now
     const insertCall = mockInsert.mock.calls[0][0]
     const postponedUntil = new Date(insertCall.postponed_until).getTime()
-    const sixHoursFromNow = now + 6 * 60 * 60 * 1000
+    const twelveHoursFromNow = now + 12 * 60 * 60 * 1000
 
     // Allow 1 second tolerance
-    expect(Math.abs(postponedUntil - sixHoursFromNow)).toBeLessThan(1000)
+    expect(Math.abs(postponedUntil - twelveHoursFromNow)).toBeLessThan(1000)
 
     vi.useRealTimers()
   })

@@ -12,14 +12,14 @@ import secondarySprites256 from "../assets/tick/sprites/secondary_expressions_25
 const coreSpritesBySize = {
   sm: coreSprites48,
   md: coreSprites128,
-  lg: coreSprites128,
+  lg: coreSprites256,
   xl: coreSprites256,
 };
 
 const secondarySpritesBySize = {
   sm: secondarySprites48,
   md: secondarySprites128,
-  lg: secondarySprites128,
+  lg: secondarySprites256,
   xl: secondarySprites256,
 };
 

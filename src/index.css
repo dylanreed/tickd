@@ -68,6 +68,27 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
+/* Date input styling for unhinged mode */
+input[type="date"] {
+  position: relative;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Unhinged mode date inputs */
+.bg-clock-parchment input[type="date"]::-webkit-calendar-picker-indicator,
+.bg-clock-ivory input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.2);
+}
+
 /* Tick sprite animation */
 .tick-sprite-idle {
   background-size: 600% 100%;

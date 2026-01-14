@@ -189,14 +189,21 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
 
   return (
     <div className="min-h-screen bg-clock-parchment font-body flex flex-col items-center justify-center p-6">
-      {/* Progress dots */}
-      <div className="flex gap-2 mb-8">
+      {/* Progress tick marks */}
+      <div className="flex items-end gap-1.5 mb-8">
         {screens.map((_, i) => (
           <div
             key={i}
-            className={`w-3 h-3 border-2 border-clock-black transition-colors ${
-              i === step ? 'bg-clock-red' : i < step ? 'bg-clock-brass' : 'bg-clock-ivory'
+            className={`w-1 transition-all ${
+              i === step
+                ? 'h-5 bg-clock-red'
+                : i < step
+                  ? 'h-4 bg-clock-brass'
+                  : 'h-3 bg-clock-black/20'
             }`}
+            style={{
+              transform: i === step ? 'none' : `rotate(${(i - step) * 2}deg)`,
+            }}
           />
         ))}
       </div>
@@ -286,7 +293,7 @@ export default function OnboardingPage({ onComplete, onAddTask }: OnboardingPage
             />
             <div>
               <label className="block text-sm text-clock-black/60 mb-1 text-left font-mono">
-                Real deadline <span className="text-clock-red">(I'll lie about this)</span>
+                Due date <span className="text-clock-red">(we'll lie about this)</span>
               </label>
               <input
                 type="date"
