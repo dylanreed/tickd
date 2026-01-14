@@ -120,6 +120,12 @@ export default function LoginPage({ onBack }: LoginPageProps) {
           <p className="text-clock-black/60 mt-2 text-sm font-mono">
             click the link to enter · trust issues officially begin
           </p>
+          <button
+            onClick={() => setStep('code-entry')}
+            className="mt-6 text-clock-black/60 hover:text-clock-red text-sm font-mono transition-colors"
+          >
+            have a code? enter it here
+          </button>
         </div>
         <Tick
           totalTasks={0}
