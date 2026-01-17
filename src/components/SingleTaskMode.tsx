@@ -18,6 +18,7 @@ interface SingleTaskModeProps {
   userName?: string;
   totalTasks: number;
   overdueTasks: number;
+  showProgress?: boolean;
 }
 
 export default function SingleTaskMode({
@@ -32,6 +33,7 @@ export default function SingleTaskMode({
   userName,
   totalTasks,
   overdueTasks,
+  showProgress = true,
 }: SingleTaskModeProps) {
   const isHinged = theme === "hinged";
   const timeRemaining = formatTimeRemaining(task.fake_due_date);
@@ -69,42 +71,44 @@ export default function SingleTaskMode({
 
       {/* Main content */}
       <main className="max-w-2xl mx-auto px-4 py-8">
-        {/* Progress indicator */}
-        <div
-          className={`rounded-xl p-4 mb-6 ${
-            isHinged ? "bg-hinged-card border border-hinged-border" : "bg-cloud"
-          }`}
-        >
-          <p
-            className={`text-center text-sm mb-2 ${
-              isHinged ? "text-hinged-text-secondary" : "text-dusty-purple"
-            }`}
-          >
-            {isHinged
-              ? `Complete ${tasksRemaining} more task${tasksRemaining > 1 ? "s" : ""} to unlock your list`
-              : `${tasksRemaining} task${tasksRemaining > 1 ? "s" : ""} until FREEDOM`}
-          </p>
-          {/* Progress bar */}
+        {/* Progress indicator - only show if showProgress is true */}
+        {showProgress && (
           <div
-            className={`h-2 rounded-full overflow-hidden ${
-              isHinged ? "bg-gray-200" : "bg-lavender"
+            className={`rounded-xl p-4 mb-6 ${
+              isHinged ? "bg-hinged-card border border-hinged-border" : "bg-cloud"
             }`}
           >
-            <div
-              className={`h-full transition-all duration-500 ${
-                isHinged ? "bg-hinged-accent" : "bg-mint"
+            <p
+              className={`text-center text-sm mb-2 ${
+                isHinged ? "text-hinged-text-secondary" : "text-dusty-purple"
               }`}
-              style={{ width: `${progressPercent}%` }}
-            />
+            >
+              {isHinged
+                ? `Complete ${tasksRemaining} more task${tasksRemaining > 1 ? "s" : ""} to unlock your list`
+                : `${tasksRemaining} task${tasksRemaining > 1 ? "s" : ""} until FREEDOM`}
+            </p>
+            {/* Progress bar */}
+            <div
+              className={`h-2 rounded-full overflow-hidden ${
+                isHinged ? "bg-gray-200" : "bg-lavender"
+              }`}
+            >
+              <div
+                className={`h-full transition-all duration-500 ${
+                  isHinged ? "bg-hinged-accent" : "bg-mint"
+                }`}
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <p
+              className={`text-center text-xs mt-1 ${
+                isHinged ? "text-hinged-text-secondary" : "text-dusty-purple"
+              }`}
+            >
+              {tasksCompleted} / {totalRequired}
+            </p>
           </div>
-          <p
-            className={`text-center text-xs mt-1 ${
-              isHinged ? "text-hinged-text-secondary" : "text-dusty-purple"
-            }`}
-          >
-            {tasksCompleted} / {totalRequired}
-          </p>
-        </div>
+        )}
 
         {/* Task card - enlarged and centered */}
         <div

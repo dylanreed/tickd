@@ -44,13 +44,13 @@ export default function TaskListPage() {
   const [excuseTaskId, setExcuseTaskId] = useState<string | null>(null)
   const [escalationModalOpen, setEscalationModalOpen] = useState(false)
 
-  // Pick For Me hook
+  // Pick For Me hook - respect profile settings (default to true for backwards compatibility)
   const pickForMe = usePickForMe(
     tasks,
     profile?.reliability_score ?? 50,
     user?.id ?? null,
-    true, // enabled
-    true  // escalationEnabled
+    profile?.pick_for_me_enabled ?? true,
+    profile?.single_task_escalation_enabled ?? true
   )
 
   // Load spicy level - migrate from localStorage to DB if needed
@@ -212,6 +212,7 @@ export default function TaskListPage() {
           userName={userName}
           totalTasks={tasks.length}
           overdueTasks={overdueTasks.length}
+          showProgress={profile?.show_earnout_progress ?? true}
         />
         <CompletionModal
           isOpen={!!completionData}

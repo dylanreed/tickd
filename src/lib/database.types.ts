@@ -134,7 +134,10 @@ export type Database = {
           id: string
           notification_preferences: string
           onboarding_completed: boolean
+          pick_for_me_enabled: boolean
           reliability_score: number
+          show_earnout_progress: boolean
+          single_task_escalation_enabled: boolean
           spicy_level: number | null
           stripe_customer_id: string | null
           subscription_id: string | null
@@ -148,7 +151,10 @@ export type Database = {
           id: string
           notification_preferences?: string
           onboarding_completed?: boolean
+          pick_for_me_enabled?: boolean
           reliability_score?: number
+          show_earnout_progress?: boolean
+          single_task_escalation_enabled?: boolean
           spicy_level?: number | null
           stripe_customer_id?: string | null
           subscription_id?: string | null
@@ -162,7 +168,10 @@ export type Database = {
           id?: string
           notification_preferences?: string
           onboarding_completed?: boolean
+          pick_for_me_enabled?: boolean
           reliability_score?: number
+          show_earnout_progress?: boolean
+          single_task_escalation_enabled?: boolean
           spicy_level?: number | null
           stripe_customer_id?: string | null
           subscription_id?: string | null

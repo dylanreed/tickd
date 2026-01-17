@@ -18,6 +18,10 @@ export interface Profile {
   subscription_id: string | null
   onboarding_completed: boolean
   created_at: string
+  // Focus Tools settings
+  pick_for_me_enabled: boolean
+  single_task_escalation_enabled: boolean
+  show_earnout_progress: boolean
 }
 
 export function useProfile() {

@@ -3,6 +3,7 @@
 
 import NotificationSettings from '../components/NotificationSettings'
 import SubscriptionSettings from '../components/SubscriptionSettings'
+import FocusToolsSettings from '../components/FocusToolsSettings'
 import DeleteAccountSection from '../components/DeleteAccountSection'
 import { useProfile } from '../hooks/useProfile'
 import TickSprite from '../components/TickSprite'
@@ -48,6 +49,7 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
         <main className="max-w-2xl mx-auto px-4 py-6 space-y-8">
           <SubscriptionSettings />
           <NotificationSettings />
+          <FocusToolsSettings />
           <DeleteAccountSection />
 
           {/* Help link */}
@@ -110,6 +112,7 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
 
         <SubscriptionSettings />
         <NotificationSettings />
+        <FocusToolsSettings />
         <DeleteAccountSection />
 
         {/* Help link */}
