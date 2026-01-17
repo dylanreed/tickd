@@ -72,6 +72,7 @@ export function useTasks() {
         description: input.description ?? null,
         real_due_date: input.real_due_date,
         category: input.category ?? null,
+        estimated_minutes: input.estimated_minutes ?? null,
       } as never)
       .select()
       .single()

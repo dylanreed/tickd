@@ -1,19 +1,22 @@
 // ABOUTME: Form component for adding new tasks.
-// ABOUTME: Collects title, due date, optional category and description.
+// ABOUTME: Collects title, due date, optional category, description, and time estimate.
 
 import { useState, type FormEvent } from 'react'
 import type { CreateTaskInput } from '../types/task'
+import EstimatePrompt from './EstimatePrompt'
 
 interface AddTaskFormProps {
   onAdd: (task: CreateTaskInput) => Promise<{ error: Error | null }>
   theme: 'hinged' | 'unhinged'
+  showEstimation?: boolean
 }
 
-export default function AddTaskForm({ onAdd, theme }: AddTaskFormProps) {
+export default function AddTaskForm({ onAdd, theme, showEstimation = false }: AddTaskFormProps) {
   const [title, setTitle] = useState('')
   const [dueDate, setDueDate] = useState('')
   const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
+  const [estimatedMinutes, setEstimatedMinutes] = useState<number | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -29,6 +32,7 @@ export default function AddTaskForm({ onAdd, theme }: AddTaskFormProps) {
       real_due_date: new Date(dueDate).toISOString(),
       category: category.trim(),
       description: description.trim(),
+      estimated_minutes: estimatedMinutes ?? undefined,
     })
 
     if (error) {
@@ -38,6 +42,7 @@ export default function AddTaskForm({ onAdd, theme }: AddTaskFormProps) {
       setDueDate('')
       setCategory('')
       setDescription('')
+      setEstimatedMinutes(null)
     }
     setSubmitting(false)
   }
@@ -76,6 +81,13 @@ export default function AddTaskForm({ onAdd, theme }: AddTaskFormProps) {
           </div>
         </div>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" rows={2} className={`${inputClasses} resize-none`} />
+        {showEstimation && (
+          <EstimatePrompt
+            value={estimatedMinutes}
+            onChange={setEstimatedMinutes}
+            theme={theme}
+          />
+        )}
         {error && <p className={`text-sm ${isHinged ? 'text-red-600' : 'text-coral'}`}>{error}</p>}
         <button type="submit" disabled={submitting || !title.trim() || !dueDate} className={`w-full font-bold py-3 px-6 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
           isHinged

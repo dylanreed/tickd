@@ -1,5 +1,8 @@
 // ABOUTME: Modal showing the reveal when a task is completed.
-// ABOUTME: Displays real due date and how early/late the task was finished.
+// ABOUTME: Displays real due date, how early/late finished, and estimate comparison.
+
+import EstimateReveal from './EstimateReveal'
+import type { SpicyLevel } from '../data/pickForMeMessages'
 
 interface CompletionModalProps {
   isOpen: boolean
@@ -9,10 +12,25 @@ interface CompletionModalProps {
   completedAt: Date
   wasOnTime: boolean
   theme: 'hinged' | 'unhinged'
+  estimatedMinutes?: number | null
+  actualMinutes?: number | null
+  spicyLevel?: SpicyLevel
 }
 
-export default function CompletionModal({ isOpen, onClose, taskTitle, realDueDate, completedAt, wasOnTime, theme }: CompletionModalProps) {
+export default function CompletionModal({
+  isOpen,
+  onClose,
+  taskTitle,
+  realDueDate,
+  completedAt,
+  wasOnTime,
+  theme,
+  estimatedMinutes,
+  actualMinutes,
+  spicyLevel = 3,
+}: CompletionModalProps) {
   if (!isOpen) return null
+  const hasEstimate = estimatedMinutes && estimatedMinutes > 0 && actualMinutes && actualMinutes > 0
 
   const diffMs = realDueDate.getTime() - completedAt.getTime()
   const diffDays = Math.abs(Math.round(diffMs / (1000 * 60 * 60 * 24)))
@@ -46,7 +64,15 @@ export default function CompletionModal({ isOpen, onClose, taskTitle, realDueDat
           <p className="text-lg font-bold text-charcoal">{realDueDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
         <p className={`text-lg mb-6 font-medium ${wasOnTime ? 'text-charcoal' : 'text-coral'}`}>{message}</p>
-        <button onClick={onClose} className="bg-hot-pink text-cloud font-bold px-8 py-3 rounded-full hover:bg-coral transition-colors">{theme === 'unhinged' ? 'Nice.' : 'Close'}</button>
+        {hasEstimate && (
+          <EstimateReveal
+            estimatedMinutes={estimatedMinutes}
+            actualMinutes={actualMinutes}
+            spicyLevel={spicyLevel}
+            theme={theme}
+          />
+        )}
+        <button onClick={onClose} className={`bg-hot-pink text-cloud font-bold px-8 py-3 rounded-full hover:bg-coral transition-colors ${hasEstimate ? 'mt-4' : ''}`}>{theme === 'unhinged' ? 'Nice.' : 'Close'}</button>
       </div>
     </div>
   )

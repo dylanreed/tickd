@@ -28,6 +28,8 @@ interface CompletionData {
   realDueDate: Date
   completedAt: Date
   wasOnTime: boolean
+  estimatedMinutes: number | null
+  actualMinutes: number | null
 }
 
 export default function TaskListPage() {
@@ -124,11 +126,18 @@ export default function TaskListPage() {
     const { wasOnTime, realDueDate, completedAt } = await completeTask(taskId)
 
     if (wasOnTime !== undefined && realDueDate) {
+      // Calculate actual minutes if task was being tracked
+      // For now, we'll use the task's actual_minutes field if set
+      // In the future, this could come from useTaskEstimation
+      const actualMinutes = task.actual_minutes
+
       setCompletionData({
         taskTitle: task.title,
         realDueDate,
         completedAt: completedAt ?? new Date(),
         wasOnTime,
+        estimatedMinutes: task.estimated_minutes,
+        actualMinutes,
       })
       await adjustReliabilityScore(wasOnTime)
     }
@@ -222,6 +231,9 @@ export default function TaskListPage() {
           completedAt={completionData?.completedAt ?? new Date()}
           wasOnTime={completionData?.wasOnTime ?? true}
           theme={theme}
+          estimatedMinutes={completionData?.estimatedMinutes}
+          actualMinutes={completionData?.actualMinutes}
+          spicyLevel={spicyLevel as SpicyLevel}
         />
       </>
     )
@@ -276,7 +288,11 @@ export default function TaskListPage() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-        <AddTaskForm onAdd={addTask} theme={theme} />
+        <AddTaskForm
+          onAdd={addTask}
+          theme={theme}
+          showEstimation={profile?.estimation_prompts_enabled ?? false}
+        />
 
         {pendingTasks.length === 0 ? (
           <div className="text-center py-12">
@@ -321,6 +337,9 @@ export default function TaskListPage() {
         completedAt={completionData?.completedAt ?? new Date()}
         wasOnTime={completionData?.wasOnTime ?? true}
         theme={theme}
+        estimatedMinutes={completionData?.estimatedMinutes}
+        actualMinutes={completionData?.actualMinutes}
+        spicyLevel={spicyLevel as SpicyLevel}
       />
 
       <Tick
