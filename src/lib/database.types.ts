@@ -130,15 +130,21 @@ export type Database = {
       profiles: {
         Row: {
           ambient_timer_enabled: boolean
+          body_doubling_enabled: boolean
+          body_doubling_intensity: string
           brain_state_affects_spiciness: boolean
+          countdown_length: number
           created_at: string
           daily_checkin_enabled: boolean
           deadline_visuals: string
           email: string
+          environment_checklist: Json
           estimate_alerts_enabled: boolean
           estimation_prompts_enabled: boolean
           id: string
+          just_five_minutes_enabled: boolean
           milestone_alerts: string
+          momentum_builder_enabled: boolean
           notification_preferences: string
           onboarding_completed: boolean
           pick_for_me_enabled: boolean
@@ -146,25 +152,35 @@ export type Database = {
           show_earnout_progress: boolean
           single_task_escalation_enabled: boolean
           spicy_level: number | null
+          startup_ritual: Json
           stripe_customer_id: string | null
           subscription_id: string | null
           subscription_status: string
+          task_shrinking_enabled: boolean
           theme: string
           time_sessions_enabled: boolean
           time_tools_enabled: boolean
+          transition_prompts_enabled: boolean
           trial_ends_at: string | null
+          warmup_streak_size: number
         }
         Insert: {
           ambient_timer_enabled?: boolean
+          body_doubling_enabled?: boolean
+          body_doubling_intensity?: string
           brain_state_affects_spiciness?: boolean
+          countdown_length?: number
           created_at?: string
           daily_checkin_enabled?: boolean
           deadline_visuals?: string
           email: string
+          environment_checklist?: Json
           estimate_alerts_enabled?: boolean
           estimation_prompts_enabled?: boolean
           id: string
+          just_five_minutes_enabled?: boolean
           milestone_alerts?: string
+          momentum_builder_enabled?: boolean
           notification_preferences?: string
           onboarding_completed?: boolean
           pick_for_me_enabled?: boolean
@@ -172,25 +188,35 @@ export type Database = {
           show_earnout_progress?: boolean
           single_task_escalation_enabled?: boolean
           spicy_level?: number | null
+          startup_ritual?: Json
           stripe_customer_id?: string | null
           subscription_id?: string | null
           subscription_status?: string
+          task_shrinking_enabled?: boolean
           theme?: string
           time_sessions_enabled?: boolean
           time_tools_enabled?: boolean
+          transition_prompts_enabled?: boolean
           trial_ends_at?: string | null
+          warmup_streak_size?: number
         }
         Update: {
           ambient_timer_enabled?: boolean
+          body_doubling_enabled?: boolean
+          body_doubling_intensity?: string
           brain_state_affects_spiciness?: boolean
+          countdown_length?: number
           created_at?: string
           daily_checkin_enabled?: boolean
           deadline_visuals?: string
           email?: string
+          environment_checklist?: Json
           estimate_alerts_enabled?: boolean
           estimation_prompts_enabled?: boolean
           id?: string
+          just_five_minutes_enabled?: boolean
           milestone_alerts?: string
+          momentum_builder_enabled?: boolean
           notification_preferences?: string
           onboarding_completed?: boolean
           pick_for_me_enabled?: boolean
@@ -198,13 +224,17 @@ export type Database = {
           show_earnout_progress?: boolean
           single_task_escalation_enabled?: boolean
           spicy_level?: number | null
+          startup_ritual?: Json
           stripe_customer_id?: string | null
           subscription_id?: string | null
           subscription_status?: string
+          task_shrinking_enabled?: boolean
           theme?: string
           time_sessions_enabled?: boolean
           time_tools_enabled?: boolean
+          transition_prompts_enabled?: boolean
           trial_ends_at?: string | null
+          warmup_streak_size?: number
         }
         Relationships: []
       }
@@ -249,9 +279,11 @@ export type Database = {
           category: string | null
           completed_at: string | null
           created_at: string
+          current_micro_step: number | null
           description: string | null
           estimated_minutes: number | null
           id: string
+          micro_steps: Json | null
           real_due_date: string
           status: string
           title: string
@@ -263,9 +295,11 @@ export type Database = {
           category?: string | null
           completed_at?: string | null
           created_at?: string
+          current_micro_step?: number | null
           description?: string | null
           estimated_minutes?: number | null
           id?: string
+          micro_steps?: Json | null
           real_due_date: string
           status?: string
           title: string
@@ -277,9 +311,11 @@ export type Database = {
           category?: string | null
           completed_at?: string | null
           created_at?: string
+          current_micro_step?: number | null
           description?: string | null
           estimated_minutes?: number | null
           id?: string
+          micro_steps?: Json | null
           real_due_date?: string
           status?: string
           title?: string

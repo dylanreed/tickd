@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 
+import type { StartupRitualStep, BodyDoublingIntensity } from '../types/paralysisTools'
+
 export interface Profile {
   id: string
   email: string
@@ -32,6 +34,17 @@ export interface Profile {
   ambient_timer_enabled: boolean
   deadline_visuals: 'hinged' | 'unhinged' | 'match_app'
   estimation_prompts_enabled: boolean
+  // Paralysis Tools settings
+  just_five_minutes_enabled: boolean
+  task_shrinking_enabled: boolean
+  body_doubling_enabled: boolean
+  body_doubling_intensity: BodyDoublingIntensity
+  momentum_builder_enabled: boolean
+  warmup_streak_size: number
+  transition_prompts_enabled: boolean
+  countdown_length: number
+  startup_ritual: StartupRitualStep[]
+  environment_checklist: string[]
 }
 
 export function useProfile() {
@@ -57,7 +70,7 @@ export function useProfile() {
       if (error) {
         setError(error)
       } else {
-        setProfile(data as Profile)
+        setProfile(data as unknown as Profile)
       }
       setLoading(false)
     }
@@ -76,7 +89,7 @@ export function useProfile() {
       .single()
 
     if (!error && data) {
-      setProfile(data as Profile)
+      setProfile(data as unknown as Profile)
     }
 
     return { data, error }
