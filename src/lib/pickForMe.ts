@@ -1,7 +1,7 @@
 // ABOUTME: Weighted random task selection algorithm for Pick For Me.
 // ABOUTME: Pretends to be random but uses smart prioritization.
 
-import { TaskWithFakeDate } from "../types/task";
+import type { TaskWithFakeDate } from "../types/task";
 
 export interface TaskWeight {
   taskId: string;

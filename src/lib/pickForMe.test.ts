@@ -13,7 +13,7 @@ import {
   getEarnOutThreshold,
   DEFAULT_PICK_CONFIG,
 } from "./pickForMe";
-import { TaskWithFakeDate } from "../types/task";
+import type { TaskWithFakeDate } from "../types/task";
 
 // Helper to create a task with overrides
 function createTask(overrides: Partial<TaskWithFakeDate> = {}): TaskWithFakeDate {

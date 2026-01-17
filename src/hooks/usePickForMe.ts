@@ -2,7 +2,7 @@
 // ABOUTME: Manages selection, escalation, and single-task mode.
 
 import { useState, useCallback, useEffect } from "react";
-import { TaskWithFakeDate } from "../types/task";
+import type { TaskWithFakeDate } from "../types/task";
 import {
   pickTask,
   areAllTasksOverdue,

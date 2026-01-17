@@ -6,6 +6,7 @@ import { useTasks } from '../hooks/useTasks'
 import { useProfile } from '../hooks/useProfile'
 import { useExcuses } from '../hooks/useExcuses'
 import { useSubscription } from '../hooks/useSubscription'
+import { usePickForMe } from '../hooks/usePickForMe'
 import { useAuth } from '../contexts/AuthContext'
 import TaskCard from '../components/TaskCard'
 import AddTaskForm from '../components/AddTaskForm'
@@ -15,6 +16,10 @@ import ThemeToggle from '../components/ThemeToggle'
 import Tick from '../components/Tick'
 import SpicinessModal from '../components/SpicinessModal'
 import SubscriptionLockOverlay from '../components/SubscriptionLockOverlay'
+import PickForMeButton from '../components/PickForMeButton'
+import EscalationModal from '../components/EscalationModal'
+import SingleTaskMode from '../components/SingleTaskMode'
+import type { SpicyLevel } from '../data/pickForMeMessages'
 
 const SPICY_LEVEL_KEY = 'tickd-spicy-level'
 
@@ -37,6 +42,16 @@ export default function TaskListPage() {
   const [spicinessModalOpen, setSpicinessModalOpen] = useState(false)
   const [spicyLevel, setSpicyLevel] = useState(3)
   const [excuseTaskId, setExcuseTaskId] = useState<string | null>(null)
+  const [escalationModalOpen, setEscalationModalOpen] = useState(false)
+
+  // Pick For Me hook
+  const pickForMe = usePickForMe(
+    tasks,
+    profile?.reliability_score ?? 50,
+    user?.id ?? null,
+    true, // enabled
+    true  // escalationEnabled
+  )
 
   // Load spicy level - migrate from localStorage to DB if needed
   useEffect(() => {
@@ -124,6 +139,44 @@ export default function TaskListPage() {
     setJustRevealed(true)
   }
 
+  // Pick For Me handlers
+  const handlePickForMe = () => {
+    const wasInSingleTaskMode = pickForMe.state.inSingleTaskMode
+    pickForMe.pickTask()
+    // Check if we just entered single-task mode (escalation triggered)
+    if (!wasInSingleTaskMode && pickForMe.state.pickCount >= 1) {
+      // The hook will update state, check on next render if we entered single-task mode
+      setTimeout(() => {
+        if (pickForMe.state.inSingleTaskMode) {
+          setEscalationModalOpen(true)
+        }
+      }, 0)
+    }
+  }
+
+  // Effect to detect escalation
+  useEffect(() => {
+    if (pickForMe.state.inSingleTaskMode && pickForMe.state.tasksCompleted === 0) {
+      // Just entered single-task mode
+      setEscalationModalOpen(true)
+    }
+  }, [pickForMe.state.inSingleTaskMode, pickForMe.state.tasksCompleted])
+
+  const handleSingleTaskComplete = async () => {
+    const currentTask = pickForMe.currentTask
+    if (!currentTask) return
+
+    // Complete the task normally
+    await handleComplete(currentTask.id)
+
+    // Then notify Pick For Me
+    pickForMe.completePick()
+  }
+
+  const handleSingleTaskDismiss = () => {
+    pickForMe.dismissPick()
+  }
+
   // Extract first name from email for Tick
   const userName = user?.email?.split('@')[0] ?? undefined
 
@@ -140,6 +193,36 @@ export default function TaskListPage() {
           {isHinged ? 'Loading...' : 'Loading your lies...'}
         </div>
       </div>
+    )
+  }
+
+  // Render Single Task Mode if active
+  if (pickForMe.state.inSingleTaskMode && pickForMe.currentTask && !escalationModalOpen) {
+    return (
+      <>
+        <SingleTaskMode
+          task={pickForMe.currentTask}
+          tasksRemaining={pickForMe.state.tasksToComplete - pickForMe.state.tasksCompleted}
+          totalRequired={pickForMe.state.tasksToComplete}
+          tasksCompleted={pickForMe.state.tasksCompleted}
+          onComplete={handleSingleTaskComplete}
+          onDismiss={handleSingleTaskDismiss}
+          theme={theme}
+          spicyLevel={spicyLevel as SpicyLevel}
+          userName={userName}
+          totalTasks={tasks.length}
+          overdueTasks={overdueTasks.length}
+        />
+        <CompletionModal
+          isOpen={!!completionData}
+          onClose={handleModalClose}
+          taskTitle={completionData?.taskTitle ?? ''}
+          realDueDate={completionData?.realDueDate ?? new Date()}
+          completedAt={completionData?.completedAt ?? new Date()}
+          wasOnTime={completionData?.wasOnTime ?? true}
+          theme={theme}
+        />
+      </>
     )
   }
 
@@ -212,6 +295,8 @@ export default function TaskListPage() {
                 onDelete={deleteTask}
                 onExcuse={handleExcuse}
                 theme={theme}
+                isHighlighted={pickForMe.state.pickedTaskId === task.id}
+                isDimmed={pickForMe.state.pickedTaskId !== null && pickForMe.state.pickedTaskId !== task.id}
               />
             ))}
           </div>
@@ -266,6 +351,27 @@ export default function TaskListPage() {
       {isLocked && (subscriptionStatus === 'expired' || subscriptionStatus === 'canceled') && (
         <SubscriptionLockOverlay status={subscriptionStatus} />
       )}
+
+      {/* Pick For Me Button */}
+      {pickForMe.canUsePick && (
+        <PickForMeButton
+          onPick={handlePickForMe}
+          isFirstPick={pickForMe.state.pickCount === 0}
+          theme={theme}
+          spicyLevel={spicyLevel as SpicyLevel}
+          allOverdue={pickForMe.allOverdue}
+        />
+      )}
+
+      {/* Escalation Modal */}
+      <EscalationModal
+        isOpen={escalationModalOpen}
+        onConfirm={() => setEscalationModalOpen(false)}
+        theme={theme}
+        spicyLevel={spicyLevel as SpicyLevel}
+        tasksRequired={pickForMe.state.tasksToComplete}
+        userName={userName}
+      />
     </div>
   )
 }

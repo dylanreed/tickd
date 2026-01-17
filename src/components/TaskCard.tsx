@@ -11,6 +11,8 @@ interface TaskCardProps {
   onDelete?: (taskId: string) => void
   onExcuse?: (taskId: string) => void
   theme: 'hinged' | 'unhinged'
+  isHighlighted?: boolean
+  isDimmed?: boolean
 }
 
 const urgencyStyles = {
@@ -47,7 +49,7 @@ const urgencyMessages = {
   },
 }
 
-export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme }: TaskCardProps) {
+export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme, isHighlighted = false, isDimmed = false }: TaskCardProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const timeRemaining = formatTimeRemaining(task.fake_due_date)
@@ -99,8 +101,16 @@ export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme }
     setMenuOpen(false)
   }
 
+  // Highlight and dim styling
+  const highlightStyle = isHighlighted
+    ? isHinged
+      ? 'ring-2 ring-hinged-accent ring-offset-2 shadow-lg'
+      : 'ring-4 ring-mint ring-offset-2 shadow-xl animate-pulse'
+    : ''
+  const dimStyle = isDimmed ? 'opacity-50' : ''
+
   return (
-    <div className={`${isHinged ? 'rounded-lg' : 'rounded-2xl'} border-2 p-4 ${urgencyStyle} transition-all`}>
+    <div className={`${isHinged ? 'rounded-lg' : 'rounded-2xl'} border-2 p-4 ${urgencyStyle} ${highlightStyle} ${dimStyle} transition-all`}>
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <h3 className={`truncate ${isHinged ? 'font-medium text-hinged-text' : 'font-bold text-charcoal'}`}>{task.title}</h3>

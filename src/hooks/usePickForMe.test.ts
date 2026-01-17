@@ -4,7 +4,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { usePickForMe } from "./usePickForMe";
-import { TaskWithFakeDate } from "../types/task";
+import type { TaskWithFakeDate } from "../types/task";
 
 // Mock localStorage with proper isolation
 let localStorageStore: Record<string, string> = {};
@@ -458,7 +458,7 @@ describe("usePickForMe", () => {
 
       const task1 = createTask({ id: "task-1" });
       const task2 = createTask({ id: "task-2" });
-      const { result } = renderHook(() =>
+      renderHook(() =>
         usePickForMe([task1, task2], 50, "user-1")
       );
 
