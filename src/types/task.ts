@@ -12,6 +12,9 @@ export interface Task {
   completed_at: string | null
   was_on_time: boolean | null
   created_at: string
+  // Time estimation fields
+  estimated_minutes: number | null
+  actual_minutes: number | null
 }
 
 export interface TaskWithFakeDate extends Task {
@@ -25,4 +28,5 @@ export interface CreateTaskInput {
   description?: string
   real_due_date: string
   category?: string
+  estimated_minutes?: number
 }

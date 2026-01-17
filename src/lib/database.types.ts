@@ -129,9 +129,16 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ambient_timer_enabled: boolean
+          brain_state_affects_spiciness: boolean
           created_at: string
+          daily_checkin_enabled: boolean
+          deadline_visuals: string
           email: string
+          estimate_alerts_enabled: boolean
+          estimation_prompts_enabled: boolean
           id: string
+          milestone_alerts: string
           notification_preferences: string
           onboarding_completed: boolean
           pick_for_me_enabled: boolean
@@ -143,12 +150,21 @@ export type Database = {
           subscription_id: string | null
           subscription_status: string
           theme: string
+          time_sessions_enabled: boolean
+          time_tools_enabled: boolean
           trial_ends_at: string | null
         }
         Insert: {
+          ambient_timer_enabled?: boolean
+          brain_state_affects_spiciness?: boolean
           created_at?: string
+          daily_checkin_enabled?: boolean
+          deadline_visuals?: string
           email: string
+          estimate_alerts_enabled?: boolean
+          estimation_prompts_enabled?: boolean
           id: string
+          milestone_alerts?: string
           notification_preferences?: string
           onboarding_completed?: boolean
           pick_for_me_enabled?: boolean
@@ -160,12 +176,21 @@ export type Database = {
           subscription_id?: string | null
           subscription_status?: string
           theme?: string
+          time_sessions_enabled?: boolean
+          time_tools_enabled?: boolean
           trial_ends_at?: string | null
         }
         Update: {
+          ambient_timer_enabled?: boolean
+          brain_state_affects_spiciness?: boolean
           created_at?: string
+          daily_checkin_enabled?: boolean
+          deadline_visuals?: string
           email?: string
+          estimate_alerts_enabled?: boolean
+          estimation_prompts_enabled?: boolean
           id?: string
+          milestone_alerts?: string
           notification_preferences?: string
           onboarding_completed?: boolean
           pick_for_me_enabled?: boolean
@@ -177,6 +202,8 @@ export type Database = {
           subscription_id?: string | null
           subscription_status?: string
           theme?: string
+          time_sessions_enabled?: boolean
+          time_tools_enabled?: boolean
           trial_ends_at?: string | null
         }
         Relationships: []
@@ -218,10 +245,12 @@ export type Database = {
       }
       tasks: {
         Row: {
+          actual_minutes: number | null
           category: string | null
           completed_at: string | null
           created_at: string
           description: string | null
+          estimated_minutes: number | null
           id: string
           real_due_date: string
           status: string
@@ -230,10 +259,12 @@ export type Database = {
           was_on_time: boolean | null
         }
         Insert: {
+          actual_minutes?: number | null
           category?: string | null
           completed_at?: string | null
           created_at?: string
           description?: string | null
+          estimated_minutes?: number | null
           id?: string
           real_due_date: string
           status?: string
@@ -242,10 +273,12 @@ export type Database = {
           was_on_time?: boolean | null
         }
         Update: {
+          actual_minutes?: number | null
           category?: string | null
           completed_at?: string | null
           created_at?: string
           description?: string | null
+          estimated_minutes?: number | null
           id?: string
           real_due_date?: string
           status?: string

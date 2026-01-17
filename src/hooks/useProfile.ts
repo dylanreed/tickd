@@ -22,6 +22,16 @@ export interface Profile {
   pick_for_me_enabled: boolean
   single_task_escalation_enabled: boolean
   show_earnout_progress: boolean
+  // Time Tools settings
+  time_tools_enabled: boolean
+  daily_checkin_enabled: boolean
+  brain_state_affects_spiciness: boolean
+  time_sessions_enabled: boolean
+  milestone_alerts: 'off' | 'on' | 'custom'
+  estimate_alerts_enabled: boolean
+  ambient_timer_enabled: boolean
+  deadline_visuals: 'hinged' | 'unhinged' | 'match_app'
+  estimation_prompts_enabled: boolean
 }
 
 export function useProfile() {

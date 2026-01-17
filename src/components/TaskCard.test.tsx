@@ -21,6 +21,8 @@ const mockTask: TaskWithFakeDate = {
   fake_due_date: new Date(Date.now() + 2.5 * 24 * 60 * 60 * 1000),
   urgency: 'medium',
   is_snoozed: false,
+  estimated_minutes: null,
+  actual_minutes: null,
 }
 
 describe('TaskCard', () => {
