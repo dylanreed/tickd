@@ -12,6 +12,7 @@ import LandingPage from './pages/LandingPage'
 import OnboardingPage from './pages/OnboardingPage'
 import SpriteReferencePage from './pages/SpriteReferencePage'
 import ColorPreviewPage from './pages/ColorPreviewPage'
+import HowItWorksPage from './pages/HowItWorksPage'
 import Tick from './components/Tick'
 import SpicinessModal from './components/SpicinessModal'
 
@@ -136,6 +137,11 @@ function AppContent() {
   }
   if (hash === '#dev') {
     return <DevPreview />
+  }
+
+  // Public pages (accessible from landing and in-app)
+  if (hash === '#how-it-works') {
+    return <HowItWorksPage onBack={() => (window.location.hash = '')} />
   }
 
   // Show landing page if enabled (pre-launch mode)

@@ -49,6 +49,16 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
           <SubscriptionSettings />
           <NotificationSettings />
           <DeleteAccountSection />
+
+          {/* Help link */}
+          <div className="pt-4 border-t border-hinged-border">
+            <a
+              href="#how-it-works"
+              className="text-hinged-text-secondary hover:text-hinged-text text-sm transition-colors"
+            >
+              How Tickd works →
+            </a>
+          </div>
         </main>
       </div>
     )
@@ -101,6 +111,16 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
         <SubscriptionSettings />
         <NotificationSettings />
         <DeleteAccountSection />
+
+        {/* Help link */}
+        <div className="pt-4 border-t-2 border-clock-black/20">
+          <a
+            href="#how-it-works"
+            className="text-clock-brass hover:text-clock-red text-sm font-mono transition-colors"
+          >
+            how tickd works →
+          </a>
+        </div>
       </main>
     </div>
   )

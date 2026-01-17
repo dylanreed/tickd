@@ -477,6 +477,12 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         <p className="text-clock-ivory/50 text-sm">
           built for brains that experience time as a lie
         </p>
+        <a
+          href="#how-it-works"
+          className="text-clock-brass/70 hover:text-clock-brass text-sm font-mono mt-3 inline-block transition-colors"
+        >
+          how it works →
+        </a>
         <p className="text-clock-ivory/30 text-xs mt-2 font-mono">
           tick'd © 2026 · made with chaos and love
         </p>
