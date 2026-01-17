@@ -161,17 +161,29 @@ Used when Tick picks a task:
 
 ### Escalation Trigger Copy (10 sayings per level)
 
-**Level 1-2 (Gentle):**
+**Level 1 (Gentle Concern):**
+1. "Hey, you asked twice. Want me to simplify things?"
+2. "Looks like choosing is hard right now. I can help with that."
+3. "Two picks — let me just show you one at a time."
+4. "It's okay. Decisions are tough. I've got you."
+5. "Let's try something gentler. One task at a time."
+6. "No pressure. I'll narrow it down for you."
+7. "Seems like you're stuck. Single-task mode might help."
+8. "No worries. Let's focus on just one thing together."
+9. "The list might be overwhelming. I'll put it away for now."
+10. "Deep breath. One task. We've got this."
+
+**Level 2 (Pointed Reminders):**
 1. "You asked twice. Seems like you need me to take the wheel."
 2. "Two picks, no progress. Let me simplify things for you."
 3. "Having trouble choosing? I'll just show you one at a time."
-4. "It's okay. Decisions are hard. I've got you."
+4. "Decisions are hard. I get it. Here's one task."
 5. "Let's try something different. One task. Just one."
 6. "Too many options? I'm narrowing it down for you."
 7. "I notice you're stuck. Single-task mode activated."
 8. "No judgment. Let's focus on just one thing."
 9. "The list is overwhelming you. I'm putting it away for now."
-10. "Deep breath. We're doing this one task at a time."
+10. "Okay. We're doing this one task at a time now."
 
 **Level 3 (Disappointed Parent):**
 1. "Two picks, zero tasks done. I'm hiding the list. You'll thank me."
@@ -211,17 +223,29 @@ Used when Tick picks a task:
 
 ### Dismissal Copy ("Can't right now") (10 sayings per level)
 
-**Level 1-2 (Gentle):**
-1. "No worries. How about this one?"
+**Level 1 (Gentle Concern):**
+1. "No worries at all. How about this one?"
+2. "That's completely okay. Let's try another."
+3. "Not that one? Here's something else."
+4. "Skipping is totally fine. Here's what's next."
+5. "No problem! Moving on."
+6. "Can't do that one? Valid. Next!"
+7. "Let's find something that works better for you."
+8. "That's alright. Here's another pick."
+9. "Not feeling it? That's okay. Next task."
+10. "Okay! Different task coming up."
+
+**Level 2 (Pointed Reminders):**
+1. "No worries. How about this one instead?"
 2. "That's okay. Let's try another."
 3. "Not that one? Here's a different option."
 4. "Skipping is fine. Here's what's next."
 5. "No problem. Moving on."
-6. "Can't do that one? Totally valid. Next!"
+6. "Can't do that one? Sure. Next!"
 7. "Let's find something that works for you."
-8. "That's alright. Here's another pick."
-9. "Not feeling it? Me neither. Next task."
-10. "Okay! Different task coming up."
+8. "Alright. Here's another pick."
+9. "Not feeling it? Fair. Next task."
+10. "Okay. Different task coming up."
 
 **Level 3 (Disappointed Parent):**
 1. "Fine. But you can't dodge forever."
@@ -276,15 +300,27 @@ When completing a task in single-task mode:
 
 ### Earn-Out Complete Copy (10 sayings per level)
 
-**Level 1-2 (Gentle):**
-1. "You did it! Here's your list back. I knew you could do it."
-2. "Freedom earned. Welcome back to choices."
-3. "The list has returned! You handled that really well."
+**Level 1 (Gentle Concern):**
+1. "You did it! Here's your list back. I knew you could."
+2. "Freedom earned! Welcome back to choices."
+3. "The list has returned. You handled that so well."
 4. "Single-task mode complete. You're back in control."
+5. "Nicely done! The list is yours again."
+6. "You focused and finished. Here's your reward: options."
+7. "Task mode complete! I'm really proud of you."
+8. "You earned list access back. Go you!"
+9. "Back to normal. You absolutely crushed it."
+10. "The list is back. You proved you could focus. Great job."
+
+**Level 2 (Pointed Reminders):**
+1. "You did it! Here's your list back. I knew you could do it."
+2. "Freedom earned. Welcome back to having choices."
+3. "The list has returned! You handled that really well."
+4. "Single-task mode complete. You're back in the driver's seat."
 5. "Nicely done. The list is yours again."
 6. "You focused and finished. Here's your reward: options."
-7. "Task mode complete! I'm proud of you."
-8. "You earned list access back. Go you!"
+7. "Task mode complete! Proud of you."
+8. "You earned list access back. Nice work!"
 9. "Back to normal. You crushed it."
 10. "The list is back. You proved you could focus."
 
