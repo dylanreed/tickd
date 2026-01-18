@@ -1,7 +1,7 @@
 // ABOUTME: Visual countdown before starting work.
 // ABOUTME: Provides mental runway for task transition.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import TickSprite from './TickSprite'
 
 interface CountdownTimerProps {
@@ -22,6 +22,12 @@ export default function CountdownTimer({
   const [remaining, setRemaining] = useState(seconds)
   const [isComplete, setIsComplete] = useState(false)
 
+  // Use ref for callback to avoid effect re-running on every render
+  const onCompleteRef = useRef(onComplete)
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  }, [onComplete])
+
   // Reset when opened
   useEffect(() => {
     if (isOpen) {
@@ -38,7 +44,7 @@ export default function CountdownTimer({
       setIsComplete(true)
       // Small delay before calling onComplete for dramatic effect
       const timeout = setTimeout(() => {
-        onComplete()
+        onCompleteRef.current()
       }, 500)
       return () => clearTimeout(timeout)
     }
@@ -48,7 +54,7 @@ export default function CountdownTimer({
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [isOpen, remaining, isComplete, onComplete])
+  }, [isOpen, remaining, isComplete])
 
   if (!isOpen) return null
 

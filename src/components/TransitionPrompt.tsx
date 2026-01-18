@@ -1,6 +1,7 @@
 // ABOUTME: Offers transition help when user seems stuck.
 // ABOUTME: Entry point to the transition flow: environment check, ritual, countdown.
 
+import { useState, useEffect } from 'react'
 import TickSprite from './TickSprite'
 import { getTransitionMessage } from '../data/transitionMessages'
 import type { SpicyLevel } from '../data/momentumMessages'
@@ -24,9 +25,16 @@ export default function TransitionPrompt({
   onQuickStart,
   onDismiss,
 }: TransitionPromptProps) {
-  if (!isOpen) return null
+  // Stabilize message - only pick a new one when modal opens
+  const [message, setMessage] = useState('')
 
-  const message = getTransitionMessage('stuck_on_list', spicyLevel)
+  useEffect(() => {
+    if (isOpen) {
+      setMessage(getTransitionMessage('stuck_on_list', spicyLevel))
+    }
+  }, [isOpen, spicyLevel])
+
+  if (!isOpen) return null
   const isHinged = theme === 'hinged'
 
   if (isHinged) {
