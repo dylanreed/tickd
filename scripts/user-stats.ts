@@ -4,8 +4,9 @@
 import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 
-// Load env from scripts/.env
+// Load env from scripts/.env or root .env
 config({ path: new URL(".env", import.meta.url).pathname });
+config({ path: new URL("../.env", import.meta.url).pathname });
 
 const SUPABASE_URL = "https://ndflrqxqhfnudumastnu.supabase.co";
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -134,6 +135,24 @@ async function getStats() {
     if (todaysUsers.length > 10) {
       console.log(`   ... and ${todaysUsers.length - 10} more`);
     }
+  }
+
+  // Domain breakdown
+  const byDomain: Record<string, number> = {};
+  for (const user of users) {
+    const domain = user.email?.split("@")[1] || "unknown";
+    byDomain[domain] = (byDomain[domain] || 0) + 1;
+  }
+  console.log("\n📧 DOMAINS:");
+  for (const [domain, count] of Object.entries(byDomain).sort((a, b) => b[1] - a[1])) {
+    console.log(`   ${domain.padEnd(25)} ${count}`);
+  }
+
+  // All users list
+  console.log("\n👥 ALL USERS:");
+  for (const user of users) {
+    const created = new Date(user.created_at).toLocaleDateString();
+    console.log(`   ${user.email.padEnd(35)} ${user.subscription_status.padEnd(12)} ${created}`);
   }
 
   console.log("\n" + "=".repeat(50) + "\n");
