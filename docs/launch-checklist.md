@@ -23,16 +23,16 @@
 
 ---
 
-## ~~IMPORTANT~~ - Mostly Fixed
+## ~~IMPORTANT~~ - All Fixed
 
 ### 5. ~~Render EnvironmentCheck component~~ DONE
 - Now rendered in transition flow between prompt and ritual
 - Respects `environment_checklist` profile setting
 
-### 6. Verify database sync - NEEDS DECISION
-- `daily_checkins` table exists but app uses localStorage
-- `time_sessions` table exists but is never written to
-- Decide: localStorage vs database for these features
+### 6. ~~Verify database sync~~ DONE
+- `daily_checkins` now syncs to database via `useDailyCheckin` hook
+- `time_sessions` now syncs to database via `useTaskEstimation` hook
+- Sessions persist across page refreshes and devices
 
 ### 7. ~~Clean up orphaned components~~ DONE
 - `FiveMinutesCheckpoint.tsx` - now rendered on phase transitions
