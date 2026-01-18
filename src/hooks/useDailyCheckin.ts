@@ -1,22 +1,18 @@
 // ABOUTME: Manages daily brain state check-in for time awareness.
-// ABOUTME: Persists to localStorage and determines if check-in is needed.
+// ABOUTME: Persists to database and determines if check-in is needed.
 
 import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
 import type { BrainState } from '../types/timeTools'
-
-const CHECKIN_STORAGE_KEY = 'tickd_daily_checkin'
-
-interface StoredCheckin {
-  date: string // YYYY-MM-DD format
-  brainState: BrainState
-  timestamp: number
-}
 
 interface UseDailyCheckinReturn {
   /** Current brain state for today, null if not checked in */
   todaysBrainState: BrainState | null
   /** Whether the user needs to check in today */
   needsCheckin: boolean
+  /** Whether we're loading the check-in state */
+  loading: boolean
   /** Set today's brain state */
   setBrainState: (state: BrainState) => void
   /** Clear today's check-in (for testing/reset) */
@@ -30,59 +26,94 @@ function getTodayString(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 }
 
-function getStoredCheckin(): StoredCheckin | null {
-  try {
-    const stored = localStorage.getItem(CHECKIN_STORAGE_KEY)
-    if (!stored) return null
-    return JSON.parse(stored) as StoredCheckin
-  } catch {
-    return null
-  }
-}
-
-function saveCheckin(checkin: StoredCheckin): void {
-  try {
-    localStorage.setItem(CHECKIN_STORAGE_KEY, JSON.stringify(checkin))
-  } catch {
-    // localStorage might be full or unavailable
-  }
-}
-
 export function useDailyCheckin(): UseDailyCheckinReturn {
+  const { user } = useAuth()
   const [todaysBrainState, setTodaysBrainState] = useState<BrainState | null>(null)
   const [needsCheckin, setNeedsCheckin] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  // Check on mount if we have a valid check-in for today
+  // Fetch today's check-in from database
   useEffect(() => {
-    const stored = getStoredCheckin()
-    const today = getTodayString()
-
-    if (stored && stored.date === today) {
-      setTodaysBrainState(stored.brainState)
+    if (!user) {
+      setLoading(false)
       setNeedsCheckin(false)
-    } else {
-      setTodaysBrainState(null)
-      setNeedsCheckin(true)
+      return
     }
-  }, [])
 
-  const setBrainState = useCallback((state: BrainState) => {
-    const today = getTodayString()
-    const checkin: StoredCheckin = {
-      date: today,
-      brainState: state,
-      timestamp: Date.now(),
+    async function fetchTodaysCheckin() {
+      const today = getTodayString()
+
+      const { data, error } = await supabase
+        .from('daily_checkins')
+        .select('brain_state')
+        .eq('user_id', user!.id)
+        .eq('checkin_date', today)
+        .maybeSingle()
+
+      if (error) {
+        console.error('Error fetching daily check-in:', error)
+        setNeedsCheckin(true)
+      } else if (data) {
+        setTodaysBrainState(data.brain_state as BrainState)
+        setNeedsCheckin(false)
+      } else {
+        setTodaysBrainState(null)
+        setNeedsCheckin(true)
+      }
+
+      setLoading(false)
     }
-    saveCheckin(checkin)
+
+    fetchTodaysCheckin()
+  }, [user])
+
+  const setBrainState = useCallback(async (state: BrainState) => {
+    if (!user) return
+
+    const today = getTodayString()
+
+    // Upsert the check-in (insert or update if exists)
+    const { error } = await supabase
+      .from('daily_checkins')
+      .upsert(
+        {
+          user_id: user.id,
+          checkin_date: today,
+          brain_state: state,
+        },
+        {
+          onConflict: 'user_id,checkin_date',
+        }
+      )
+
+    if (error) {
+      console.error('Error saving daily check-in:', error)
+      return
+    }
+
     setTodaysBrainState(state)
     setNeedsCheckin(false)
-  }, [])
+  }, [user])
 
-  const clearCheckin = useCallback(() => {
-    localStorage.removeItem(CHECKIN_STORAGE_KEY)
+  const clearCheckin = useCallback(async () => {
+    if (!user) return
+
+    const today = getTodayString()
+
+    const { error } = await supabase
+      .from('daily_checkins')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('checkin_date', today)
+
+    if (error) {
+      console.error('Error clearing daily check-in:', error)
+      return
+    }
+
     setTodaysBrainState(null)
     setNeedsCheckin(true)
-  }, [])
+  }, [user])
 
   // Calculate effective spicy level based on brain state
   // Low brain state = gentler messages, high brain state = can handle spicier
@@ -108,6 +139,7 @@ export function useDailyCheckin(): UseDailyCheckinReturn {
   return {
     todaysBrainState,
     needsCheckin,
+    loading,
     setBrainState,
     clearCheckin,
     getEffectiveSpicyLevel,

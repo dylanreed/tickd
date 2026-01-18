@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_checkins: {
+        Row: {
+          id: string
+          user_id: string
+          checkin_date: string
+          brain_state: number
+          time_budget_minutes: number | null
+          hard_stop_time: string | null
+          selected_task_ids: string[] | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          checkin_date: string
+          brain_state: number
+          time_budget_minutes?: number | null
+          hard_stop_time?: string | null
+          selected_task_ids?: string[] | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          checkin_date?: string
+          brain_state?: number
+          time_budget_minutes?: number | null
+          hard_stop_time?: string | null
+          selected_task_ids?: string[] | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_checkins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       excuses: {
         Row: {
           created_at: string
@@ -328,6 +369,63 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_sessions: {
+        Row: {
+          id: string
+          user_id: string
+          task_id: string | null
+          session_type: string
+          started_at: string
+          planned_end_at: string
+          actual_end_at: string | null
+          paused_at: string | null
+          total_paused_seconds: number
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          task_id?: string | null
+          session_type: string
+          started_at: string
+          planned_end_at: string
+          actual_end_at?: string | null
+          paused_at?: string | null
+          total_paused_seconds?: number
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          task_id?: string | null
+          session_type?: string
+          started_at?: string
+          planned_end_at?: string
+          actual_end_at?: string | null
+          paused_at?: string | null
+          total_paused_seconds?: number
+          status?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_sessions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
         ]

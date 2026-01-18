@@ -1,15 +1,15 @@
 // ABOUTME: Hook for tracking task time estimates vs actuals.
-// ABOUTME: Manages focus tracking and estimate comparison.
+// ABOUTME: Manages focus tracking with database persistence.
 
 import { useState, useCallback, useEffect, useRef } from 'react'
+import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { getEstimateContext, getEstimationMessage } from '../data/estimationMessages'
 import type { EstimateContext } from '../types/timeTools'
 import type { SpicyLevel } from '../data/estimationMessages'
 
-const STORAGE_KEY_PREFIX = 'tickd-task-focus'
-
 interface FocusState {
+  sessionId: string
   taskId: string
   startTime: number // timestamp
   totalPausedMs: number
@@ -53,33 +53,41 @@ export function useTaskEstimation(): UseTaskEstimationReturn {
   const [recentEstimates, setRecentEstimates] = useState<{ taskId: string; ratio: number }[]>([])
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Load focus state from localStorage
+  // Load active session from database on mount
   useEffect(() => {
     if (!user) return
 
-    const key = `${STORAGE_KEY_PREFIX}-${user.id}`
-    try {
-      const stored = localStorage.getItem(key)
-      if (stored) {
-        const state = JSON.parse(stored) as FocusState
-        setFocusState(state)
+    async function loadActiveSession() {
+      const { data, error } = await supabase
+        .from('time_sessions')
+        .select('id, task_id, started_at, total_paused_seconds, paused_at, status')
+        .eq('user_id', user!.id)
+        .in('status', ['active', 'paused'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+      if (error) {
+        console.error('Error loading active session:', error)
+        return
       }
-    } catch {
-      // Ignore localStorage errors
+
+      if (data && data.task_id) {
+        const startTime = new Date(data.started_at).getTime()
+        const pausedAt = data.paused_at ? new Date(data.paused_at).getTime() : null
+
+        setFocusState({
+          sessionId: data.id,
+          taskId: data.task_id,
+          startTime,
+          totalPausedMs: (data.total_paused_seconds || 0) * 1000,
+          pausedAt,
+        })
+      }
     }
+
+    loadActiveSession()
   }, [user])
-
-  // Save focus state to localStorage
-  useEffect(() => {
-    if (!user || !focusState) return
-
-    const key = `${STORAGE_KEY_PREFIX}-${user.id}`
-    try {
-      localStorage.setItem(key, JSON.stringify(focusState))
-    } catch {
-      // Ignore localStorage errors
-    }
-  }, [user, focusState])
 
   // Update elapsed time
   useEffect(() => {
@@ -109,52 +117,125 @@ export function useTaskEstimation(): UseTaskEstimationReturn {
   }, [focusState])
 
   // Focus on a task (start tracking time)
-  const focusTask = useCallback((taskId: string) => {
+  const focusTask = useCallback(async (taskId: string) => {
+    if (!user) return
+
+    const now = new Date()
+    // Default planned end to 1 hour from now (can be updated later)
+    const plannedEnd = new Date(now.getTime() + 60 * 60 * 1000)
+
+    const { data, error } = await supabase
+      .from('time_sessions')
+      .insert({
+        user_id: user.id,
+        task_id: taskId,
+        session_type: 'focus',
+        started_at: now.toISOString(),
+        planned_end_at: plannedEnd.toISOString(),
+        status: 'active',
+      })
+      .select('id')
+      .single()
+
+    if (error) {
+      console.error('Error creating time session:', error)
+      return
+    }
+
     setFocusState({
+      sessionId: data.id,
       taskId,
-      startTime: Date.now(),
+      startTime: now.getTime(),
       totalPausedMs: 0,
       pausedAt: null,
     })
     setElapsedMinutes(0)
-  }, [])
+  }, [user])
 
-  // Unfocus task and return elapsed time
-  const unfocusTask = useCallback(() => {
-    if (!focusState) return
+  // Unfocus task and complete the session
+  const unfocusTask = useCallback(async () => {
+    if (!focusState || !user) return
 
-    const key = `${STORAGE_KEY_PREFIX}-${user?.id}`
-    try {
-      localStorage.removeItem(key)
-    } catch {
-      // Ignore
+    const now = new Date()
+
+    // Update the session as completed
+    const { error } = await supabase
+      .from('time_sessions')
+      .update({
+        actual_end_at: now.toISOString(),
+        total_paused_seconds: Math.floor(focusState.totalPausedMs / 1000),
+        status: 'completed',
+      })
+      .eq('id', focusState.sessionId)
+
+    if (error) {
+      console.error('Error completing time session:', error)
+    }
+
+    // Also update the task's actual_minutes if we have a task
+    if (focusState.taskId && elapsedMinutes > 0) {
+      await supabase
+        .from('tasks')
+        .update({ actual_minutes: elapsedMinutes })
+        .eq('id', focusState.taskId)
     }
 
     setFocusState(null)
     setElapsedMinutes(0)
-  }, [focusState, user])
+  }, [focusState, user, elapsedMinutes])
 
   // Pause focus tracking
-  const pauseFocus = useCallback(() => {
-    if (!focusState || focusState.pausedAt !== null) return
+  const pauseFocus = useCallback(async () => {
+    if (!focusState || focusState.pausedAt !== null || !user) return
+
+    const now = new Date()
+
+    const { error } = await supabase
+      .from('time_sessions')
+      .update({
+        paused_at: now.toISOString(),
+        status: 'paused',
+      })
+      .eq('id', focusState.sessionId)
+
+    if (error) {
+      console.error('Error pausing time session:', error)
+      return
+    }
 
     setFocusState({
       ...focusState,
-      pausedAt: Date.now(),
+      pausedAt: now.getTime(),
     })
-  }, [focusState])
+  }, [focusState, user])
 
   // Resume focus tracking
-  const resumeFocus = useCallback(() => {
-    if (!focusState || focusState.pausedAt === null) return
+  const resumeFocus = useCallback(async () => {
+    if (!focusState || focusState.pausedAt === null || !user) return
 
     const pausedDuration = Date.now() - focusState.pausedAt
+    const newTotalPausedMs = focusState.totalPausedMs + pausedDuration
+
+    const { error } = await supabase
+      .from('time_sessions')
+      .update({
+        paused_at: null,
+        total_paused_seconds: Math.floor(newTotalPausedMs / 1000),
+        status: 'active',
+      })
+      .eq('id', focusState.sessionId)
+
+    if (error) {
+      console.error('Error resuming time session:', error)
+      return
+    }
+
     setFocusState({
       ...focusState,
-      totalPausedMs: focusState.totalPausedMs + pausedDuration,
+      totalPausedMs: newTotalPausedMs,
       pausedAt: null,
     })
-  }, [focusState])
+  }, [focusState, user])
 
   // Get estimate comparison result
   const getEstimateResult = useCallback((
