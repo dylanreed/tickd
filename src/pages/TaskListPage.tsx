@@ -185,22 +185,24 @@ export default function TaskListPage() {
 
   // Check for transition help triggers (browsing without starting)
   // Don't show if daily check-in modal is open
+  const shouldOfferTransition = transitionHelp.shouldOfferTransition
   useEffect(() => {
     if (
       profile?.transition_prompts_enabled &&
       !dailyCheckin.needsCheckin &&
-      transitionHelp.shouldOfferTransition()
+      shouldOfferTransition()
     ) {
       setShowTransitionPrompt(true)
     }
-  }, [profile?.transition_prompts_enabled, dailyCheckin.needsCheckin, transitionHelp])
+  }, [profile?.transition_prompts_enabled, dailyCheckin.needsCheckin, shouldOfferTransition])
 
   // Track page views for transition help
+  const recordListView = transitionHelp.recordListView
   useEffect(() => {
     if (profile?.transition_prompts_enabled && !loading) {
-      transitionHelp.recordListView()
+      recordListView()
     }
-  }, [profile?.transition_prompts_enabled, loading, transitionHelp])
+  }, [profile?.transition_prompts_enabled, loading, recordListView])
 
   // Transition help flow handlers
   const handleTransitionStartFull = () => {
