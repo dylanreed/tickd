@@ -7,6 +7,12 @@ import { useProfile } from '../hooks/useProfile'
 import { useExcuses } from '../hooks/useExcuses'
 import { useSubscription } from '../hooks/useSubscription'
 import { usePickForMe } from '../hooks/usePickForMe'
+import { useDailyCheckin } from '../hooks/useDailyCheckin'
+import { useTransitionHelp } from '../hooks/useTransitionHelp'
+import { useFiveMinutes } from '../hooks/useFiveMinutes'
+import { useBodyDoubling } from '../hooks/useBodyDoubling'
+import { useMomentumBuilder } from '../hooks/useMomentumBuilder'
+import { useTaskShrinking } from '../hooks/useTaskShrinking'
 import { useAuth } from '../contexts/AuthContext'
 import TaskCard from '../components/TaskCard'
 import AddTaskForm from '../components/AddTaskForm'
@@ -19,6 +25,17 @@ import SubscriptionLockOverlay from '../components/SubscriptionLockOverlay'
 import PickForMeButton from '../components/PickForMeButton'
 import EscalationModal from '../components/EscalationModal'
 import SingleTaskMode from '../components/SingleTaskMode'
+import DailyCheckinModal from '../components/DailyCheckinModal'
+import TransitionPrompt from '../components/TransitionPrompt'
+import RitualWalkthrough from '../components/RitualWalkthrough'
+import CountdownTimer from '../components/CountdownTimer'
+import FiveMinutesTimer from '../components/FiveMinutesTimer'
+import ShrinkTaskModal from '../components/ShrinkTaskModal'
+import MicroStepView from '../components/MicroStepView'
+import BodyDoublingStart from '../components/BodyDoublingStart'
+import BodyDoublingSession from '../components/BodyDoublingSession'
+import WarmupOffer from '../components/WarmupOffer'
+import WarmupQueue from '../components/WarmupQueue'
 import type { SpicyLevel } from '../data/pickForMeMessages'
 
 const SPICY_LEVEL_KEY = 'tickd-spicy-level'
@@ -54,6 +71,23 @@ export default function TaskListPage() {
     profile?.pick_for_me_enabled ?? true,
     profile?.single_task_escalation_enabled ?? true
   )
+
+  // Feature hooks - respect profile settings
+  const dailyCheckin = useDailyCheckin()
+  const transitionHelp = useTransitionHelp()
+  const fiveMinutes = useFiveMinutes()
+  const bodyDoubling = useBodyDoubling()
+  const momentumBuilder = useMomentumBuilder()
+  const taskShrinking = useTaskShrinking()
+
+  // Track transition help state
+  const [showTransitionPrompt, setShowTransitionPrompt] = useState(false)
+  const [showRitualWalkthrough, setShowRitualWalkthrough] = useState(false)
+  const [showCountdown, setShowCountdown] = useState(false)
+  const [showBodyDoublingStart, setShowBodyDoublingStart] = useState(false)
+  const [showWarmupOffer, setShowWarmupOffer] = useState(false)
+  const [warmupTargetTaskId, setWarmupTargetTaskId] = useState<string | null>(null)
+  const [shrinkingTaskId, setShrinkingTaskId] = useState<string | null>(null)
 
   // Load spicy level - migrate from localStorage to DB if needed
   useEffect(() => {
@@ -117,6 +151,180 @@ export default function TaskListPage() {
       return () => clearTimeout(timer)
     }
   }, [justRevealed])
+
+  // Check for transition help triggers (browsing without starting)
+  useEffect(() => {
+    if (profile?.transition_prompts_enabled && transitionHelp.shouldOfferTransition()) {
+      setShowTransitionPrompt(true)
+    }
+  }, [profile?.transition_prompts_enabled, transitionHelp])
+
+  // Track page views for transition help
+  useEffect(() => {
+    if (profile?.transition_prompts_enabled && !loading) {
+      transitionHelp.recordListView()
+    }
+  }, [profile?.transition_prompts_enabled, loading, transitionHelp])
+
+  // Transition help flow handlers
+  const handleTransitionStartFull = () => {
+    setShowTransitionPrompt(false)
+    transitionHelp.startTransition()
+    transitionHelp.goToRitual()
+    setShowRitualWalkthrough(true)
+  }
+
+  const handleTransitionQuickStart = () => {
+    setShowTransitionPrompt(false)
+    transitionHelp.goToCountdown()
+    setShowCountdown(true)
+  }
+
+  const handleTransitionDismiss = () => {
+    setShowTransitionPrompt(false)
+    transitionHelp.cancel()
+  }
+
+  const handleRitualComplete = () => {
+    setShowRitualWalkthrough(false)
+    transitionHelp.goToCountdown()
+    setShowCountdown(true)
+  }
+
+  const handleRitualSkip = () => {
+    setShowRitualWalkthrough(false)
+    transitionHelp.skipRitual()
+    setShowCountdown(true)
+  }
+
+  const handleCountdownComplete = () => {
+    setShowCountdown(false)
+    transitionHelp.completeCountdown()
+  }
+
+  // Five minutes handlers
+  const handleStartFiveMinutes = (taskId: string) => {
+    fiveMinutes.start(taskId)
+    transitionHelp.recordTaskStarted()
+  }
+
+  const handleFiveMinutesPause = () => {
+    fiveMinutes.pause()
+  }
+
+  const handleFiveMinutesResume = () => {
+    fiveMinutes.resume()
+  }
+
+  const handleFiveMinutesStop = () => {
+    fiveMinutes.stop('clean_exit')
+  }
+
+  // Called when user completes task during 5-minute session
+  const _handleFiveMinutesComplete = async () => {
+    if (fiveMinutes.state.taskId) {
+      await handleComplete(fiveMinutes.state.taskId)
+    }
+    fiveMinutes.stop('completed')
+  }
+  void _handleFiveMinutesComplete // Mark as intentionally unused for now
+
+  // Task shrinking handlers
+  const handleStartShrinking = (taskId: string) => {
+    setShrinkingTaskId(taskId)
+  }
+
+  const handleAddMicroStep = (stepText: string) => {
+    if (shrinkingTaskId) {
+      taskShrinking.addMicroStep(shrinkingTaskId, stepText)
+    }
+  }
+
+  const handleCompleteMicroStep = () => {
+    if (shrinkingTaskId) {
+      taskShrinking.completeCurrentStep(shrinkingTaskId)
+    }
+  }
+
+  const handleShrinkingClose = () => {
+    if (shrinkingTaskId) {
+      taskShrinking.clearMicroSteps(shrinkingTaskId)
+    }
+    setShrinkingTaskId(null)
+  }
+
+  // Called when user finishes task through micro-steps
+  const _handleShrinkingDone = async () => {
+    if (shrinkingTaskId) {
+      await handleComplete(shrinkingTaskId)
+      taskShrinking.clearMicroSteps(shrinkingTaskId)
+      setShrinkingTaskId(null)
+    }
+  }
+  void _handleShrinkingDone // Mark as intentionally unused for now
+
+  // Body doubling handlers
+  const handleOpenBodyDoublingStart = () => {
+    setShowBodyDoublingStart(true)
+  }
+
+  const handleStartBodyDoubling = (intensity?: 'passive' | 'checkins' | 'activity_aware' | 'coworking') => {
+    bodyDoubling.startSession(intensity ?? profile?.body_doubling_intensity ?? 'coworking')
+    setShowBodyDoublingStart(false)
+    transitionHelp.recordTaskStarted()
+  }
+
+  // Reserved for manual pause functionality
+  const _handleBodyDoublingPause = () => {
+    // Body doubling tracks activity automatically, but we can touch the current task
+    if (bodyDoubling.state.session?.tasksTouched[0]) {
+      bodyDoubling.touchTask(bodyDoubling.state.session.tasksTouched[0])
+    }
+  }
+  void _handleBodyDoublingPause // Mark as intentionally unused for now
+
+  const handleBodyDoublingDismissCheckin = () => {
+    bodyDoubling.dismissCheckin()
+  }
+
+  // Reserved for ending session from controls
+  const _handleBodyDoublingEnd = () => {
+    bodyDoubling.endSession()
+  }
+  void _handleBodyDoublingEnd // Mark as intentionally unused for now
+
+  // Momentum builder handlers
+  const handleOfferWarmup = (targetTaskId: string) => {
+    setWarmupTargetTaskId(targetTaskId)
+    setShowWarmupOffer(true)
+  }
+
+  const handleStartWarmup = () => {
+    if (warmupTargetTaskId) {
+      momentumBuilder.startWarmup(
+        warmupTargetTaskId,
+        pendingTasks,
+        profile?.warmup_streak_size ?? 3
+      )
+      setShowWarmupOffer(false)
+    }
+  }
+
+  const handleWarmupTaskComplete = async (taskId: string) => {
+    await handleComplete(taskId)
+    momentumBuilder.completeWarmupTask(taskId)
+  }
+
+  const handleSkipWarmup = () => {
+    momentumBuilder.skipToTarget()
+    setShowWarmupOffer(false)
+  }
+
+  const handleCancelWarmup = () => {
+    momentumBuilder.cancel()
+    setShowWarmupOffer(false)
+    setWarmupTargetTaskId(null)
+  }
 
   const handleComplete = async (taskId: string) => {
     const task = tasks.find(t => t.id === taskId)
@@ -311,9 +519,15 @@ export default function TaskListPage() {
                 onComplete={handleComplete}
                 onDelete={deleteTask}
                 onExcuse={handleExcuse}
+                onFiveMinutes={handleStartFiveMinutes}
+                onShrink={handleStartShrinking}
+                onWarmup={handleOfferWarmup}
                 theme={theme}
                 isHighlighted={pickForMe.state.pickedTaskId === task.id}
                 isDimmed={pickForMe.state.pickedTaskId !== null && pickForMe.state.pickedTaskId !== task.id}
+                showFiveMinutes={profile?.just_five_minutes_enabled ?? false}
+                showShrink={profile?.task_shrinking_enabled ?? false}
+                showWarmup={profile?.momentum_builder_enabled ?? false}
               />
             ))}
           </div>
@@ -392,6 +606,174 @@ export default function TaskListPage() {
         tasksRequired={pickForMe.state.tasksToComplete}
         userName={userName}
       />
+
+      {/* Daily Check-in Modal - blocks everything, shown once per day */}
+      {profile?.daily_checkin_enabled && (
+        <DailyCheckinModal
+          isOpen={dailyCheckin.needsCheckin}
+          onClose={() => {/* Can't close without selecting */}}
+          onSelect={dailyCheckin.setBrainState}
+          theme={theme}
+          spicyLevel={spicyLevel as SpicyLevel}
+        />
+      )}
+
+      {/* Transition Prompt - helps with context switching */}
+      <TransitionPrompt
+        isOpen={showTransitionPrompt}
+        spicyLevel={spicyLevel as SpicyLevel}
+        theme={theme}
+        hasRitual={(profile?.startup_ritual?.length ?? 0) > 0}
+        onStartFull={handleTransitionStartFull}
+        onQuickStart={handleTransitionQuickStart}
+        onDismiss={handleTransitionDismiss}
+      />
+
+      {/* Ritual Walkthrough - guided startup ritual */}
+      <RitualWalkthrough
+        isOpen={showRitualWalkthrough}
+        steps={profile?.startup_ritual ?? []}
+        currentStep={transitionHelp.state.currentRitualStep}
+        onCompleteStep={() => {
+          // Check if this is the last step
+          const steps = profile?.startup_ritual ?? []
+          if (transitionHelp.state.currentRitualStep >= steps.length - 1) {
+            handleRitualComplete()
+          } else {
+            transitionHelp.completeRitualStep()
+          }
+        }}
+        onSkip={handleRitualSkip}
+        theme={theme}
+        spicyLevel={spicyLevel as SpicyLevel}
+      />
+
+      {/* Countdown Timer - final countdown before work */}
+      <CountdownTimer
+        isOpen={showCountdown}
+        seconds={profile?.countdown_length ?? 10}
+        theme={theme}
+        onComplete={handleCountdownComplete}
+        onCancel={() => {
+          setShowCountdown(false)
+          transitionHelp.cancel()
+        }}
+      />
+
+      {/* Five Minutes Timer - active "just 5 minutes" session */}
+      {fiveMinutes.state.isActive && (
+        <div className="fixed bottom-24 right-4 z-40">
+          <FiveMinutesTimer
+            elapsedMs={fiveMinutes.state.elapsedMs}
+            phase={fiveMinutes.state.phase}
+            isPaused={fiveMinutes.state.isPaused}
+            taskTitle={tasks.find(t => t.id === fiveMinutes.state.taskId)?.title ?? 'Task'}
+            theme={theme}
+            onPause={handleFiveMinutesPause}
+            onResume={handleFiveMinutesResume}
+            onStop={handleFiveMinutesStop}
+          />
+        </div>
+      )}
+
+      {/* Shrink Task Modal - enter micro steps */}
+      <ShrinkTaskModal
+        isOpen={!!shrinkingTaskId && taskShrinking.getMicroSteps(shrinkingTaskId ?? '').length === 0}
+        onClose={handleShrinkingClose}
+        taskTitle={tasks.find(t => t.id === shrinkingTaskId)?.title ?? ''}
+        onSubmit={handleAddMicroStep}
+        theme={theme}
+        spicyLevel={spicyLevel as SpicyLevel}
+      />
+
+      {/* Micro Step View - working through micro steps */}
+      {shrinkingTaskId && taskShrinking.getMicroSteps(shrinkingTaskId).length > 0 && (
+        <MicroStepView
+          taskTitle={tasks.find(t => t.id === shrinkingTaskId)?.title ?? ''}
+          microSteps={taskShrinking.getMicroSteps(shrinkingTaskId)}
+          currentStepIndex={taskShrinking.getCurrentStepIndex(shrinkingTaskId)}
+          onCompleteStep={handleCompleteMicroStep}
+          onAddStep={() => {
+            // Clear current steps so modal reopens
+            if (shrinkingTaskId) {
+              taskShrinking.clearMicroSteps(shrinkingTaskId)
+            }
+          }}
+          onHasMomentum={() => taskShrinking.setHasMomentum(shrinkingTaskId)}
+          theme={theme}
+          spicyLevel={spicyLevel as SpicyLevel}
+        />
+      )}
+
+      {/* Body Doubling Start Modal */}
+      <BodyDoublingStart
+        isOpen={showBodyDoublingStart}
+        spicyLevel={spicyLevel as SpicyLevel}
+        theme={theme}
+        onStart={handleStartBodyDoubling}
+        onClose={() => setShowBodyDoublingStart(false)}
+      />
+
+      {/* Body Doubling Session - active co-working overlay */}
+      {bodyDoubling.state.isActive && (
+        <BodyDoublingSession
+          isActive={bodyDoubling.state.isActive}
+          intensity={bodyDoubling.state.intensity}
+          isPaused={false}
+          showCheckin={bodyDoubling.state.showCheckin}
+          durationSeconds={bodyDoubling.getSessionDurationSeconds()}
+          onDismissCheckin={handleBodyDoublingDismissCheckin}
+          onEndSession={bodyDoubling.endSession}
+          theme={theme}
+          spicyLevel={spicyLevel as SpicyLevel}
+        />
+      )}
+
+      {/* Warmup Offer Modal */}
+      {warmupTargetTaskId && (
+        <WarmupOffer
+          isOpen={showWarmupOffer}
+          taskTitle={tasks.find(t => t.id === warmupTargetTaskId)?.title ?? ''}
+          quickWinCount={Math.min(profile?.warmup_streak_size ?? 3, pendingTasks.filter(t => t.id !== warmupTargetTaskId).length)}
+          streakSize={profile?.warmup_streak_size ?? 3}
+          onAccept={handleStartWarmup}
+          onDecline={handleSkipWarmup}
+          theme={theme}
+          spicyLevel={spicyLevel as SpicyLevel}
+        />
+      )}
+
+      {/* Warmup Queue - active momentum building */}
+      {momentumBuilder.state.isActive && (
+        <WarmupQueue
+          warmupTasks={pendingTasks.filter(t => momentumBuilder.warmupTaskIds.includes(t.id))}
+          completedCount={momentumBuilder.state.completedCount}
+          requiredCount={momentumBuilder.state.requiredCount}
+          targetTaskTitle={tasks.find(t => t.id === momentumBuilder.state.targetTaskId)?.title ?? ''}
+          onTaskClick={handleWarmupTaskComplete}
+          onSkipToTarget={handleSkipWarmup}
+          onCancel={handleCancelWarmup}
+          theme={theme}
+          spicyLevel={spicyLevel as SpicyLevel}
+        />
+      )}
+
+      {/* Body Doubling FAB - floating action button */}
+      {profile?.body_doubling_enabled && !bodyDoubling.state.isActive && (
+        <button
+          onClick={handleOpenBodyDoublingStart}
+          className={`fixed bottom-24 left-4 z-30 p-3 rounded-full shadow-lg transition-all ${
+            isHinged
+              ? 'bg-hinged-accent text-white hover:bg-hinged-accent-hover'
+              : 'bg-mint text-charcoal border-2 border-clock-black shadow-[3px_3px_0_0_#1c1917] hover:shadow-[1px_1px_0_0_#1c1917] hover:translate-x-0.5 hover:translate-y-0.5'
+          }`}
+          aria-label="Start body doubling session"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </button>
+      )}
     </div>
   )
 }

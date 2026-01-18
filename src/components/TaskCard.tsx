@@ -10,9 +10,15 @@ interface TaskCardProps {
   onComplete: (taskId: string) => void
   onDelete?: (taskId: string) => void
   onExcuse?: (taskId: string) => void
+  onFiveMinutes?: (taskId: string) => void
+  onShrink?: (taskId: string) => void
+  onWarmup?: (taskId: string) => void
   theme: 'hinged' | 'unhinged'
   isHighlighted?: boolean
   isDimmed?: boolean
+  showFiveMinutes?: boolean
+  showShrink?: boolean
+  showWarmup?: boolean
 }
 
 const urgencyStyles = {
@@ -49,7 +55,21 @@ const urgencyMessages = {
   },
 }
 
-export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme, isHighlighted = false, isDimmed = false }: TaskCardProps) {
+export default function TaskCard({
+  task,
+  onComplete,
+  onDelete,
+  onExcuse,
+  onFiveMinutes,
+  onShrink,
+  onWarmup,
+  theme,
+  isHighlighted = false,
+  isDimmed = false,
+  showFiveMinutes = false,
+  showShrink = false,
+  showWarmup = false,
+}: TaskCardProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const timeRemaining = formatTimeRemaining(task.fake_due_date)
@@ -147,6 +167,47 @@ export default function TaskCard({ task, onComplete, onDelete, onExcuse, theme, 
             <p className={`text-xs mt-1 ${theme === 'unhinged' ? 'font-bold text-hot-pink' : 'text-hinged-text-secondary'}`}>
               {urgencyMessage}
             </p>
+          )}
+          {/* Feature buttons row */}
+          {(showFiveMinutes || showShrink || showWarmup) && (
+            <div className="flex gap-2 mt-2">
+              {showFiveMinutes && onFiveMinutes && (
+                <button
+                  onClick={() => onFiveMinutes(task.id)}
+                  className={`text-xs px-2 py-1 rounded transition-colors ${
+                    isHinged
+                      ? 'border border-hinged-border text-hinged-text-secondary hover:border-hinged-accent hover:text-hinged-accent'
+                      : 'border-2 border-clock-black bg-clock-ivory text-clock-black font-mono shadow-[2px_2px_0_0_#1c1917] hover:shadow-[1px_1px_0_0_#1c1917] hover:translate-x-0.5 hover:translate-y-0.5'
+                  }`}
+                >
+                  {isHinged ? '5 min' : '5 MIN'}
+                </button>
+              )}
+              {showShrink && onShrink && (
+                <button
+                  onClick={() => onShrink(task.id)}
+                  className={`text-xs px-2 py-1 rounded transition-colors ${
+                    isHinged
+                      ? 'border border-hinged-border text-hinged-text-secondary hover:border-hinged-accent hover:text-hinged-accent'
+                      : 'border-2 border-clock-black bg-peach text-clock-black font-mono shadow-[2px_2px_0_0_#1c1917] hover:shadow-[1px_1px_0_0_#1c1917] hover:translate-x-0.5 hover:translate-y-0.5'
+                  }`}
+                >
+                  {isHinged ? 'Shrink' : 'SHRINK'}
+                </button>
+              )}
+              {showWarmup && onWarmup && (
+                <button
+                  onClick={() => onWarmup(task.id)}
+                  className={`text-xs px-2 py-1 rounded transition-colors ${
+                    isHinged
+                      ? 'border border-hinged-border text-hinged-text-secondary hover:border-hinged-accent hover:text-hinged-accent'
+                      : 'border-2 border-clock-black bg-mint text-clock-black font-mono shadow-[2px_2px_0_0_#1c1917] hover:shadow-[1px_1px_0_0_#1c1917] hover:translate-x-0.5 hover:translate-y-0.5'
+                  }`}
+                >
+                  {isHinged ? 'Warm up' : 'WARM UP'}
+                </button>
+              )}
+            </div>
           )}
         </div>
         <div className="flex gap-2 items-center">
