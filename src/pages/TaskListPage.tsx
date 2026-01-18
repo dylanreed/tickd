@@ -1,7 +1,7 @@
 // ABOUTME: Main page displaying the task list with add form.
 // ABOUTME: Orchestrates task management and completion reveals.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTasks } from '../hooks/useTasks'
 import { useProfile } from '../hooks/useProfile'
 import { useExcuses } from '../hooks/useExcuses'
@@ -13,6 +13,8 @@ import { useFiveMinutes } from '../hooks/useFiveMinutes'
 import { useBodyDoubling } from '../hooks/useBodyDoubling'
 import { useMomentumBuilder } from '../hooks/useMomentumBuilder'
 import { useTaskShrinking } from '../hooks/useTaskShrinking'
+import { useTaskEstimation } from '../hooks/useTaskEstimation'
+import { useTimeAlerts } from '../hooks/useTimeAlerts'
 import { useAuth } from '../contexts/AuthContext'
 import TaskCard from '../components/TaskCard'
 import AddTaskForm from '../components/AddTaskForm'
@@ -36,6 +38,10 @@ import BodyDoublingStart from '../components/BodyDoublingStart'
 import BodyDoublingSession from '../components/BodyDoublingSession'
 import WarmupOffer from '../components/WarmupOffer'
 import WarmupQueue from '../components/WarmupQueue'
+import WarmupComplete from '../components/WarmupComplete'
+import FiveMinutesCheckpoint from '../components/FiveMinutesCheckpoint'
+import TimeAlertToast from '../components/TimeAlertToast'
+import EnvironmentCheck from '../components/EnvironmentCheck'
 import type { SpicyLevel } from '../data/pickForMeMessages'
 
 const SPICY_LEVEL_KEY = 'tickd-spicy-level'
@@ -79,6 +85,28 @@ export default function TaskListPage() {
   const bodyDoubling = useBodyDoubling()
   const momentumBuilder = useMomentumBuilder()
   const taskShrinking = useTaskShrinking()
+  const taskEstimation = useTaskEstimation()
+
+  // Calculate effective spicy level based on brain state
+  const effectiveSpicyLevel = dailyCheckin.getEffectiveSpicyLevel(
+    spicyLevel,
+    profile?.brain_state_affects_spiciness ?? false
+  )
+
+  // Find active task for time tracking
+  const activeTask = tasks.find(t => t.id === taskEstimation.activeTaskId)
+  const activeTaskStartTime = taskEstimation.activeTaskId ? new Date(Date.now() - taskEstimation.elapsedMinutes * 60 * 1000) : null
+
+  // Time alerts hook - fires alerts when time thresholds are crossed
+  const timeAlerts = useTimeAlerts({
+    enabled: profile?.time_tools_enabled ?? false,
+    milestoneEnabled: profile?.milestone_alerts !== 'off',
+    estimateEnabled: profile?.estimate_alerts_enabled ?? false,
+    spicyLevel: effectiveSpicyLevel as 1 | 2 | 3 | 4 | 5,
+    activeTaskId: taskEstimation.activeTaskId,
+    taskStartTime: activeTaskStartTime,
+    estimatedMinutes: activeTask?.estimated_minutes ?? null,
+  })
 
   // Track transition help state
   const [showTransitionPrompt, setShowTransitionPrompt] = useState(false)
@@ -86,6 +114,9 @@ export default function TaskListPage() {
   const [showCountdown, setShowCountdown] = useState(false)
   const [showBodyDoublingStart, setShowBodyDoublingStart] = useState(false)
   const [showWarmupOffer, setShowWarmupOffer] = useState(false)
+  const [showWarmupComplete, setShowWarmupComplete] = useState(false)
+  const [showEnvironmentCheck, setShowEnvironmentCheck] = useState(false)
+  const [showFiveMinutesCheckpoint, setShowFiveMinutesCheckpoint] = useState(false)
   const [warmupTargetTaskId, setWarmupTargetTaskId] = useState<string | null>(null)
   const [shrinkingTaskId, setShrinkingTaskId] = useState<string | null>(null)
 
@@ -170,8 +201,19 @@ export default function TaskListPage() {
   const handleTransitionStartFull = () => {
     setShowTransitionPrompt(false)
     transitionHelp.startTransition()
-    transitionHelp.goToRitual()
-    setShowRitualWalkthrough(true)
+
+    // Show environment check first if checklist exists
+    if ((profile?.environment_checklist?.length ?? 0) > 0) {
+      setShowEnvironmentCheck(true)
+    } else if ((profile?.startup_ritual?.length ?? 0) > 0) {
+      // Skip to ritual if no checklist
+      transitionHelp.goToRitual()
+      setShowRitualWalkthrough(true)
+    } else {
+      // Skip to countdown if no checklist or ritual
+      transitionHelp.goToCountdown()
+      setShowCountdown(true)
+    }
   }
 
   const handleTransitionQuickStart = () => {
@@ -183,6 +225,30 @@ export default function TaskListPage() {
   const handleTransitionDismiss = () => {
     setShowTransitionPrompt(false)
     transitionHelp.cancel()
+  }
+
+  const handleEnvironmentCheckComplete = () => {
+    setShowEnvironmentCheck(false)
+    // Move to ritual if it exists, otherwise countdown
+    if ((profile?.startup_ritual?.length ?? 0) > 0) {
+      transitionHelp.goToRitual()
+      setShowRitualWalkthrough(true)
+    } else {
+      transitionHelp.goToCountdown()
+      setShowCountdown(true)
+    }
+  }
+
+  const handleEnvironmentCheckSkip = () => {
+    setShowEnvironmentCheck(false)
+    // Move to ritual if it exists, otherwise countdown
+    if ((profile?.startup_ritual?.length ?? 0) > 0) {
+      transitionHelp.goToRitual()
+      setShowRitualWalkthrough(true)
+    } else {
+      transitionHelp.goToCountdown()
+      setShowCountdown(true)
+    }
   }
 
   const handleRitualComplete = () => {
@@ -205,29 +271,59 @@ export default function TaskListPage() {
   // Five minutes handlers
   const handleStartFiveMinutes = (taskId: string) => {
     fiveMinutes.start(taskId)
+    taskEstimation.focusTask(taskId) // Start tracking focus time
     transitionHelp.recordTaskStarted()
   }
 
   const handleFiveMinutesPause = () => {
     fiveMinutes.pause()
+    taskEstimation.pauseFocus()
   }
 
   const handleFiveMinutesResume = () => {
     fiveMinutes.resume()
+    taskEstimation.resumeFocus()
   }
 
   const handleFiveMinutesStop = () => {
     fiveMinutes.stop('clean_exit')
+    taskEstimation.unfocusTask()
+    setShowFiveMinutesCheckpoint(false)
   }
 
   // Called when user completes task during 5-minute session
-  const _handleFiveMinutesComplete = async () => {
+  const handleFiveMinutesComplete = async () => {
     if (fiveMinutes.state.taskId) {
       await handleComplete(fiveMinutes.state.taskId)
     }
     fiveMinutes.stop('completed')
+    taskEstimation.unfocusTask()
+    setShowFiveMinutesCheckpoint(false)
   }
-  void _handleFiveMinutesComplete // Mark as intentionally unused for now
+
+  // Called when user continues past a checkpoint
+  const handleFiveMinutesContinue = () => {
+    setShowFiveMinutesCheckpoint(false)
+  }
+
+  // Watch for phase transitions in 5 minutes timer to show checkpoints
+  const prevPhaseRef = useRef(fiveMinutes.state.phase)
+  useEffect(() => {
+    const prevPhase = prevPhaseRef.current
+    const currentPhase = fiveMinutes.state.phase
+
+    // Check if phase changed to a checkpoint phase
+    if (prevPhase !== currentPhase && fiveMinutes.state.isActive) {
+      if (
+        (prevPhase === 'first_five' && currentPhase === 'five_to_ten') ||
+        (prevPhase === 'five_to_ten' && currentPhase === 'ten_to_fifteen') ||
+        (prevPhase === 'ten_to_fifteen' && currentPhase === 'flow_state')
+      ) {
+        setShowFiveMinutesCheckpoint(true)
+      }
+    }
+    prevPhaseRef.current = currentPhase
+  }, [fiveMinutes.state.phase, fiveMinutes.state.isActive])
 
   // Task shrinking handlers
   const handleStartShrinking = (taskId: string) => {
@@ -268,30 +364,25 @@ export default function TaskListPage() {
     setShowBodyDoublingStart(true)
   }
 
-  const handleStartBodyDoubling = (intensity?: 'passive' | 'checkins' | 'activity_aware' | 'coworking') => {
+  const handleStartBodyDoubling = (intensity?: 'passive' | 'checkins' | 'activity_aware' | 'coworking', taskId?: string) => {
     bodyDoubling.startSession(intensity ?? profile?.body_doubling_intensity ?? 'coworking')
     setShowBodyDoublingStart(false)
     transitionHelp.recordTaskStarted()
-  }
-
-  // Reserved for manual pause functionality
-  const _handleBodyDoublingPause = () => {
-    // Body doubling tracks activity automatically, but we can touch the current task
-    if (bodyDoubling.state.session?.tasksTouched[0]) {
-      bodyDoubling.touchTask(bodyDoubling.state.session.tasksTouched[0])
+    // If a specific task was selected, start tracking it
+    if (taskId) {
+      taskEstimation.focusTask(taskId)
     }
   }
-  void _handleBodyDoublingPause // Mark as intentionally unused for now
 
   const handleBodyDoublingDismissCheckin = () => {
     bodyDoubling.dismissCheckin()
   }
 
-  // Reserved for ending session from controls
-  const _handleBodyDoublingEnd = () => {
-    bodyDoubling.endSession()
+  const handleBodyDoublingEnd = () => {
+    const summary = bodyDoubling.endSession()
+    taskEstimation.unfocusTask()
+    return summary
   }
-  void _handleBodyDoublingEnd // Mark as intentionally unused for now
 
   // Momentum builder handlers
   const handleOfferWarmup = (targetTaskId: string) => {
@@ -313,6 +404,30 @@ export default function TaskListPage() {
   const handleWarmupTaskComplete = async (taskId: string) => {
     await handleComplete(taskId)
     momentumBuilder.completeWarmupTask(taskId)
+
+    // Check if warmup is now complete (all required tasks done)
+    // Note: check after state update settles
+    setTimeout(() => {
+      if (momentumBuilder.state.completedCount >= momentumBuilder.state.requiredCount) {
+        setShowWarmupComplete(true)
+      }
+    }, 100)
+  }
+
+  const handleWarmupCompleteGoToTarget = () => {
+    setShowWarmupComplete(false)
+    // Focus on the target task
+    if (warmupTargetTaskId) {
+      taskEstimation.focusTask(warmupTargetTaskId)
+    }
+    setWarmupTargetTaskId(null)
+    momentumBuilder.cancel() // Clear warmup state
+  }
+
+  const handleWarmupCompleteDone = () => {
+    setShowWarmupComplete(false)
+    setWarmupTargetTaskId(null)
+    momentumBuilder.cancel()
   }
 
   const handleSkipWarmup = () => {
@@ -331,14 +446,19 @@ export default function TaskListPage() {
     if (!task) return
 
     setJustCompleted(true)
+
+    // Get actual minutes from task estimation if this task was being tracked
+    const trackedMinutes = taskEstimation.activeTaskId === taskId ? taskEstimation.elapsedMinutes : null
+    const actualMinutes = trackedMinutes ?? task.actual_minutes
+
+    // Unfocus if this was the tracked task
+    if (taskEstimation.activeTaskId === taskId) {
+      taskEstimation.unfocusTask()
+    }
+
     const { wasOnTime, realDueDate, completedAt } = await completeTask(taskId)
 
     if (wasOnTime !== undefined && realDueDate) {
-      // Calculate actual minutes if task was being tracked
-      // For now, we'll use the task's actual_minutes field if set
-      // In the future, this could come from useTaskEstimation
-      const actualMinutes = task.actual_minutes
-
       setCompletionData({
         taskTitle: task.title,
         realDueDate,
@@ -425,7 +545,7 @@ export default function TaskListPage() {
           onComplete={handleSingleTaskComplete}
           onDismiss={handleSingleTaskDismiss}
           theme={theme}
-          spicyLevel={spicyLevel as SpicyLevel}
+          spicyLevel={effectiveSpicyLevel as SpicyLevel}
           userName={userName}
           totalTasks={tasks.length}
           overdueTasks={overdueTasks.length}
@@ -441,7 +561,7 @@ export default function TaskListPage() {
           theme={theme}
           estimatedMinutes={completionData?.estimatedMinutes}
           actualMinutes={completionData?.actualMinutes}
-          spicyLevel={spicyLevel as SpicyLevel}
+          spicyLevel={effectiveSpicyLevel as SpicyLevel}
         />
       </>
     )
@@ -553,7 +673,7 @@ export default function TaskListPage() {
         theme={theme}
         estimatedMinutes={completionData?.estimatedMinutes}
         actualMinutes={completionData?.actualMinutes}
-        spicyLevel={spicyLevel as SpicyLevel}
+        spicyLevel={effectiveSpicyLevel as SpicyLevel}
       />
 
       <Tick
@@ -561,7 +681,7 @@ export default function TaskListPage() {
         completedTasks={completedTasks.length}
         overdueTasks={overdueTasks.length}
         approachingTasks={approachingTasks.length}
-        spicyLevel={spicyLevel}
+        spicyLevel={effectiveSpicyLevel}
         justCompleted={justCompleted}
         justRevealed={justRevealed}
         userName={userName}
@@ -592,7 +712,7 @@ export default function TaskListPage() {
           onPick={handlePickForMe}
           isFirstPick={pickForMe.state.pickCount === 0}
           theme={theme}
-          spicyLevel={spicyLevel as SpicyLevel}
+          spicyLevel={effectiveSpicyLevel as SpicyLevel}
           allOverdue={pickForMe.allOverdue}
         />
       )}
@@ -602,10 +722,20 @@ export default function TaskListPage() {
         isOpen={escalationModalOpen}
         onConfirm={() => setEscalationModalOpen(false)}
         theme={theme}
-        spicyLevel={spicyLevel as SpicyLevel}
+        spicyLevel={effectiveSpicyLevel as SpicyLevel}
         tasksRequired={pickForMe.state.tasksToComplete}
         userName={userName}
       />
+
+      {/* Time Alert Toast - shows time-based notifications */}
+      {timeAlerts.currentAlert && (
+        <TimeAlertToast
+          message={timeAlerts.currentAlert.message}
+          type={timeAlerts.currentAlert.type}
+          theme={theme}
+          onDismiss={timeAlerts.dismissAlert}
+        />
+      )}
 
       {/* Daily Check-in Modal - blocks everything, shown once per day */}
       {profile?.daily_checkin_enabled && (
@@ -614,19 +744,28 @@ export default function TaskListPage() {
           onClose={() => {/* Can't close without selecting */}}
           onSelect={dailyCheckin.setBrainState}
           theme={theme}
-          spicyLevel={spicyLevel as SpicyLevel}
+          spicyLevel={effectiveSpicyLevel as SpicyLevel}
         />
       )}
 
       {/* Transition Prompt - helps with context switching */}
       <TransitionPrompt
         isOpen={showTransitionPrompt}
-        spicyLevel={spicyLevel as SpicyLevel}
+        spicyLevel={effectiveSpicyLevel as SpicyLevel}
         theme={theme}
         hasRitual={(profile?.startup_ritual?.length ?? 0) > 0}
         onStartFull={handleTransitionStartFull}
         onQuickStart={handleTransitionQuickStart}
         onDismiss={handleTransitionDismiss}
+      />
+
+      {/* Environment Check - pre-work checklist */}
+      <EnvironmentCheck
+        isOpen={showEnvironmentCheck}
+        checklist={profile?.environment_checklist ?? []}
+        theme={theme}
+        onComplete={handleEnvironmentCheckComplete}
+        onSkip={handleEnvironmentCheckSkip}
       />
 
       {/* Ritual Walkthrough - guided startup ritual */}
@@ -645,7 +784,7 @@ export default function TaskListPage() {
         }}
         onSkip={handleRitualSkip}
         theme={theme}
-        spicyLevel={spicyLevel as SpicyLevel}
+        spicyLevel={effectiveSpicyLevel as SpicyLevel}
       />
 
       {/* Countdown Timer - final countdown before work */}
@@ -676,6 +815,17 @@ export default function TaskListPage() {
         </div>
       )}
 
+      {/* Five Minutes Checkpoint - phase transition modal */}
+      <FiveMinutesCheckpoint
+        isOpen={showFiveMinutesCheckpoint}
+        phase={fiveMinutes.state.phase}
+        elapsedMinutes={Math.floor(fiveMinutes.state.elapsedMs / 60000)}
+        spicyLevel={effectiveSpicyLevel as SpicyLevel}
+        theme={theme}
+        onContinue={handleFiveMinutesContinue}
+        onStop={handleFiveMinutesComplete}
+      />
+
       {/* Shrink Task Modal - enter micro steps */}
       <ShrinkTaskModal
         isOpen={!!shrinkingTaskId && taskShrinking.getMicroSteps(shrinkingTaskId ?? '').length === 0}
@@ -683,7 +833,7 @@ export default function TaskListPage() {
         taskTitle={tasks.find(t => t.id === shrinkingTaskId)?.title ?? ''}
         onSubmit={handleAddMicroStep}
         theme={theme}
-        spicyLevel={spicyLevel as SpicyLevel}
+        spicyLevel={effectiveSpicyLevel as SpicyLevel}
       />
 
       {/* Micro Step View - working through micro steps */}
@@ -701,14 +851,14 @@ export default function TaskListPage() {
           }}
           onHasMomentum={() => taskShrinking.setHasMomentum(shrinkingTaskId)}
           theme={theme}
-          spicyLevel={spicyLevel as SpicyLevel}
+          spicyLevel={effectiveSpicyLevel as SpicyLevel}
         />
       )}
 
       {/* Body Doubling Start Modal */}
       <BodyDoublingStart
         isOpen={showBodyDoublingStart}
-        spicyLevel={spicyLevel as SpicyLevel}
+        spicyLevel={effectiveSpicyLevel as SpicyLevel}
         theme={theme}
         onStart={handleStartBodyDoubling}
         onClose={() => setShowBodyDoublingStart(false)}
@@ -723,9 +873,9 @@ export default function TaskListPage() {
           showCheckin={bodyDoubling.state.showCheckin}
           durationSeconds={bodyDoubling.getSessionDurationSeconds()}
           onDismissCheckin={handleBodyDoublingDismissCheckin}
-          onEndSession={bodyDoubling.endSession}
+          onEndSession={handleBodyDoublingEnd}
           theme={theme}
-          spicyLevel={spicyLevel as SpicyLevel}
+          spicyLevel={effectiveSpicyLevel as SpicyLevel}
         />
       )}
 
@@ -739,12 +889,12 @@ export default function TaskListPage() {
           onAccept={handleStartWarmup}
           onDecline={handleSkipWarmup}
           theme={theme}
-          spicyLevel={spicyLevel as SpicyLevel}
+          spicyLevel={effectiveSpicyLevel as SpicyLevel}
         />
       )}
 
       {/* Warmup Queue - active momentum building */}
-      {momentumBuilder.state.isActive && (
+      {momentumBuilder.state.isActive && !showWarmupComplete && (
         <WarmupQueue
           warmupTasks={pendingTasks.filter(t => momentumBuilder.warmupTaskIds.includes(t.id))}
           completedCount={momentumBuilder.state.completedCount}
@@ -754,9 +904,20 @@ export default function TaskListPage() {
           onSkipToTarget={handleSkipWarmup}
           onCancel={handleCancelWarmup}
           theme={theme}
-          spicyLevel={spicyLevel as SpicyLevel}
+          spicyLevel={effectiveSpicyLevel as SpicyLevel}
         />
       )}
+
+      {/* Warmup Complete Modal - celebration when warmup streak is done */}
+      <WarmupComplete
+        isOpen={showWarmupComplete}
+        completedCount={momentumBuilder.state.completedCount}
+        targetTaskTitle={tasks.find(t => t.id === warmupTargetTaskId)?.title ?? ''}
+        spicyLevel={effectiveSpicyLevel as SpicyLevel}
+        theme={theme}
+        onGoToTarget={handleWarmupCompleteGoToTarget}
+        onDone={handleWarmupCompleteDone}
+      />
 
       {/* Body Doubling FAB - floating action button */}
       {profile?.body_doubling_enabled && !bodyDoubling.state.isActive && (

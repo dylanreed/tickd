@@ -13,15 +13,21 @@ interface DeadlineIndicatorProps {
   dueDate: Date
   theme: 'hinged' | 'unhinged'
   compact?: boolean
+  /** Override visual style: 'hinged' = subtle, 'unhinged' = dramatic, 'match_app' = use theme */
+  visualStyle?: 'hinged' | 'unhinged' | 'match_app'
 }
 
 export default function DeadlineIndicator({
   dueDate,
   theme,
   compact = false,
+  visualStyle = 'match_app',
 }: DeadlineIndicatorProps) {
   const [now, setNow] = useState(new Date())
-  const isHinged = theme === 'hinged'
+
+  // Determine visual theme based on visualStyle setting
+  const effectiveTheme = visualStyle === 'match_app' ? theme : visualStyle
+  const isHinged = effectiveTheme === 'hinged'
 
   // Update every minute
   useEffect(() => {
